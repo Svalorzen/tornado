@@ -7,11 +7,11 @@
 #include <vector>
 #include <array>
 
-#include "tile.h"
+#include "tile.hpp"
 
 class Map {
     public:
-        Map(int,int);
+        Map(int,int,Tile);
 
     private:
         std::vector<std::vector<Tile>> grid;

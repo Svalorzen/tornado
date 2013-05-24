@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-#include "map.h"
+#include "map.hpp"
 
 int main()
 {
