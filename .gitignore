@@ -1,0 +1,6 @@
+objects/
+dependencies/
+*.a
+bin/
+*.swp
+SFML-2.0/
