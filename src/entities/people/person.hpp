@@ -1,7 +1,7 @@
 #ifndef PERSON_HEADER_FILE
 #define PERSON_HEADER_FILE
 
-#include "entity.hpp"
+#include <entities/entity.hpp>
 
 class Person : public Entity {
     public:
