@@ -10,7 +10,7 @@ EXECUTABLE=tornado
 WINEXECUTABLE=ruletheskies.exe
 
 CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./SFML-2.0/include 
-LDFLAGS=-L./SFML-2.0/lib/ -Wl,-rpath -Wl,./SFML-2.0/lib -g
+LDFLAGS=-L./SFML-2.0/lib/ -Wl,-rpath -Wl,../SFML-2.0/lib -g
 
 LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 WINLIBRARIES=#-ljson_mingw_libmt -lbprinter_mingw
