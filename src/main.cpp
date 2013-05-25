@@ -1,12 +1,13 @@
 #include <SFML/Graphics.hpp>
 
 #include <entities/people/person.hpp>
+#include "map/map.hpp"
 
-int main()
-{
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Project Tornado");
-
+int main() {
+    Map myMap(10,10);
     Person p(1,1,true);
+    
+    sf::RenderWindow window(sf::VideoMode(200, 200), "Map Test");
 
     while (window.isOpen())
     {
@@ -20,10 +21,12 @@ int main()
 
         window.clear();
 
+        myMap.displayMap(window);
         window.draw(p);
 
         window.display();
     }
 
     return 0;
+
 }
