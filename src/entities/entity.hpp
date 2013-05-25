@@ -14,6 +14,10 @@ class Entity : public AnimatedSprite {
         };
 
         Entity(Position); 
+
+    protected:
+        // Absolute
+        void setPosition(Position);
     private:
         // X,Y,W,H
         Position position;

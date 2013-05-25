@@ -8,6 +8,8 @@ class AnimatedSprite : public sf::Sprite {
         AnimatedSprite();
         AnimatedSprite(const sf::Texture &);
         AnimatedSprite(const sf::Texture &, const sf::IntRect & );
+
+        void resize(int width, int height);
 };
 
 #endif
