@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 
-#include "map.hpp"
+#include "map/map.hpp"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    Map myMap(10,10);
+    
+    sf::RenderWindow window(sf::VideoMode(200, 200), "Map Test");
 
     while (window.isOpen())
     {
@@ -18,9 +18,10 @@ int main()
         }
 
         window.clear();
-        window.draw(shape);
+        myMap.displayMap(window);
         window.display();
     }
 
     return 0;
+
 }

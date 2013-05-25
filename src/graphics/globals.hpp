@@ -3,7 +3,6 @@
 
 namespace Graphics {
     constexpr int TILE_EDGE_SIZE = 32;
-
 }
 
 #endif

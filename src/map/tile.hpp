@@ -1,12 +1,14 @@
 #ifndef TILE_HEADER_FILE
 #define TILE_HEADER_FILE
 
-#include <SFML/Graphics.hpp>
+#include <graphics/animated_sprite.hpp>
 
-class Tile:public sf::Sprite {
+class Tile : public AnimatedSprite {
 
     public:
         Tile();
+        Tile(const sf::Texture &);
+        Tile(const sf::Texture &, const sf::IntRect &);
 
         void setEmpty(bool);
         bool getEmpty();

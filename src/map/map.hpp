@@ -1,21 +1,23 @@
 #ifndef MAP_HEADER_FILE
 #define MAP_HEADER_FILE
 
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
-#include <iostream>
 #include <vector>
-#include <array>
 
 #include "tile.hpp"
 
+namespace sf { class Texture; class RenderWindow; }
+
 class Map {
     public:
-        Map(int,int,Tile);
+        Map(int,int);
+        
+        void displayMap(sf::RenderWindow &);
+
 
     private:
         std::vector<std::vector<Tile>> grid;
-
+        std::vector<sf::Texture> textures;
+        
 };
 
 #endif
