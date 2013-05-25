@@ -14,13 +14,16 @@ class Entity : public AnimatedSprite {
         };
 
         Entity(Position); 
+        Entity(Position p, const sf::Texture & t);
+        Entity(Position p, const sf::Texture & t, const sf::IntRect & r);
 
     protected:
         // Absolute
         void setPosition(Position);
+        Position getPosition();
     private:
         // X,Y,W,H
-        Position position;
+        Position position_;
 };
 
 #endif

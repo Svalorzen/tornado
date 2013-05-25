@@ -7,10 +7,17 @@ class Person : public Entity {
     public:
         Person(int,int, bool);
 
+        void act();
+
         bool isMale();
     private:
-        bool male;
-        std::array<unsigned,10> needs;
+        bool male_;
+        std::array<unsigned,10> needs_;
+
+        void goDown();
+        void goLeft();
+        void goRight();
+        void goUp();
 };
 
 #endif
