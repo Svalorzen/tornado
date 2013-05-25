@@ -1,3 +1,3 @@
 #include "person.hpp"
 
-Person::Person(Position p, bool isMale) : Entity(p), male(isMale) {}
+Person::Person(int x, int y, bool isMale) : Entity(std::make_tuple(x,y,1,1)), male(isMale) {}

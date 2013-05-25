@@ -5,7 +5,7 @@
 
 class Person : public Entity {
     public:
-        Person(Position, bool);
+        Person(int,int, bool);
 
         bool isMale();
     private:
