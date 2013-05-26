@@ -2,13 +2,13 @@
 
 #include <graphics/globals.hpp>
 
-Entity::Entity(Position p) : AnimatedSprite() {
+Entity::Entity(Map & m, Position p) : AnimatedSprite(), ownMap_(m) {
     setPosition(p);
 }
-Entity::Entity(Position p, const sf::Texture & t) : AnimatedSprite(t) {
+Entity::Entity(Map & m, Position p, const sf::Texture & t) : AnimatedSprite(t), ownMap_(m) {
     setPosition(p);
 }
-Entity::Entity(Position p, const sf::Texture & t, const sf::IntRect & r) : AnimatedSprite(t,r) {
+Entity::Entity(Map & m, Position p, const sf::Texture & t, const sf::IntRect & r) : AnimatedSprite(t,r), ownMap_(m) {
     setPosition(p);
 }
 

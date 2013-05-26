@@ -1,9 +1,10 @@
 #include "person.hpp"
 
 #include <graphics/textures.hpp>
+#include <map/map.hpp>
 
-Person::Person(int x, int y, bool isMale) : 
-    Entity(std::make_tuple(x,y,1,1), Graphics::getTexture("src/resources/red.png")), male_(isMale) {}
+Person::Person(Map& m, int x, int y, bool isMale) : 
+    Entity(m, std::make_tuple(x,y,1,1), Graphics::getTexture("src/resources/red.png")), male_(isMale) {}
 
 void Person::goLeft() {
     Entity::Position p = getPosition();

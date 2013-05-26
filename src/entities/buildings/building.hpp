@@ -3,9 +3,11 @@
 
 #include <entities/entity.hpp>
 
+class Map;
+
 class Building : public Entity {
     public:
-        Building(Position);
+        Building(Map&,Position);
     private:
 
 };

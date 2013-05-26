@@ -1,3 +1,5 @@
 #include "building.hpp"
 
-Building::Building(Position p) : Entity(p) {}
+#include <map/map.hpp>
+
+Building::Building(Map& m, Position p) : Entity(m,p) {}

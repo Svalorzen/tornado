@@ -12,10 +12,7 @@ using std::vector;
 int main() {
     Map myMap(10,10);
 
-    vector<Person> villagers;
-    villagers.emplace_back(1,1,true);
-    
-    sf::RenderWindow window(sf::VideoMode(200, 200), "Map Test");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Map Test");
 
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
 
@@ -34,9 +31,7 @@ int main() {
         int diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t).count();
 
         if ( diff ) {
-            for ( auto & v : villagers )
-                v.act();
-
+            myMap.runStep();
             // Reset timer for next seconds
             // FIXME: THIS IS WRONG BECAUSE ERRORS ACCUMULATE
             t = t2;
@@ -46,7 +41,6 @@ int main() {
         window.clear();
 
         myMap.displayMap(window);
-        window.draw(villagers[0]);
 
         window.display();
     }

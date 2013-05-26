@@ -3,6 +3,8 @@
 
 #include <graphics/animated_sprite.hpp>
 
+class Map;
+
 class Entity : public AnimatedSprite {
     public:
         typedef std::tuple<int,int,int,int> Position;
@@ -13,15 +15,18 @@ class Entity : public AnimatedSprite {
             H = 3
         };
 
-        Entity(Position); 
-        Entity(Position p, const sf::Texture & t);
-        Entity(Position p, const sf::Texture & t, const sf::IntRect & r);
+        Entity(Map &, Position p); 
+        Entity(Map &, Position p, const sf::Texture & t);
+        Entity(Map &, Position p, const sf::Texture & t, const sf::IntRect & r);
 
     protected:
         // Absolute
         void setPosition(Position);
         Position getPosition();
+
+        // Possibly methods for setting animations, used by children
     private:
+        Map & ownMap_;
         // X,Y,W,H
         Position position_;
 };

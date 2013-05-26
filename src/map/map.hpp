@@ -3,7 +3,9 @@
 
 #include <vector>
 
-#include "tile.hpp"
+#include <map/tile.hpp>
+#include <entities/people/person.hpp>
+#include <entities/buildings/building.hpp>
 
 namespace sf { class Texture; class RenderWindow; }
 
@@ -11,13 +13,14 @@ class Map {
     public:
         Map(int,int);
         
-        void displayMap(sf::RenderWindow &);
-
+        void runStep();
+        void displayMap(sf::RenderWindow &) const;
 
     private:
-        std::vector<std::vector<Tile>> grid;
-        std::vector<sf::Texture> textures;
-        
+        std::vector<std::vector<Tile>> grid_;
+
+        std::vector<Person> people_;
+        std::vector<Building> buildings_;
 };
 
 #endif

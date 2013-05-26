@@ -3,9 +3,11 @@
 
 #include <entities/entity.hpp>
 
+class Map;
+
 class Person : public Entity {
     public:
-        Person(int,int, bool);
+        Person(Map&,int,int,bool);
 
         void act();
 
