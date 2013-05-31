@@ -13,8 +13,6 @@ Area::Area(std::initializer_list<std::string> init) {
     for ( size_t i = 0; i < size; i++ ) {
         if ( (*s).size() != stringSize ) throw std::runtime_error("Init strings don't have all same size\n");
 
-        std::cout << "Adding " << *s << "\n";
-
         std::bitset<maxSize> temp(*s);
         auto t = reverseBitmap(temp);
 
@@ -30,11 +28,11 @@ const std::array<std::bitset<Area::maxSize>,Area::maxSize> & Area::getArea() con
     return area_;
 }
 
-int Area::getMaxW() const {
+unsigned Area::getMaxW() const {
     return maxW_;
 }
 
-int Area::getMaxH() const {
+unsigned Area::getMaxH() const {
     return maxH_;
 }
 
@@ -43,25 +41,37 @@ void Area::normalize() {
     unsigned emptyLines = 0;
     unsigned emptyColumns = maxSize;
 
+    unsigned topFilledLine = 0;
+    unsigned topFilledColumn = 0;
+
     for ( size_t i = 0; i < maxSize; i++ ) {
         // Vertical stuff
-        if ( addLine && area_[i].none() ) emptyLines++;
-        else addLine = false;
+        if ( area_[i].none() ) {
+            if ( addLine ) emptyLines++;
+        }
+        else {
+            addLine = false;
+            topFilledLine = i;
+        }
 
         // Horizontal stuff
         unsigned c = 0;
         while ( !area_[i][c] && c < maxSize ) c++;
         emptyColumns = std::min(emptyColumns, c);
+
+        for ( size_t j = c; j < maxSize; j++ )
+            if ( area_[i][j] ) topFilledColumn = j;
     }
 
     if ( emptyLines ) {
-        std::cout << "There are empty lines: "<<emptyLines<<"\n";
         std::move(begin(area_)+emptyLines, end(area_), begin(area_));
     }
 
     if ( emptyColumns ) {
-        std::cout << "There are empty columns: "<<emptyColumns<<"\n";
         for ( auto & i : area_ )
             i >>= emptyColumns;
     }
+
+    maxH_ = topFilledLine - emptyLines + 1;
+    maxW_ = topFilledColumn - emptyColumns + 1;
 }

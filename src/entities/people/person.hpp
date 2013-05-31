@@ -8,9 +8,7 @@ class Map;
 
 class Person : public Entity {
     public:
-        Person(Map&,int,int,bool);
-
-        void act();
+        Person(Map&,bool);
 
         bool isMale();
 
@@ -18,11 +16,6 @@ class Person : public Entity {
     private:
         bool male_;
         std::array<unsigned,10> needs_;
-
-        void goDown();
-        void goLeft();
-        void goRight();
-        void goUp();
 };
 
 #endif

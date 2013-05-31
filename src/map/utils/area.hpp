@@ -14,16 +14,16 @@ class Area {
 
         const std::array<std::bitset<maxSize>,maxSize> & getArea() const;
 
-        int getMaxH() const;
-        int getMaxW() const;
+        unsigned getMaxH() const;
+        unsigned getMaxW() const;
 
         Area& operator+=(const Area&);
         Area& operator-=(const Area&);
 
     private:
         std::array<std::bitset<maxSize>,maxSize> area_; 
-        int maxH_;
-        int maxW_;
+        unsigned maxH_;
+        unsigned maxW_;
 
         void normalize();
 };

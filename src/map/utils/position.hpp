@@ -4,9 +4,15 @@
 class Position {
     public:
         Position();
+        Position(int, int);
 
         int getX() const;
         int getY() const;
+
+        Position up() const;
+        Position down() const;
+        Position left() const;
+        Position right() const;
 
         void setX(int);
         void setY(int);

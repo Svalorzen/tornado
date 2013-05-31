@@ -24,13 +24,12 @@ class Action {
     public:
         Action(Entity &, ActionType);
 
-        const Entity & getEntity() const;
+        Entity & getEntity();
 
-        void resolve(ActionResolver);
+        ActionType getActionType() const;
     private:
-        bool resolved_;
-
-        const Entity & entity_;
+        Entity & entity_;
+        ActionType at_;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "position.hpp"
 
 Position::Position() : x_(0), y_(0) {}
+Position::Position(int x, int y) : x_(x), y_(y) {}
 
 int Position::getX() const {
     return x_;
@@ -16,4 +17,26 @@ void Position::setX(int newX) {
 
 void Position::setY(int newY) {
     y_ = newY;
+}
+
+// ORIGIN IS TOP LEFT
+Position Position::up() const {
+   Position p = *this;
+   p.setY(getY() - 1);
+   return p;
+}
+Position Position::down() const {
+   Position p = *this;
+   p.setY(getY() + 1);
+   return p;
+}
+Position Position::left() const {
+   Position p = *this;
+   p.setX(getX() - 1);
+   return p;
+}
+Position Position::right() const {
+   Position p = *this;
+   p.setX(getX() + 1);
+   return p;
 }

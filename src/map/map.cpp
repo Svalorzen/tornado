@@ -26,7 +26,9 @@ Map::Map(int x, int y) {
         dummy.clear();
     }
 
-    people_.emplace_back(*this, 1, 1, true);    
+    Person p(*this, true);
+    p.setPosition({1,1});
+    people_.push_back(p);    
 }
 
 void Map::runStep() { 
@@ -34,6 +36,30 @@ void Map::runStep() {
     for ( auto & p : people_ )
         actions.push_back(p.getAction());
 
+    for ( auto & a : actions ) {
+        switch( a.getActionType() ) {
+            case ActionType::MOVE_UP: {
+                a.getEntity().setPosition(a.getEntity().getPosition().up()); 
+                break;
+            }
+            case ActionType::MOVE_DOWN: {
+                a.getEntity().setPosition(a.getEntity().getPosition().down()); 
+
+                break;
+            }
+            case ActionType::MOVE_LEFT: {
+                a.getEntity().setPosition(a.getEntity().getPosition().left()); 
+
+                break;
+            }
+            case ActionType::MOVE_RIGHT: {
+                a.getEntity().setPosition(a.getEntity().getPosition().right()); 
+
+                break;
+            }
+            default: std::cout << "LOL\n" ;
+        }
+    }
 }
 
 void Map::displayMap(sf::RenderWindow &window) const {

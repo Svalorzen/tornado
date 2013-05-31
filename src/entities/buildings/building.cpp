@@ -2,4 +2,4 @@
 
 #include <map/map.hpp>
 
-Building::Building(Map& m, Position p) : Entity(m,p) {}
+Building::Building(Map& m, Area a) : Entity(m,a) {}

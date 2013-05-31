@@ -7,7 +7,21 @@
 #include <map/map.hpp>
 #include <iostream>
 
+#include <map/utils/area.hpp>
+
 using std::vector;
+
+void printArea(Area a) {
+    auto k = a.getArea();    
+
+    for ( auto j = k.rbegin(); j != k.rend(); j++ ) {
+        for ( size_t i = 0; i < (*j).size(); i++ )
+            std::cout << (*j)[i];
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+}
 
 int main() {
     Map myMap(10,10);
@@ -45,6 +59,9 @@ int main() {
         window.display();
     }
 
+    //Map myMap(10,10);
+    //Person p(myMap, true);
+    //printArea(p.getArea());
     return 0;
 
 }
