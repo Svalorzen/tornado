@@ -2,6 +2,7 @@
 #define PERSON_HEADER_FILE
 
 #include <entities/entity.hpp>
+#include <actions/action.hpp>
 
 class Map;
 
@@ -12,6 +13,8 @@ class Person : public Entity {
         void act();
 
         bool isMale();
+
+        Action getAction();
     private:
         bool male_;
         std::array<unsigned,10> needs_;

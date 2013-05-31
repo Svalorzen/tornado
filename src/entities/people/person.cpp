@@ -3,6 +3,8 @@
 #include <graphics/textures.hpp>
 #include <map/map.hpp>
 
+#include <actions/action.hpp>
+
 Person::Person(Map& m, int x, int y, bool isMale) : 
     Entity(m, std::make_tuple(x,y,1,1), Graphics::getTexture("src/resources/red.png")), male_(isMale) {}
 
@@ -34,18 +36,26 @@ void Person::goUp() {
     setPosition(p);
 }
 
-void Person::act() {
+Action Person::getAction() {
     static int x = 0, y = 0;
+    ActionType action;
 
     if ( x != 2 && y == 0 ) {
-        goLeft(); x++;
+        x++;
+        action = ActionType::MOVE_LEFT;
     }
     else if ( x == 2 && y != 2 ) {
-        goDown(); y++;
+        y++;
+        action = ActionType::MOVE_DOWN;
     }
     else if ( y == 2 && x != 0 ) {
-        goRight(); x--;
+        x--;
+        action = ActionType::MOVE_RIGHT;
     }
-    else { goUp(); y--; }
+    else { 
+        y--;
+        action = ActionType::MOVE_UP;
+    }
 
+    return Action(*this, action);
 }

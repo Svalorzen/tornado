@@ -6,6 +6,8 @@
 #include <graphics/globals.hpp>
 #include <graphics/textures.hpp>
 
+#include <actions/action.hpp>
+
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
     const sf::Texture & texture = Graphics::getTexture("src/resources/green.png");
@@ -28,8 +30,9 @@ Map::Map(int x, int y) {
 }
 
 void Map::runStep() { 
+    std::vector<Action> actions;
     for ( auto & p : people_ )
-        p.act();
+        actions.push_back(p.getAction());
 
 }
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <map/tile.hpp>
+#include <map/utils/tile.hpp>
 #include <entities/people/person.hpp>
 #include <entities/buildings/building.hpp>
 
