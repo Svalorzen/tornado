@@ -28,13 +28,18 @@ Map::Map(int x, int y) {
 
     Person p(*this, true);
     p.setPosition({1,1});
+    p.refresh();
     people_.push_back(p);    
 }
 
 void Map::runStep() { 
     std::vector<Action> actions;
-    for ( auto & p : people_ )
+    for ( auto & p : people_ ) {
         actions.push_back(p.getAction());
+        // Set people so that graphically they are actually in the square they had to go previous turn,
+        // so that there shouldn't be circular turns
+        p.refresh();
+    }
 
     for ( auto & a : actions ) {
         switch( a.getActionType() ) {
@@ -62,15 +67,19 @@ void Map::runStep() {
     }
 }
 
-void Map::displayMap(sf::RenderWindow &window) const {
+void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     for ( auto & row : grid_ )
         for (auto & cell : row ) 
             window.draw(cell);
     
-    for ( auto & b : buildings_ )
+    for ( auto & b : buildings_ ) {
         window.draw(b);
+        b.update(elapsedMs);
+    }
 
-    for ( auto & p : people_ )
+    for ( auto & p : people_ ) {
         window.draw(p);
+        p.update(elapsedMs);
+    }
 }
 

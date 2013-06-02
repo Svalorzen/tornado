@@ -3,6 +3,9 @@
 
 namespace Graphics {
     constexpr int TILE_EDGE_SIZE = 32;
+
+    constexpr unsigned FPS = 60;
+    constexpr unsigned MS_PER_FRAME = 1000/60;
 }
 
 #endif

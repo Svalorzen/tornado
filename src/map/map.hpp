@@ -14,7 +14,7 @@ class Map {
         Map(int,int);
         
         void runStep();
-        void displayMap(sf::RenderWindow &) const;
+        void displayMap(sf::RenderWindow &, unsigned);
 
     private:
         std::vector<std::vector<Tile>> grid_;

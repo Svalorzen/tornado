@@ -1,7 +1,7 @@
 #include "position.hpp"
 
-Position::Position() : x_(0), y_(0) {}
 Position::Position(int x, int y) : x_(x), y_(y) {}
+Position::Position() : Position(0,0) {}
 
 int Position::getX() const {
     return x_;

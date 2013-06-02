@@ -4,6 +4,8 @@
 #include <chrono>
 
 #include <entities/people/person.hpp>
+#include <globals.hpp>
+#include <graphics/globals.hpp>
 #include <map/map.hpp>
 #include <iostream>
 
@@ -27,36 +29,46 @@ int main() {
     Map myMap(10,10);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Map Test");
+    window.setFramerateLimit(Graphics::FPS);
 
-    std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
+    // Using chrono instead of SF::Time.. not a problem for now
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    unsigned oldDiff = 0;
 
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        // Event reading
+        while (window.pollEvent(event)) {
+            // Closing game events (Esc + clicking on the 'x' button)
             if (event.type == sf::Event::Closed ||
                 (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) )
                 window.close();
         }
 
         // We will need to do work during frames, can't do it all at once..
-        std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
-        int diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t).count();
+        std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
+        unsigned elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(t-start).count();
+        unsigned diff = elapsedMs / Core::MS_PER_UPDATE;
 
-        if ( diff ) {
+        // Update world state once per second
+        if ( diff > oldDiff ) {
             myMap.runStep();
-            // Reset timer for next seconds
-            // FIXME: THIS IS WRONG BECAUSE ERRORS ACCUMULATE
-            t = t2;
+
+            oldDiff = diff;
+            // We reset this because runStep already forces stuff to snap to the grid (moving them),
+            // so in case display gets called we don't want stuff to move more
+            elapsedMs = 0;
         }
+        else
+            // Not sure if it'll work but let's see!
+            elapsedMs -= oldDiff * Core::MS_PER_UPDATE;
 
-
+        // This will be automatically limited to Graphics::FPS by SFML (setted frame rate above) 
         window.clear();
-
-        myMap.displayMap(window);
-
+        // The idea here is that elapsed is a number [0,MS_PER_UPDATE), that represents how far we are in this frame.
+        myMap.displayMap(window, elapsedMs);
         window.display();
+
     }
 
     //Map myMap(10,10);

@@ -18,12 +18,17 @@ class Entity : public AnimatedSprite {
         Area getArea() const;
 
         void refresh();
+        void update(unsigned);
     protected:
 
     private:
         Map & ownMap_;
 
         Position position_;
+        // To update the sprite we would normally store an old position and the position, and find out
+        // what the difference is and render appropriately. Since the difference doesn't change during
+        // a step, and we would have to compute it every time nontheless, we directly store the difference.
+        Position diffPosition_;
         Area area_;
 
         void setPosition(Position);
