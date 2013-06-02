@@ -6,28 +6,14 @@
 #include <actions/action.hpp>
 
 Person::Person(Map& m, bool isMale) : 
-    Entity(m, {"1"}, Graphics::getTexture("src/resources/red.png")), male_(isMale) {}
+    //    MAP, AREA, SOLID
+    Entity(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale) {}
 
 Action Person::getAction() {
     static int x = 0, y = 0;
-    ActionType action;
-
-    if ( x != 2 && y == 0 ) {
-        x++;
-        action = ActionType::MOVE_RIGHT;
+    if ( getPosition().getX() == x && getPosition().getY() == y ) {
+        x = (x+6) %10;
+        y = (y+13) % 10;
     }
-    else if ( x == 2 && y != 2 ) {
-        y++;
-        action = ActionType::MOVE_DOWN;
-    }
-    else if ( y == 2 && x != 0 ) {
-        x--;
-        action = ActionType::MOVE_LEFT;
-    }
-    else { 
-        y--;
-        action = ActionType::MOVE_UP;
-    }
-
-    return Action(*this, action);
+    return Action(*this, ActionType::MOVE_TO, {x,y});
 }

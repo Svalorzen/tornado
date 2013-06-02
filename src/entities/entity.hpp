@@ -10,15 +10,17 @@ class Map;
 
 class Entity : public AnimatedSprite {
     public:
-        Entity(Map &, Area a); 
-        Entity(Map &, Area a, const sf::Texture & t);
-        Entity(Map &, Area a, const sf::Texture & t, const sf::IntRect & r);
+        Entity(Map &, Area a, bool solid); 
+        Entity(Map &, Area a, bool solid, const sf::Texture & t);
+        Entity(Map &, Area a, bool solid, const sf::Texture & t, const sf::IntRect & r);
 
         Position getPosition() const;
         Area getArea() const;
 
         void refresh();
         void update(unsigned);
+
+        bool isSolid() const;
     protected:
 
     private:
@@ -30,6 +32,10 @@ class Entity : public AnimatedSprite {
         // a step, and we would have to compute it every time nontheless, we directly store the difference.
         Position diffPosition_;
         Area area_;
+
+        // Represents if pathing can or can't use tiles where this entity stands. Alive stuff generally isn't solid
+        // but is specially handled by the map
+        bool solid_;
 
         void setPosition(Position);
 

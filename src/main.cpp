@@ -3,13 +3,10 @@
 #include <vector>
 #include <chrono>
 
-#include <entities/people/person.hpp>
 #include <globals.hpp>
 #include <graphics/globals.hpp>
 #include <map/map.hpp>
 #include <iostream>
-
-#include <map/utils/area.hpp>
 
 using std::vector;
 
@@ -32,7 +29,7 @@ int main() {
     window.setFramerateLimit(Graphics::FPS);
 
     // Using chrono instead of SF::Time.. not a problem for now
-    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() - std::chrono::duration<int>(1);
     unsigned oldDiff = 0;
 
     while (window.isOpen()) {
@@ -52,6 +49,7 @@ int main() {
 
         // Update world state once per second
         if ( diff > oldDiff ) {
+            std::cout << "running\n";
             myMap.runStep();
 
             oldDiff = diff;
