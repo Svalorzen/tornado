@@ -3,8 +3,11 @@
 
 #include <initializer_list>
 #include <array>
+#include <vector>
 #include <bitset>
 #include <string>
+
+class Position;
 
 class Area {
     public:
@@ -19,6 +22,8 @@ class Area {
 
         Area& operator+=(const Area&);
         Area& operator-=(const Area&);
+
+        std::vector<Position> applyArea(const Position &) const;
 
     private:
         std::array<std::bitset<maxSize>,maxSize> area_; 

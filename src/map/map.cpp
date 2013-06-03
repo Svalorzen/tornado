@@ -30,7 +30,7 @@ Map::Map(int x, int y) {
     }
 
     Person p(*this, true);
-    p.setPosition({1,1});
+    setEntityPosition(p, {1,1});
     p.refresh();
     people_.push_back(p);    
 }
@@ -45,25 +45,18 @@ void Map::runStep() {
     }
 
     for ( auto & a : actions ) {
+        // We may resolve more than one action at a time, so this checks that
         if ( ! a.isResolved() ) {
             switch( a.getActionType() ) {
                 case ActionType::MOVE_TO: {
+                    auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    a.getEntity().setPosition(computeSingleMove(a.getEntity(), a.getTargetPosition())); 
+                    setEntityPosition(a.getEntity(), nextMove);
                     std::cout << "Move is  "; a.getEntity().getPosition().print();
                     break;
                 }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
-            }
-        }
-        else {
-            // This code is for actions we have already resolved before
-            switch( a.getActionType() ) {
-                case ActionType::MOVE_TO: {
-                    a.getEntity().setPosition(a.getTargetPosition()); 
-                }
-                default: ;
             }
         }
     }
@@ -179,4 +172,22 @@ Position Map::computeSingleMove(const Entity & entity, Position target) {
 
     // Return path step
     return path.back();
+}
+
+// This function updates tile links, it is called only when we are actually
+// sure the guy will move here
+void Map::setEntityPosition(Entity & e, Position p) {
+    {
+        std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
+
+        for ( auto & p : initialTiles )
+            grid_.at(p.getX()).at(p.getY()).rmEntity(&e); 
+    }
+    {
+        std::vector<Position> finalTiles = e.getArea().applyArea(p);
+
+        for ( auto & p : finalTiles )
+            grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
+    }
+    e.setPosition(p);
 }

@@ -30,6 +30,7 @@ class Map {
         std::vector<Building> buildings_;
 
         Position computeSingleMove(const Entity &, Position); 
+        void setEntityPosition(Entity &, Position);
 
         // This map links a pair <Entity*,Position> with our last known pathfinding for it.
         // In addition, there is an iterator to the list containing the history, so that if

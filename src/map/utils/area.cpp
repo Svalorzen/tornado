@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <map/utils/position.hpp>
+
 Area::Area(std::initializer_list<std::string> init) {
     auto s = end(init)-1;
     size_t stringSize = (*s).size();
@@ -74,4 +76,16 @@ void Area::normalize() {
 
     maxH_ = topFilledLine - emptyLines + 1;
     maxW_ = topFilledColumn - emptyColumns + 1;
+}
+
+
+std::vector<Position> Area::applyArea(const Position & p) const {
+    std::vector<Position> positions;
+
+    for ( unsigned i = 0; i < getMaxH(); i++ )
+        for ( unsigned j = 0; j < getMaxW(); j++ )
+            if ( area_[i][j] )
+                positions.push_back(p + Position(-i, j));
+
+    return positions;
 }

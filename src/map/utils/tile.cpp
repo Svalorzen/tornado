@@ -21,9 +21,10 @@ void Tile::rmEntity(Entity * e) {
     for ( auto it = begin(aboveEntities_); it != end(aboveEntities_); /* NO! it++ */ ) {
         if ( (*it) == e )
             it = aboveEntities_.erase(it);
-
-        walkable_ |= (*it)->isSolid();
-        it++;
+        else {
+            walkable_ |= (*it)->isSolid();
+            it++;
+        }
     }
 }
 

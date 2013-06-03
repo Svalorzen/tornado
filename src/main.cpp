@@ -25,7 +25,7 @@ void printArea(Area a) {
 int main() {
     Map myMap(10,10);
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Map Test");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!");
     window.setFramerateLimit(Graphics::FPS);
 
     // Using chrono instead of SF::Time.. not a problem for now
