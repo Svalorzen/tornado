@@ -25,6 +25,8 @@ class Map {
 
         void askPeopleNeeds(); //CHECK THE NEEDS OF EVERY ENTITY ON THE MAP -> COMPUTE RESULTING ACTIONS
 
+        void addResource(Position);
+
 
     private:
         std::vector<std::vector<Tile>> grid_;

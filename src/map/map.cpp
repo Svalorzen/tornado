@@ -53,7 +53,6 @@ void Map::runStep() {
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
                     setEntityPosition(a.getEntity(), nextMove);
-                    std::cout << "Move is  "; a.getEntity().getPosition().print();
                     break;
                 }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
@@ -89,10 +88,17 @@ void Map::askPeopleNeeds() {
 
 }
 
+void Map::addResource(Position pos) {
+    Person p(*this, true);
+    setEntityPosition(p, pos);
+    p.refresh();
+    people_.push_back(p);    
+}
+
 Position Map::computeSingleMove(const Entity & entity, Position target) {
-    std::cout << "Going to -- "; target.print();
-    std::cout << "From     -- "; entity.getPosition().print();
-    std::cout << "\n";
+   // std::cout << "Going to -- "; target.print();
+   // std::cout << "From     -- "; entity.getPosition().print();
+   // std::cout << "\n";
 
     if (entity.getPosition() == target) return target;
 
@@ -160,11 +166,11 @@ Position Map::computeSingleMove(const Entity & entity, Position target) {
 
     }
 
-    std::cout << "PATH BUILT:\n";
-    for ( auto p : path ) {
-        std::cout << "  ";
-        p.print();
-    }
+   // std::cout << "PATH BUILT:\n";
+   // for ( auto p : path ) {
+   //     std::cout << "  ";
+   //     p.print();
+   // }
 
     // We can build it in a forward manner, but then we have to invert it.
     // std::reverse(path.begin(),path.end());
