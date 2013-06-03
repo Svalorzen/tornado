@@ -14,6 +14,8 @@ class Person : public Thinkable {
 
         Action getAction();
 
+        virtual void stepUpdate();
+
         unsigned getNeedValue(size_t);
         int getPriorityNeed();
 

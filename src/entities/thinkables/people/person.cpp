@@ -5,31 +5,20 @@
 
 #include <actions/action.hpp>
 
+//    MAP, AREA, SOLID
 Person::Person(Map& m, bool isMale) : 
-    Thinkable(m, {"1"}, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
+    Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
 
 Action Person::getAction() {
     static int x = 0, y = 0;
-    ActionType action;
+    if ( getPosition().getX() == x && getPosition().getY() == y ) {
+        x = (x+6) %10;
+        y = (y+13) % 10;
+    }
+    return Action(*this, ActionType::MOVE_TO, {x,y});
+}
 
-    if ( x != 2 && y == 0 ) {
-        x++;
-        action = ActionType::MOVE_RIGHT;
-    }
-    else if ( x == 2 && y != 2 ) {
-        y++;
-        action = ActionType::MOVE_DOWN;
-    }
-    else if ( y == 2 && x != 0 ) {
-        x--;
-        action = ActionType::MOVE_LEFT;
-    }
-    else { 
-        y--;
-        action = ActionType::MOVE_UP;
-    }
-
-    return Action(*this, action);
+void Person::stepUpdate() {
 }
 
 unsigned Person::getNeedValue(size_t index) {

@@ -1,7 +1,10 @@
 #include "map.hpp"
 
-#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
+#include <cmath>
+
+#include <SFML/Graphics.hpp>
 
 #include <graphics/globals.hpp>
 #include <graphics/textures.hpp>
@@ -27,7 +30,7 @@ Map::Map(int x, int y) {
     }
 
     Person p(*this, true);
-    p.setPosition({1,1});
+    setEntityPosition(p, {1,1});
     p.refresh();
     people_.push_back(p);    
 }
@@ -42,27 +45,19 @@ void Map::runStep() {
     }
 
     for ( auto & a : actions ) {
-        switch( a.getActionType() ) {
-            case ActionType::MOVE_UP: {
-                a.getEntity().setPosition(a.getEntity().getPosition().up()); 
-                break;
+        // We may resolve more than one action at a time, so this checks that
+        if ( ! a.isResolved() ) {
+            switch( a.getActionType() ) {
+                case ActionType::MOVE_TO: {
+                    auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
+                    // Here there should probably be a check verifying that target position is walkable in the
+                    // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
+                    setEntityPosition(a.getEntity(), nextMove);
+                    std::cout << "Move is  "; a.getEntity().getPosition().print();
+                    break;
+                }
+                default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
             }
-            case ActionType::MOVE_DOWN: {
-                a.getEntity().setPosition(a.getEntity().getPosition().down()); 
-
-                break;
-            }
-            case ActionType::MOVE_LEFT: {
-                a.getEntity().setPosition(a.getEntity().getPosition().left()); 
-
-                break;
-            }
-            case ActionType::MOVE_RIGHT: {
-                a.getEntity().setPosition(a.getEntity().getPosition().right()); 
-
-                break;
-            }
-            default: std::cout << "LOL\n" ;
         }
     }
 }
@@ -74,22 +69,136 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     
     for ( auto & b : buildings_ ) {
         window.draw(b);
-        b.update(elapsedMs);
+        b.graphicalUpdate(elapsedMs);
     }
 
     for ( auto & p : people_ ) {
         window.draw(p);
-        p.update(elapsedMs);
+        p.graphicalUpdate(elapsedMs);
     }
 }
 
-void Map::getPeopleActions() {
+void Map::askPeopleNeeds() {
     
+
     // CHECK PEOPLE BASIC NEEDS
     for ( auto & p : people_ ) {
-        std::cout << p.getPriorityNeed() << std::endl;
+        p.getPriorityNeed();
     
     }
 
 }
 
+Position Map::computeSingleMove(const Entity & entity, Position target) {
+    std::cout << "Going to -- "; target.print();
+    std::cout << "From     -- "; entity.getPosition().print();
+    std::cout << "\n";
+
+    if (entity.getPosition() == target) return target;
+
+    // For now we assume everything is walkable
+    // This is the pair that allows us to search for already computed paths
+    auto definingPair = std::make_pair(&entity, target);
+
+    // IT HERE IS PAIR OF (HASH,VALUE), AND VALUE IS PAIR OF (VECTOR, ITERATOR)
+    auto it = cachedPaths_.find(definingPair);
+    // If we already have that path
+    if ( it != cachedPaths_.end() ) {
+        // Moves are stored in inverted order perform better (vector doesn't need to move everything up one step after pop)
+        // So if this pathing actually starts from where we are, we can use it
+        // NOTE: this check will probably have to be updated to verify that all steps still walk on 
+        // walkable tiles (since we may have built stuff in the meantime). Thanksfully we can't destroy stuff
+        // so we don't need to trash old paths because a new faster way opened up.
+        // Or we may want to validate only the next step, and we recompute the path only when we realize that
+        // the world has changed
+        if ( (*it).second.first.size() > 1 && entity.getPosition() == (*it).second.first.back() ) {
+            // If it is good, we refresh it in the history
+            cachedPathsHistory_.splice(cachedPathsHistory_.begin(), cachedPathsHistory_, (*it).second.second);
+
+            (*it).second.first.pop_back();
+            return (*it).second.first.back();
+        }
+        // Otherwise it's wrong (for whatever reason), so we remove it from the history and then recompute it
+        else {
+            cachedPathsHistory_.erase((*it).second.second);
+        }
+    }
+    std::vector<Position> path;
+
+    // Compute path
+    auto diff = target - entity.getPosition();
+
+    // NOTE: LAST MOVES IN FIRST, LastInFirstOut!
+    {
+        int i = 0;
+        if ( diff.getX() < 0 ) {
+            while( i >= diff.getX() ) {
+                path.emplace_back(target.getX()-i, target.getY());
+                i--;
+            }
+        }
+        else {
+            while( i <= diff.getX() ) {
+                path.emplace_back(target.getX()-i, target.getY());
+                i++;
+            }
+        }
+        i = 1;
+        if ( diff.getY() < 0 ) {
+            i = -i;
+            while( i > diff.getY() ) {
+                path.emplace_back(entity.getPosition().getX(), target.getY()-i);
+                i--;
+            }
+        }
+        else {
+            while( i < diff.getY() ) {
+                path.emplace_back(entity.getPosition().getX(), target.getY()-i);
+                i++;
+            }
+        }
+
+    }
+
+    std::cout << "PATH BUILT:\n";
+    for ( auto p : path ) {
+        std::cout << "  ";
+        p.print();
+    }
+
+    // We can build it in a forward manner, but then we have to invert it.
+    // std::reverse(path.begin(),path.end());
+
+    // Updating cache history
+    cachedPathsHistory_.push_front(definingPair);
+
+    // Save path (iterator to element should remain valid throughout)
+    cachedPaths_[definingPair] = std::make_pair(path,cachedPathsHistory_.begin());
+
+    // Cleaning cache
+    if ( cachedPaths_.size() > MAX_PATH_CACHE ) {
+        cachedPaths_.erase(cachedPathsHistory_.back());
+        cachedPathsHistory_.pop_back();
+    }
+
+    // Return path step
+    return path.back();
+}
+
+// This function updates tile links, it is called only when we are actually
+// sure the guy will move here
+void Map::setEntityPosition(Entity & e, Position p) {
+    {
+        std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
+
+        for ( auto & p : initialTiles )
+            grid_.at(p.getX()).at(p.getY()).rmEntity(&e); 
+    }
+    {
+        std::vector<Position> finalTiles = e.getArea().applyArea(p);
+
+        for ( auto & p : finalTiles )
+            grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
+    }
+    e.setPosition(p);
+}

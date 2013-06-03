@@ -2,7 +2,7 @@
 #define CORE_GLOBALS_HEADER_FILE
 
 namespace Core {
-    constexpr unsigned MS_PER_UPDATE = 1000;
+    constexpr unsigned MS_PER_UPDATE = 100;
 
 }
 #endif
