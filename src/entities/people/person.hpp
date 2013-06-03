@@ -13,6 +13,8 @@ class Person : public Entity {
         bool isMale();
 
         Action getAction();
+
+        virtual void stepUpdate();
     private:
         bool male_;
         std::array<unsigned,10> needs_;

@@ -17,3 +17,6 @@ Action Person::getAction() {
     }
     return Action(*this, ActionType::MOVE_TO, {x,y});
 }
+
+void Person::stepUpdate() {
+}

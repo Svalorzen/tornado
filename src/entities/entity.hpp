@@ -18,7 +18,9 @@ class Entity : public AnimatedSprite {
         Area getArea() const;
 
         void refresh();
-        void update(unsigned);
+        void graphicalUpdate(unsigned);
+
+        virtual void stepUpdate() = 0;
 
         bool isSolid() const;
     protected:

@@ -29,7 +29,7 @@ void Entity::refresh() {
     diffPosition_ = {0,0}; 
 }
 
-void Entity::update(unsigned msLapsed) {
+void Entity::graphicalUpdate(unsigned msLapsed) {
     // The entity counts as in position_ for all game effects,
     // here we are simply visualizing the transition.
     float stepPercentage = 1.0f - (float)msLapsed / Core::MS_PER_UPDATE;

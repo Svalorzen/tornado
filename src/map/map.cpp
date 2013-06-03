@@ -69,12 +69,12 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     
     for ( auto & b : buildings_ ) {
         window.draw(b);
-        b.update(elapsedMs);
+        b.graphicalUpdate(elapsedMs);
     }
 
     for ( auto & p : people_ ) {
         window.draw(p);
-        p.update(elapsedMs);
+        p.graphicalUpdate(elapsedMs);
     }
 }
 
