@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <map/utils/tile.hpp>
-#include <entities/people/person.hpp>
+#include <entities/thinkables/people/person.hpp>
 #include <entities/buildings/building.hpp>
 
 namespace sf { class Texture; class RenderWindow; }
@@ -15,6 +15,9 @@ class Map {
         
         void runStep();
         void displayMap(sf::RenderWindow &, unsigned);
+
+        void getPeopleActions(); //CHECK THE NEEDS OF EVERY ENTITY ON THE MAP -> COMPUTE RESULTING ACTIONS
+
 
     private:
         std::vector<std::vector<Tile>> grid_;

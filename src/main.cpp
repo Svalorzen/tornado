@@ -3,7 +3,7 @@
 #include <vector>
 #include <chrono>
 
-#include <entities/people/person.hpp>
+#include <entities/thinkables/people/person.hpp>
 #include <globals.hpp>
 #include <graphics/globals.hpp>
 #include <map/map.hpp>
@@ -27,6 +27,8 @@ void printArea(Area a) {
 
 int main() {
     Map myMap(10,10);
+
+    //myMap.getPeopleActions();
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Map Test");
     window.setFramerateLimit(Graphics::FPS);

@@ -83,3 +83,13 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     }
 }
 
+void Map::getPeopleActions() {
+    
+    // CHECK PEOPLE BASIC NEEDS
+    for ( auto & p : people_ ) {
+        std::cout << p.getPriorityNeed() << std::endl;
+    
+    }
+
+}
+
