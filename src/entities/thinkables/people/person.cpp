@@ -6,7 +6,7 @@
 #include <actions/action.hpp>
 
 //    MAP, AREA, SOLID
-Person::Person(Map& m, bool isMale) : 
+Person::Person(const Map & m, bool isMale) : 
     Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
 
 Action Person::getAction() {

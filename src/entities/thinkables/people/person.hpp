@@ -8,7 +8,7 @@ class Map;
 
 class Person : public Thinkable {
     public:
-        Person(Map&,bool);
+        Person(const Map &, bool);
 
         bool isMale();
 

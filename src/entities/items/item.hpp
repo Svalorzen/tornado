@@ -11,7 +11,7 @@ enum class ItemType {
 
 class Item : public Entity {
     public:
-        Item(const Map *, ItemType);        
+        Item(const Map &, ItemType);        
         ItemType getType() const;
         bool isLocked() const;
         void setLocked(bool);

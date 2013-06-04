@@ -5,13 +5,13 @@
 
 #include <iostream>
 
-Entity::Entity(Map & m, Area a, bool s) : AnimatedSprite(), ownMap_(m), area_(a), solid_(s) {
+Entity::Entity(const Map & m, Area a, bool s) : AnimatedSprite(), ownMap_(m), area_(a), solid_(s) {
     refresh();
 }
-Entity::Entity(Map & m, Area a, bool s, const sf::Texture & t) : AnimatedSprite(t), ownMap_(m), area_(a), solid_(s) {
+Entity::Entity(const Map & m, Area a, bool s, const sf::Texture & t) : AnimatedSprite(t), ownMap_(m), area_(a), solid_(s) {
     refresh();
 }
-Entity::Entity(Map & m, Area a, bool s, const sf::Texture & t, const sf::IntRect & r) : AnimatedSprite(t,r), ownMap_(m), area_(a), solid_(s) {
+Entity::Entity(const Map & m, Area a, bool s, const sf::Texture & t, const sf::IntRect & r) : AnimatedSprite(t,r), ownMap_(m), area_(a), solid_(s) {
     refresh();
 }
 

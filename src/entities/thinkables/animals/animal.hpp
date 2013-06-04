@@ -8,7 +8,7 @@ class Map;
 
 class Animal : public Thinkable {
     public:
-        Animal(Map&);
+        Animal(const Map &);
 };
 
 #endif

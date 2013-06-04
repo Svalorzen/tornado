@@ -9,7 +9,7 @@ class Map;
 
 class Building : public Entity {
     public:
-        Building(Map&,Area);
+        Building(const Map &,Area);
     private:
 
 };
