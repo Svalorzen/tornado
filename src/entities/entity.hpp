@@ -23,10 +23,11 @@ class Entity : public AnimatedSprite {
         virtual void stepUpdate() = 0;
 
         bool isSolid() const;
+        const Map& getOwnMap() const;
     protected:
 
     private:
-        Map & ownMap_;
+        const Map & ownMap_;
 
         Position position_;
         // To update the sprite we would normally store an old position and the position, and find out

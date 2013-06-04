@@ -48,3 +48,7 @@ Area Entity::getArea() const {
 bool Entity::isSolid() const {
     return solid_;
 }
+
+const Map & Entity::getOwnMap() const {
+    return ownMap_;
+}
