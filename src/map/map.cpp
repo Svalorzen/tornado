@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <vector>
-#include <random>
 #include <cstdlib>
+#include <algorithm>
 
 #include <SFML/Graphics.hpp>
 
@@ -51,19 +51,27 @@ void Map::runStep() {
         // We may resolve more than one action at a time, so this checks that
         if ( ! a.isResolved() ) {
             switch( a.getActionType() ) {
+                case ActionType::PICK_UP: {
+                    if ( a.getEntity().getPosition() == a.getTargetPosition() ) {
+                        std::remove_if(begin(items_), end(items_), [a](const Item & i){ return &i == a.getTargetEntity(); });    
+                       
+                        //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
+                        //    if ( &(*it) == a.getTargetEntity() ) {
+                        //        std::cout << "DELETED!!\n";
+                        //        items_.erase(it);
+                        //        break;
+                        //    }
+                        //}
+
+                        break;
+                    }
+                // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
+                }
                 case ActionType::MOVE_TO: {
                     auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
                     setEntityPosition(a.getEntity(), nextMove);
-                    break;
-                }
-                case ActionType::PICK_UP: {
-                    auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
-                    // Here there should probably be a check verifying that target position is walkable in the
-                    // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    setEntityPosition(a.getEntity(), nextMove);
-                    std::cout << "Move is  "; a.getEntity().getPosition().print();
                     break;
                 }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
@@ -95,6 +103,7 @@ void Map::addPerson(Position pos) {
     people_.push_back(p);
     entities_.push_back(e);
 }
+
 
 void Map::addResource(Position pos) {
     std::shared_ptr<Item> i(new Item(*this, ItemType::FOOD));
@@ -220,6 +229,7 @@ void Map::setEntityPosition(Entity & e, Position p) {
     }
     e.setPosition(p);
 }
+
 bool Map::isThereFood() const {
     for ( auto & i : items_ )
         if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) 

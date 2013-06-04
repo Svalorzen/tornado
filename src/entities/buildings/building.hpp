@@ -10,6 +10,7 @@ class Map;
 class Building : public Entity {
     public:
         Building(const Map &,Area);
+        virtual void stepUpdate();
     private:
 
 };

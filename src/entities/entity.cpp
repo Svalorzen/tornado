@@ -49,6 +49,6 @@ bool Entity::isSolid() const {
     return solid_;
 }
 
-const Map & Entity::getOwnMap() const {
+const Map * Entity::getOwnMap() const {
     return ownMap_;
 }

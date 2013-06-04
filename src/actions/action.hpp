@@ -18,13 +18,14 @@ class Action {
     public:
         Action(Entity &, ActionType);
         Action(Entity &, ActionType, Position);
-        Action(Entity &, ActionType, Entity*);
+        Action(Entity &, ActionType, const Entity*);
 
         bool isResolved() const;
         void setResolved(bool);
 
         // Base entity can't change
         Entity & getEntity();
+        const Entity & getEntity() const;
         // Nor can the action type (yet?)
         ActionType getActionType() const;
 
@@ -32,7 +33,7 @@ class Action {
         void setTargetEntity(Entity*);
 
         Position getTargetPosition() const;
-        Entity* getTargetEntity();
+        const Entity* getTargetEntity() const;
     private:
         Entity & entity_;
         ActionType at_;
@@ -42,7 +43,7 @@ class Action {
         bool resolved_;
         
         Position targetPosition_;
-        Entity * targetEntity_;
+        const Entity * targetEntity_;
 };
 
 #endif

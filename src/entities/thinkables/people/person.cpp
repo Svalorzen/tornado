@@ -5,50 +5,51 @@
 
 #include <actions/action.hpp>
 
+#include <functional>
+
 //    MAP, AREA, SOLID
 Person::Person(const Map & m, bool isMale) : 
     Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
 
 Action Person::getAction() {
-    
-    const Action veryLowNeedActions[] = {
-        Action(*this, ActionType::SLEEP), 
-        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
-        Action(*this, ActionType::SHELTER)
-    }
-    const Action lowNeedActions[] = {
-        Action(*this, ActionType::SLEEP), 
-        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
-        Action(*this, ActionType::SHELTER)
-    }
-    const Action normalNeedActions[] = {
-        Action(*this, ActionType::SLEEP), 
-        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
-        Action(*this, ActionType::SHELTER)
-    }
-    
+    // ARRAY OF ACTIONS FOR EACH LEVEL OF BASIC NEEDS
+    //const Action veryLowNeedActions[] = {
+    //    Action(*this, ActionType::SLEEP), 
+    //    Action(*this, ActionType::PICK_UP, getOwnMap()->getNearestFood(getPosition())),
+    //    Action(*this, ActionType::SHELTER)
+    //};
+   
+   //// CHECK FOR ACTIONS
+    //const std::function<bool(const Person &)> veryLowControlActions[] = {
+    //    [](const Person &){ return true; }, // When very low a person will sleep everywhere
+    //    std::bind(&Map::isThereFood,*getOwnMap()),
+    //    std::bind(&Map::isThereShelter,*getOwnMap())
+    //};
+
     // 0 SLEEP
     // 1 HUNGER
     // 2 COLD
     
-    for (int i = 0; i < 3; i++) {
-        if ( needs_[i] = 0 ) // TODO: DEATH
-    }
+//    for ( size_t i = 0; i < BASIC_NEEDS_NUM; i++ ) {
+//        if ( needs_[i] < NEEDS_LOW ) { // VERY LOW
+//            if ( 
+//                return lowNeedActions[i];
+//        } 
+//    
+//    }
 
-    // Check priority basic need (0-Sleep, 1-Hunger, 2-Cold)
+    if ( getOwnMap()->isThereFood() ) 
+        return Action(*this, ActionType::PICK_UP, getOwnMap()->getNearestFood(getPosition()));
     
-    for (int i = 0; i < 3; i++) {
-        if ( needs_[i] < 2500 ) { // VERY LOW
-            return lowNeedActions[i];
-        } 
-    
-    }
-
+    return Action(*this, ActionType::MOVE_TO, getPosition());
 }
 
 void Person::stepUpdate() {
+    for ( size_t i = 0; i < NEEDS_NUM; i++ ) {
+        needs_[i] -= 1;     
+        if ( needs_[i] == 0 ) {
+            // DEATH
+        }
+    }
 }
 
-Map Person::getOwnMap() {
-    return 
-}

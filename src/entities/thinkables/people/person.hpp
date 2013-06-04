@@ -16,11 +16,15 @@ class Person : public Thinkable {
 
         virtual void stepUpdate();
 
-        Map getOwnMap();        
-
     private:
         bool male_;
-        std::array<unsigned,10> needs_;
+        static constexpr size_t NEEDS_NUM = 10;
+        static constexpr size_t BASIC_NEEDS_NUM = 3;
+        static constexpr unsigned NEED_MAX = 10000;
+        static constexpr unsigned NEED_NORMAL = 5000;
+        static constexpr unsigned NEED_LOW = 2500;
+        std::array<unsigned,NEEDS_NUM> needs_;
+
 
         enum {
             // Needs indexes;
