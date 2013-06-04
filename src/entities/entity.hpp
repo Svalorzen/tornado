@@ -42,6 +42,9 @@ class Entity : public AnimatedSprite {
         void setPosition(Position);
 
         friend class Map;
+
+        // INVENTORY - need functions to get/remove objects
+        std::vector<Entity*> inventory;
 };
 
 #endif

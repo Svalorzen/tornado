@@ -56,6 +56,14 @@ void Map::runStep() {
                     std::cout << "Move is  "; a.getEntity().getPosition().print();
                     break;
                 }
+                case ActionType::PICK_UP: {
+                    auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
+                    // Here there should probably be a check verifying that target position is walkable in the
+                    // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
+                    setEntityPosition(a.getEntity(), nextMove);
+                    std::cout << "Move is  "; a.getEntity().getPosition().print();
+                    break;
+                }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
             }
         }

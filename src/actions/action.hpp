@@ -10,7 +10,8 @@ enum class ActionType {
     PICK_UP,
     PUT_DOWN,
     EAT,
-    SLEEP
+    SLEEP,
+    SHELTER
 };
 
 class Action {

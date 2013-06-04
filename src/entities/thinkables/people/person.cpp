@@ -10,35 +10,45 @@ Person::Person(Map& m, bool isMale) :
     Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
 
 Action Person::getAction() {
-    static int x = 0, y = 0;
-    if ( getPosition().getX() == x && getPosition().getY() == y ) {
-        x = (x+6) %10;
-        y = (y+13) % 10;
+    
+    const Action veryLowNeedActions[] = {
+        Action(*this, ActionType::SLEEP), 
+        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
+        Action(*this, ActionType::SHELTER)
     }
-    return Action(*this, ActionType::MOVE_TO, {x,y});
+    const Action lowNeedActions[] = {
+        Action(*this, ActionType::SLEEP), 
+        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
+        Action(*this, ActionType::SHELTER)
+    }
+    const Action normalNeedActions[] = {
+        Action(*this, ActionType::SLEEP), 
+        Action(*this, ActionType::PICK_UP, getOwnMap().getNearestFood(*this)),
+        Action(*this, ActionType::SHELTER)
+    }
+    
+    // 0 SLEEP
+    // 1 HUNGER
+    // 2 COLD
+    
+    for (int i = 0; i < 3; i++) {
+        if ( needs_[i] = 0 ) // TODO: DEATH
+    }
+
+    // Check priority basic need (0-Sleep, 1-Hunger, 2-Cold)
+    
+    for (int i = 0; i < 3; i++) {
+        if ( needs_[i] < 2500 ) { // VERY LOW
+            return lowNeedActions[i];
+        } 
+    
+    }
+
 }
 
 void Person::stepUpdate() {
 }
 
-unsigned Person::getNeedValue(size_t index) {
-    return needs_[index];
+Map Person::getOwnMap() {
+    return 
 }
-
-
-int Person::getPriorityNeed() {
-    size_t priorityNeed = 0;
-    
-    // CHECK PEOPLE BASIC NEEDS
-    for ( int i = 0; i < 3; i++ ) {
-    
-        if (needs_[i] == 0); // TODO: DEATH
-        
-        if (needs_[priorityNeed] > needs_[i])
-            priorityNeed = i;
-        
-    }
-
-    return priorityNeed;
-}
-

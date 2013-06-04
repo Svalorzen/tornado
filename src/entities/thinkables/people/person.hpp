@@ -16,9 +16,7 @@ class Person : public Thinkable {
 
         virtual void stepUpdate();
 
-        unsigned getNeedValue(size_t);
-        int getPriorityNeed();
-
+        Map getOwnMap();        
 
     private:
         bool male_;
