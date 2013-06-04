@@ -2,12 +2,18 @@
 
 #include <iostream>
 #include <vector>
-#include <cmath>
+#include <random>
+#include <cstdlib>
 
 #include <SFML/Graphics.hpp>
 
 #include <graphics/globals.hpp>
 #include <graphics/textures.hpp>
+
+#include <entities/entity.hpp>
+#include <entities/items/item.hpp>
+#include <entities/buildings/building.hpp>
+#include <entities/thinkables/people/person.hpp>
 
 #include <actions/action.hpp>
 
@@ -29,19 +35,16 @@ Map::Map(int x, int y) {
         dummy.clear();
     }
 
-    Person p(*this, true);
-    setEntityPosition(p, {1,1});
-    p.refresh();
-    people_.push_back(p);    
+    addPerson({1,1});
 }
 
 void Map::runStep() { 
     std::vector<Action> actions;
     for ( auto & p : people_ ) {
-        actions.push_back(p.getAction());
+        actions.push_back(p->getAction());
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
-        p.refresh();
+        p->refresh();
     }
 
     for ( auto & a : actions ) {
@@ -66,33 +69,34 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
         for (auto & cell : row ) 
             window.draw(cell);
     
-    for ( auto & b : buildings_ ) {
-        window.draw(b);
-        b.graphicalUpdate(elapsedMs);
-    }
-
-    for ( auto & p : people_ ) {
-        window.draw(p);
-        p.graphicalUpdate(elapsedMs);
+    for ( auto & e : entities_ ) {
+        window.draw(*e);
+        e->graphicalUpdate(elapsedMs);
     }
 }
 
-void Map::askPeopleNeeds() {
-    
+void Map::addPerson(Position pos) {
+    std::uniform_int_distribution<int> distribution(0,1);
+    // Randomizes man females
+    std::shared_ptr<Person> p(new Person(*this, distribution(generator_)));
+    std::shared_ptr<Entity> e(p);
 
-    // CHECK PEOPLE BASIC NEEDS
-    for ( auto & p : people_ ) {
-        p.getPriorityNeed();
-    
-    }
+    setEntityPosition(*p, pos);
+    p->refresh();
 
+    people_.push_back(p);
+    entities_.push_back(e);
 }
 
 void Map::addResource(Position pos) {
-    Person p(*this, true);
-    setEntityPosition(p, pos);
-    p.refresh();
-    people_.push_back(p);    
+    std::shared_ptr<Item> i(new Item(*this, ItemType::FOOD));
+    std::shared_ptr<Entity> e(i);
+
+    setEntityPosition(*i, pos);
+    i->refresh();
+
+    items_.push_back(i);    
+    entities_.push_back(e);
 }
 
 Position Map::computeSingleMove(const Entity & entity, Position target) {
@@ -207,4 +211,30 @@ void Map::setEntityPosition(Entity & e, Position p) {
             grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
     }
     e.setPosition(p);
+}
+bool Map::isThereFood() const {
+    for ( auto & i : items_ )
+        if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) 
+            return true;
+
+    return false;
+}
+
+const Item * Map::getNearestFood(Position p) const {
+    const Item * pi = nullptr;
+    int distance = 0;
+
+    for ( auto & i : items_ ) {
+        if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) {
+            Position diffPos = p - i->getPosition();
+            int distanceDiff = abs(diffPos.getX()) + abs(diffPos.getY());
+
+            if ( pi == nullptr || distance > distanceDiff ) {
+                pi = i.get();
+                distance = distanceDiff;
+            }
+        }
+    }
+
+    return pi;
 }

@@ -5,6 +5,6 @@
 
 #include <actions/action.hpp>
 
-Animal::Animal(Map& m) : 
+Animal::Animal(const Map & m) : 
     Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")) {}
 

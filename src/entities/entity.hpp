@@ -10,9 +10,9 @@ class Map;
 
 class Entity : public AnimatedSprite {
     public:
-        Entity(Map &, Area a, bool solid); 
-        Entity(Map &, Area a, bool solid, const sf::Texture & t);
-        Entity(Map &, Area a, bool solid, const sf::Texture & t, const sf::IntRect & r);
+        Entity(const Map &, Area a, bool solid); 
+        Entity(const Map &, Area a, bool solid, const sf::Texture & t);
+        Entity(const Map &, Area a, bool solid, const sf::Texture & t, const sf::IntRect & r);
 
         Position getPosition() const;
         Area getArea() const;
