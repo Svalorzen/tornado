@@ -25,7 +25,7 @@ class Map {
         void runStep();
         void displayMap(sf::RenderWindow &, unsigned);
 
-        void addResource(Position);
+        void addItem(Position);
         void addPerson(Position);
 
         bool isThereFood() const;
@@ -33,6 +33,9 @@ class Map {
         const Item * getNearestFood(Position) const;
 
     private:
+        void removeItem(const Item *);
+        void removePerson(const Person *);
+
         // Randoms for this map
         std::default_random_engine generator_;
 
@@ -43,7 +46,9 @@ class Map {
         std::vector<std::shared_ptr<Entity>> entities_;
 
         // This function sets an entity on the map and updates eventual grid properties
-        void setEntityPosition(Entity &, Position);
+        void setEntityPosition(Entity *, Position);
+        void applyEntityToGrid(const Entity*);
+        void unapplyEntityFromGrid(const Entity*);
 
         // People
         std::vector<std::shared_ptr<Person>> people_;

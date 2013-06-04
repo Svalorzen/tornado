@@ -11,12 +11,12 @@ bool Tile::isWalkable() const {
     return walkable_;
 }
 
-void Tile::addEntity(Entity * e) {
+void Tile::addEntity(const Entity * e) {
     aboveEntities_.push_back(e);
     walkable_ |= e->isSolid();
 }
 
-void Tile::rmEntity(Entity * e) {
+void Tile::rmEntity(const Entity * e) {
     walkable_ = true;
     for ( auto it = begin(aboveEntities_); it != end(aboveEntities_); /* NO! it++ */ ) {
         if ( (*it) == e )
@@ -28,6 +28,6 @@ void Tile::rmEntity(Entity * e) {
     }
 }
 
-std::vector<Entity*> Tile::getEntities() {
+std::vector<const Entity*> Tile::getEntities() {
     return aboveEntities_;
 }

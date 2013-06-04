@@ -14,14 +14,14 @@ class Tile : public AnimatedSprite {
 
         bool isWalkable() const;
 
-        void addEntity(Entity *);
-        void rmEntity(Entity *);
+        void addEntity(const Entity *);
+        void rmEntity(const Entity *);
 
-        std::vector<Entity*> getEntities();
+        std::vector<const Entity*> getEntities();
 
     private:
         bool walkable_;
-        std::vector<Entity*> aboveEntities_;
+        std::vector<const Entity*> aboveEntities_;
 };
 
 #endif

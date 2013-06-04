@@ -49,7 +49,7 @@ int main() {
             // Spawning stuff
             else if ( event.type == sf::Event::MouseButtonPressed ) {
                 auto realCoords = window.mapPixelToCoords( {event.mouseButton.x, event.mouseButton.y} );
-                map.addResource({static_cast<int>(realCoords.x/Graphics::TILE_EDGE_SIZE),
+                map.addItem({static_cast<int>(realCoords.x/Graphics::TILE_EDGE_SIZE),
                         static_cast<int>(realCoords.y/Graphics::TILE_EDGE_SIZE)});
             }
         }

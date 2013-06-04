@@ -4,6 +4,7 @@
 #include <map/map.hpp>
 
 #include <actions/action.hpp>
+#include <entities/items/item.hpp>
 
 #include <functional>
 
@@ -38,9 +39,9 @@ Action Person::getAction() {
 //    
 //    }
 
-    if ( getOwnMap()->isThereFood() ) 
-        return Action(*this, ActionType::PICK_UP, getOwnMap()->getNearestFood(getPosition()));
-    
+    if ( getOwnMap().isThereFood() ) {
+        return Action(*this, ActionType::PICK_UP,getOwnMap().getNearestFood(getPosition()));
+    } 
     return Action(*this, ActionType::MOVE_TO, getPosition());
 }
 

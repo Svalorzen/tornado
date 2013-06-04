@@ -2,8 +2,8 @@
 #define PERSON_HEADER_FILE
 
 #include <entities/thinkables/thinkable.hpp>
-#include <actions/action.hpp>
 
+class Action;
 class Map;
 
 class Person : public Thinkable {

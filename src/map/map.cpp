@@ -53,8 +53,7 @@ void Map::runStep() {
             switch( a.getActionType() ) {
                 case ActionType::PICK_UP: {
                     if ( a.getEntity().getPosition() == a.getTargetPosition() ) {
-                        std::remove_if(begin(items_), end(items_), [a](const Item & i){ return &i == a.getTargetEntity(); });    
-                       
+                        removeItem(dynamic_cast<const Item*>(a.getTargetEntity()));
                         //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
                         //    if ( &(*it) == a.getTargetEntity() ) {
                         //        std::cout << "DELETED!!\n";
@@ -71,7 +70,7 @@ void Map::runStep() {
                     auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    setEntityPosition(a.getEntity(), nextMove);
+                    setEntityPosition(&(a.getEntity()), nextMove);
                     break;
                 }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
@@ -97,23 +96,34 @@ void Map::addPerson(Position pos) {
     std::shared_ptr<Person> p(new Person(*this, distribution(generator_)));
     std::shared_ptr<Entity> e(p);
 
-    setEntityPosition(*p, pos);
+    setEntityPosition(p.get(), pos);
     p->refresh();
 
     people_.push_back(p);
     entities_.push_back(e);
 }
 
+void Map::removePerson(const Person* p) {
+    unapplyEntityFromGrid(p);
+    people_.erase(std::remove_if(begin(people_), end(people_), [p](std::shared_ptr<Person> &pp){ return pp.get() == p; }), end(people_));
+    entities_.erase(std::remove_if(begin(entities_), end(entities_), [p](std::shared_ptr<Entity> &e){ return e.get() == p; }), end(entities_));
+}
 
-void Map::addResource(Position pos) {
+void Map::addItem(Position pos) {
     std::shared_ptr<Item> i(new Item(*this, ItemType::FOOD));
     std::shared_ptr<Entity> e(i);
 
-    setEntityPosition(*i, pos);
+    setEntityPosition(i.get(), pos);
     i->refresh();
 
     items_.push_back(i);    
     entities_.push_back(e);
+}
+
+void Map::removeItem(const Item* i) {
+    unapplyEntityFromGrid(i);
+    items_.erase(std::remove_if(begin(items_), end(items_), [i](std::shared_ptr<Item> &ii){ return ii.get() == i; }), end(items_));
+    entities_.erase(std::remove_if(begin(entities_), end(entities_), [i](std::shared_ptr<Entity> &e){ return e.get() == i; }), end(entities_));
 }
 
 Position Map::computeSingleMove(const Entity & entity, Position target) {
@@ -214,20 +224,10 @@ Position Map::computeSingleMove(const Entity & entity, Position target) {
 
 // This function updates tile links, it is called only when we are actually
 // sure the guy will move here
-void Map::setEntityPosition(Entity & e, Position p) {
-    {
-        std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
-
-        for ( auto & p : initialTiles )
-            grid_.at(p.getX()).at(p.getY()).rmEntity(&e); 
-    }
-    {
-        std::vector<Position> finalTiles = e.getArea().applyArea(p);
-
-        for ( auto & p : finalTiles )
-            grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
-    }
-    e.setPosition(p);
+void Map::setEntityPosition(Entity* e, Position p) {
+    unapplyEntityFromGrid(e);
+    e->setPosition(p);
+    applyEntityToGrid(e);
 }
 
 bool Map::isThereFood() const {
@@ -255,4 +255,24 @@ const Item * Map::getNearestFood(Position p) const {
     }
 
     return pi;
+}
+
+void Map::unapplyEntityFromGrid(const Entity* e) {
+    std::vector<Position> initialTiles = e->getArea().applyArea(e->getPosition());
+    
+    for ( auto & p : initialTiles ) {
+        try {
+            grid_.at(p.getX()).at(p.getY()).rmEntity(e); 
+        } catch(...){}
+    }
+}
+
+void Map::applyEntityToGrid(const Entity* e) {
+    std::vector<Position> finalTiles = e->getArea().applyArea(e->getPosition());
+    
+    for ( auto & p : finalTiles ) {
+        try {
+            grid_.at(p.getX()).at(p.getY()).addEntity(e); 
+        } catch(...) {}
+    }
 }
