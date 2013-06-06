@@ -1,18 +1,13 @@
-#include "person.hpp"
+#include "base_person_ai.hpp"
 
-#include <graphics/textures.hpp>
+#include <entities/person.hpp>
+#include <entities/item.hpp>
+#include <ai/utils/action.hpp>
 #include <map/map.hpp>
 
-#include <actions/action.hpp>
-#include <entities/items/item.hpp>
+#include <iostream>
 
-#include <functional>
-
-//    MAP, AREA, SOLID
-Person::Person(const Map & m, bool isMale) : 
-    Thinkable(m, {"1"}, false, Graphics::getTexture("src/resources/red.png")), male_(isMale), needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
-
-Action Person::getAction() {
+Action BasePersonAI::getAction(const Person & body) {
     // ARRAY OF ACTIONS FOR EACH LEVEL OF BASIC NEEDS
     //const Action veryLowNeedActions[] = {
     //    Action(*this, ActionType::SLEEP), 
@@ -40,17 +35,7 @@ Action Person::getAction() {
 //    }
 
     if ( getOwnMap().isThereFood() ) {
-        return Action(*this, ActionType::PICK_UP,getOwnMap().getNearestFood(getPosition()));
+        return Action(ActionType::PICK_UP,getOwnMap().getNearestFood(body.getPosition()));
     } 
-    return Action(*this, ActionType::MOVE_TO, getPosition());
+    return Action(ActionType::MOVE_TO, body.getPosition());
 }
-
-void Person::stepUpdate() {
-    for ( size_t i = 0; i < NEEDS_NUM; i++ ) {
-        needs_[i] -= 1;     
-        if ( needs_[i] == 0 ) {
-            // DEATH
-        }
-    }
-}
-

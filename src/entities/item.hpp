@@ -3,20 +3,22 @@
 
 #include <entities/entity.hpp>
 
-class Map;
-
 enum class ItemType {
     FOOD
 };
 
 class Item : public Entity {
     public:
-        Item(const Map &, ItemType);        
+        Item(ItemType);        
+
+        void setType(ItemType);
         ItemType getType() const;
-        bool isLocked() const;
+
         void setLocked(bool);
+        bool isLocked() const;
 
         virtual void stepUpdate();
+
     private:
         bool locked_;
         ItemType type_;

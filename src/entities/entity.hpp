@@ -7,43 +7,44 @@
 #include <map/utils/distance.hpp>
 #include <map/utils/area.hpp>
 
-class Map;
-
-class Entity : public AnimatedSprite {
+class Entity {
     public:
-        Entity(const Map &, Area a, bool solid); 
-        Entity(const Map &, Area a, bool solid, const sf::Texture & t);
-        Entity(const Map &, Area a, bool solid, const sf::Texture & t, const sf::IntRect & r);
+        Entity(const Area &, bool, const AnimatedSprite &); 
+        Entity(const Position &, const Area &, bool, const AnimatedSprite &);
 
+        void setPosition(const Position &);
         Position getPosition() const;
+
+        Distance getStepDiff() const;
+
+        void setArea(const Area&);
         Area getArea() const;
 
-        void refresh();
-        void graphicalUpdate(unsigned);
+        void setSolid(bool);
+        bool isSolid() const;
+
+        void setOwnSprite(const AnimatedSprite&);
+        AnimatedSprite & getOwnSprite();
+        const AnimatedSprite & getOwnSprite() const;
 
         virtual void stepUpdate() = 0;
 
-        bool isSolid() const;
-        const Map& getOwnMap() const;
-    protected:
+        void refresh();
+        void graphicalUpdate(unsigned msLapsed);
 
     private:
-        const Map & ownMap_;
-
         Position position_;
+        Area area_;
         // To update the sprite we would normally store an old position and the position, and find out
         // what the difference is and render appropriately. Since the difference doesn't change during
         // a step, and we would have to compute it every time nontheless, we directly store the difference.
         Distance stepDiff_;
-        Area area_;
 
         // Represents if pathing can or can't use tiles where this entity stands. Alive stuff generally isn't solid
         // but is specially handled by the map
         bool solid_;
 
-        void setPosition(Position);
-
-        friend class Map;
+        AnimatedSprite ownSprite_;
 
         // INVENTORY - need functions to get/remove objects
         std::vector<Entity*> inventory;

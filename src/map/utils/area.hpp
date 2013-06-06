@@ -7,6 +7,8 @@
 #include <bitset>
 #include <string>
 
+#include <iostream>
+
 class Position;
 
 class Area {
@@ -24,6 +26,16 @@ class Area {
         Area& operator-=(const Area&);
 
         std::vector<Position> applyArea(const Position &) const;
+
+        void print() const {
+            auto k = getArea();    
+
+            for ( auto j = k.rbegin(); j != k.rend(); j++ ) {
+                for ( size_t i = 0; i < (*j).size(); i++ )
+                    std::cout << (*j)[i];
+                std::cout << std::endl;
+            }
+        }
 
     private:
         std::array<std::bitset<maxSize>,maxSize> area_; 

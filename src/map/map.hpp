@@ -2,7 +2,6 @@
 #define MAP_HEADER_FILE
 
 #include <vector>
-#include <memory>
 #include <unordered_map>
 #include <utility>
 #include <list>
@@ -11,12 +10,13 @@
 #include <map/utils/tile.hpp>
 #include <map/utils/position.hpp>
 
-class Entity;
-class Item;
-class Building;
-class Person;
+#include <entities/entity.hpp>
+#include <entities/item.hpp>
+#include <entities/building.hpp>
+#include <entities/person.hpp>
 
 namespace sf { class Texture; class RenderWindow; }
+class EntityBox;
 
 class Map {
     public:
@@ -30,11 +30,11 @@ class Map {
 
         bool isThereFood() const;
         // Can return nullptr if there's no food!
-        const Item * getNearestFood(Position) const;
+        EntityBox getNearestFood(Position) const;
 
     private:
-        void removeItem(const Item *);
-        void removePerson(const Person *);
+        void removeItem(size_t);
+        void removePerson(size_t);
 
         // Randoms for this map
         std::default_random_engine generator_;
@@ -42,20 +42,17 @@ class Map {
         // The map grid. Contains walkable properties and other ones.
         std::vector<std::vector<Tile>> grid_;
 
-        // All the objects in the map
-        std::vector<std::shared_ptr<Entity>> entities_;
-
         // This function sets an entity on the map and updates eventual grid properties
-        void setEntityPosition(Entity *, Position);
-        void applyEntityToGrid(const Entity*);
-        void unapplyEntityFromGrid(const Entity*);
+        void setEntityPosition(Entity &, Position);
+        void applyEntityToGrid(const Entity &);
+        void unapplyEntityFromGrid(const Entity &);
 
         // People
-        std::vector<std::shared_ptr<Person>> people_;
+        std::vector<Person> people_;
         // Buildings
-        std::vector<std::shared_ptr<Building>> buildings_;
+        std::vector<Building> buildings_;
         // Items
-        std::vector<std::shared_ptr<Item>> items_;
+        std::vector<Item> items_;
 
         // Pathing (A*...)
         Position computeSingleMove(const Entity &, Position); 

@@ -2,17 +2,13 @@
 #define BUILDING_HEADER_FILE
 
 #include <entities/entity.hpp>
-#include <map/utils/position.hpp>
-#include <map/utils/area.hpp>
 
-class Map;
+class Area;
 
 class Building : public Entity {
     public:
-        Building(const Map &,Area);
+        Building(Area);
         virtual void stepUpdate();
-    private:
-
 };
 
 #endif

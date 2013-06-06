@@ -1,30 +1,18 @@
 #ifndef PERSON_HEADER_FILE
 #define PERSON_HEADER_FILE
 
-#include <entities/thinkables/thinkable.hpp>
+#include <entities/entity.hpp>
 
 class Action;
 class Map;
 
-class Person : public Thinkable {
+class Person : public Entity {
     public:
-        Person(const Map &, bool);
-
-        bool isMale();
-
-        Action getAction();
-
-        virtual void stepUpdate();
-
-    private:
-        bool male_;
         static constexpr size_t NEEDS_NUM = 10;
         static constexpr size_t BASIC_NEEDS_NUM = 3;
         static constexpr unsigned NEED_MAX = 10000;
         static constexpr unsigned NEED_NORMAL = 5000;
         static constexpr unsigned NEED_LOW = 2500;
-        std::array<unsigned,NEEDS_NUM> needs_;
-
 
         enum {
             // Needs indexes;
@@ -39,6 +27,19 @@ class Person : public Thinkable {
             // MORE
             LUXURY=         6
         };
+
+        Person(bool);
+
+        void setMale(bool);
+        bool isMale() const;
+
+        // setNeeds, atm we don't need it..
+        const std::array<unsigned,NEEDS_NUM> & getNeeds() const;
+
+        virtual void stepUpdate();
+    private:
+        bool male_;
+        std::array<unsigned,NEEDS_NUM> needs_;
 };
 
 #endif

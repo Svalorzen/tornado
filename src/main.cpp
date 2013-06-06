@@ -3,7 +3,6 @@
 #include <vector>
 #include <chrono>
 
-#include <entities/thinkables/people/person.hpp>
 #include <globals.hpp>
 #include <graphics/globals.hpp>
 #include <map/map.hpp>
@@ -11,18 +10,6 @@
 #include <cmath>
 
 using std::vector;
-
-void printArea(Area a) {
-    auto k = a.getArea();    
-
-    for ( auto j = k.rbegin(); j != k.rend(); j++ ) {
-        for ( size_t i = 0; i < (*j).size(); i++ )
-            std::cout << (*j)[i];
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl;
-}
 
 int main() {
     Map map(100,100);

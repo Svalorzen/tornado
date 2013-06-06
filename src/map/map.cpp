@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <vector>
-#include <cstdlib>
 #include <algorithm>
 
 #include <SFML/Graphics.hpp>
@@ -10,12 +9,9 @@
 #include <graphics/globals.hpp>
 #include <graphics/textures.hpp>
 
-#include <entities/entity.hpp>
-#include <entities/items/item.hpp>
-#include <entities/buildings/building.hpp>
-#include <entities/thinkables/people/person.hpp>
-
-#include <actions/action.hpp>
+#include <ai/utils/action.hpp>
+#include <ai/utils/entity_box.hpp>
+#include <ai/person/base_person_ai.hpp>
 
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
@@ -35,25 +31,31 @@ Map::Map(int x, int y) {
         dummy.clear();
     }
 
+    people_.reserve(1000);
+    items_.reserve(1000);
+
     addPerson({1,1});
 }
 
 void Map::runStep() { 
-    std::vector<Action> actions;
+    std::vector<std::pair<Action, Person&>> actions;
+
+    BasePersonAI ai(*this);
+
     for ( auto & p : people_ ) {
-        actions.push_back(p->getAction());
+        actions.emplace_back(ai.getAction(p), p);
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
-        p->refresh();
+        p.refresh();
     }
 
     for ( auto & a : actions ) {
         // We may resolve more than one action at a time, so this checks that
-        if ( ! a.isResolved() ) {
-            switch( a.getActionType() ) {
+        if ( ! a.first.isResolved() ) {
+            switch( a.first.getActionType() ) {
                 case ActionType::PICK_UP: {
-                    if ( a.getEntity().getPosition() == a.getTargetPosition() ) {
-                        removeItem(dynamic_cast<const Item*>(a.getTargetEntity()));
+                    if ( a.second.getPosition() == a.first.getTargetPosition() ) {
+                        removeItem(a.first.getEntityBox().getEntityIndex());
                         //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
                         //    if ( &(*it) == a.getTargetEntity() ) {
                         //        std::cout << "DELETED!!\n";
@@ -67,13 +69,13 @@ void Map::runStep() {
                 // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
                 }
                 case ActionType::MOVE_TO: {
-                    auto nextMove = computeSingleMove(a.getEntity(), a.getTargetPosition()); 
+                    auto nextMove = computeSingleMove(a.second, a.first.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    setEntityPosition(&(a.getEntity()), nextMove);
+                    setEntityPosition(a.second, nextMove);
                     break;
                 }
-                default: std::cout << "No code specified for this type of action: "<<(int)a.getActionType()<<"\n" ;
+                default: std::cout << "No code specified for this type of action: "<<(int)a.first.getActionType()<<"\n" ;
             }
         }
     }
@@ -84,46 +86,42 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
         for (auto & cell : row ) 
             window.draw(cell);
     
-    for ( auto & e : entities_ ) {
-        window.draw(*e);
-        e->graphicalUpdate(elapsedMs);
+    for ( auto & i : items_ ) {
+        window.draw(i.getOwnSprite());
+        i.graphicalUpdate(elapsedMs);
+    }
+    for ( auto & p : people_ ) {
+        window.draw(p.getOwnSprite());
+        p.graphicalUpdate(elapsedMs);
     }
 }
 
 void Map::addPerson(Position pos) {
     std::uniform_int_distribution<int> distribution(0,1);
     // Randomizes man females
-    std::shared_ptr<Person> p(new Person(*this, distribution(generator_)));
-    std::shared_ptr<Entity> e(p);
+    people_.emplace_back(distribution(generator_));
+    Person & p = people_.back();
 
-    setEntityPosition(p.get(), pos);
-    p->refresh();
-
-    people_.push_back(p);
-    entities_.push_back(e);
+    setEntityPosition(p, pos);
+    p.refresh();
 }
 
-void Map::removePerson(const Person* p) {
-    unapplyEntityFromGrid(p);
-    people_.erase(std::remove_if(begin(people_), end(people_), [p](std::shared_ptr<Person> &pp){ return pp.get() == p; }), end(people_));
-    entities_.erase(std::remove_if(begin(entities_), end(entities_), [p](std::shared_ptr<Entity> &e){ return e.get() == p; }), end(entities_));
+void Map::removePerson(size_t i) {
+    unapplyEntityFromGrid(people_[i]);
+    people_.erase(begin(people_)+i);
 }
 
 void Map::addItem(Position pos) {
-    std::shared_ptr<Item> i(new Item(*this, ItemType::FOOD));
-    std::shared_ptr<Entity> e(i);
+    items_.emplace_back(ItemType::FOOD);
+    Item & i = items_.back();
 
-    setEntityPosition(i.get(), pos);
-    i->refresh();
-
-    items_.push_back(i);    
-    entities_.push_back(e);
+    setEntityPosition(i, pos);
+    i.refresh();
 }
 
-void Map::removeItem(const Item* i) {
-    unapplyEntityFromGrid(i);
-    items_.erase(std::remove_if(begin(items_), end(items_), [i](std::shared_ptr<Item> &ii){ return ii.get() == i; }), end(items_));
-    entities_.erase(std::remove_if(begin(entities_), end(entities_), [i](std::shared_ptr<Entity> &e){ return e.get() == i; }), end(entities_));
+void Map::removeItem(size_t i) {
+    unapplyEntityFromGrid(items_[i]);
+    items_.erase(begin(items_)+i);
 }
 
 Position Map::computeSingleMove(const Entity & entity, Position target) {
@@ -224,54 +222,56 @@ Position Map::computeSingleMove(const Entity & entity, Position target) {
 
 // This function updates tile links, it is called only when we are actually
 // sure the guy will move here
-void Map::setEntityPosition(Entity* e, Position p) {
+void Map::setEntityPosition(Entity & e, Position p) {
     unapplyEntityFromGrid(e);
-    e->setPosition(p);
+    e.setPosition(p);
     applyEntityToGrid(e);
 }
 
 bool Map::isThereFood() const {
     for ( auto & i : items_ )
-        if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) 
+        if ( i.getType() == ItemType::FOOD && ! i.isLocked() ) 
             return true;
 
     return false;
 }
 
-const Item * Map::getNearestFood(Position p) const {
-    const Item * pi = nullptr;
+EntityBox Map::getNearestFood(Position p) const {
+    int it = -1;
     Distance distance;
 
-    for ( auto & i : items_ ) {
-        if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) {
-            Distance distanceDiff = p - i->getPosition();
+    for ( size_t i = 0; i < items_.size(); i++ ) {
+        const Item & item = items_[i];
 
-            if ( pi == nullptr || distance > distanceDiff ) {
-                pi = i.get();
+        if ( item.getType() == ItemType::FOOD && ! item.isLocked() ) {
+            Distance distanceDiff = p - item.getPosition();
+
+            if ( it == -1 || distance > distanceDiff ) {
+                it = i;
                 distance = distanceDiff;
             }
         }
     }
 
-    return pi;
+    return EntityBox(items_[it], static_cast<size_t>(it));
 }
 
-void Map::unapplyEntityFromGrid(const Entity* e) {
-    std::vector<Position> initialTiles = e->getArea().applyArea(e->getPosition());
+void Map::unapplyEntityFromGrid(const Entity& e) {
+    std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
     
     for ( auto & p : initialTiles ) {
         try {
-            grid_.at(p.getX()).at(p.getY()).rmEntity(e); 
+            grid_.at(p.getX()).at(p.getY()).rmEntity(&e); 
         } catch(...){}
     }
 }
 
-void Map::applyEntityToGrid(const Entity* e) {
-    std::vector<Position> finalTiles = e->getArea().applyArea(e->getPosition());
+void Map::applyEntityToGrid(const Entity& e) {
+    std::vector<Position> finalTiles = e.getArea().applyArea(e.getPosition());
     
     for ( auto & p : finalTiles ) {
         try {
-            grid_.at(p.getX()).at(p.getY()).addEntity(e); 
+            grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
         } catch(...) {}
     }
 }
