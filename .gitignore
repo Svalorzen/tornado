@@ -3,4 +3,5 @@ dependencies/
 *.a
 bin/
 *.swp
-SFML-2.0/
+include/
+lib/
