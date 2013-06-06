@@ -6,6 +6,7 @@
 #include <globals.hpp>
 #include <graphics/globals.hpp>
 #include <map/map.hpp>
+#include <engine/game_engine.hpp>
 #include <iostream>
 #include <cmath>
 
@@ -13,6 +14,7 @@ using std::vector;
 
 int main() {
     Map map(100,100);
+    GameEngine engine(map);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!");
     window.setFramerateLimit(Graphics::FPS);
@@ -89,7 +91,7 @@ int main() {
 
         // Update world state once per second
         if ( diff > oldDiff ) {
-            map.runStep();
+            engine.runStep();
 
             oldDiff = diff;
             // We reset this because runStep already forces stuff to snap to the grid (moving them),
