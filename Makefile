@@ -9,10 +9,10 @@ WCXX=~/Projects/MinGW/bin/i686-w64-mingw32-g++
 EXECUTABLE=tornado
 WINEXECUTABLE=ruletheskies.exe
 
-CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./include -I./src
-LDFLAGS=-L./lib/SFML -Wl,-rpath -Wl,./lib/SFML -g
+CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./include/ -I./src/ -I/usr/include/lua5.2/
+LDFLAGS=-L./lib/Diluculum/ -L./lib/SFML/ -Wl,-rpath -Wl,./lib/SFML/ -Wl,-rpath -Wl,./lib/Diluculum/ -g
 
-LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
+LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system -ldiluculum
 WINLIBRARIES=#-ljson_mingw_libmt -lbprinter_mingw
 
 WINDEFINES=-DWINVER=0x0400 -D__WIN95__ -D__GNUWIN32__ -DSTRICT -DHAVE_W32API_H -D__WXMSW__ -D__WINDOWS__

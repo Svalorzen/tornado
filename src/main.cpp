@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <Diluculum/LuaState.hpp>
 
 #include <vector>
 #include <chrono>
@@ -13,6 +14,8 @@
 using std::vector;
 
 int main() {
+    Diluculum::LuaState lua;
+    lua.doString("print(\"Hello World!\")");
     Map map(100,100);
     GameEngine engine(map);
 
