@@ -33,46 +33,10 @@ class Area {
         void normalize();
 };
 
-inline Area& Area::operator+=(const Area& rhs) {
-    for ( size_t i = 0; i < area_.size(); i++ )
-        area_[i] |= rhs.area_[i];
-
-    maxW_ = maxW_ > rhs.maxW_ ? maxW_ : rhs.maxW_ ;
-    maxH_ = maxH_ > rhs.maxH_ ? maxH_ : rhs.maxH_ ;
-
-    return *this;
-}
-inline Area operator+(Area lhs, const Area& rhs) {
-    lhs += rhs;
-    return lhs;
-}
-
-inline Area& Area::operator-=(const Area& rhs) {
-    for ( size_t i = 0; i < area_.size(); i++ )
-        area_[i] ^= ( area_[i] & rhs.area_[i] );
-
-    normalize();
-
-    return *this;
-}
-inline Area operator-(Area lhs, const Area& rhs) {
-    lhs -= rhs;
-    return lhs;
-}
+Area operator+(Area lhs, const Area& rhs);
+Area operator-(Area lhs, const Area& rhs);
 
 template <typename T>
-inline T reverseBitmap(T v) {
-    auto r = v;
-
-    size_t s = v.size() - 1;
-    for (v >>= 1; v.any(); v >>= 1) {   
-        r <<= 1;
-        r[0] = v[0];
-        s--;
-    }
-    r <<= s; // shift when v's highest bits are zero
-    
-    return r;
-}
+T reverseBitmap(T v);
 
 #endif

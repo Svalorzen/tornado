@@ -4,6 +4,7 @@
 #include <graphics/animated_sprite.hpp>
 
 #include <map/utils/position.hpp>
+#include <map/utils/distance.hpp>
 #include <map/utils/area.hpp>
 
 class Map;
@@ -33,7 +34,7 @@ class Entity : public AnimatedSprite {
         // To update the sprite we would normally store an old position and the position, and find out
         // what the difference is and render appropriately. Since the difference doesn't change during
         // a step, and we would have to compute it every time nontheless, we directly store the difference.
-        Position diffPosition_;
+        Distance stepDiff_;
         Area area_;
 
         // Represents if pathing can or can't use tiles where this entity stands. Alive stuff generally isn't solid

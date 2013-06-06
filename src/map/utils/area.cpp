@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <map/utils/position.hpp>
+#include <map/utils/distance.hpp>
 
 Area::Area(std::initializer_list<std::string> init) {
     auto s = end(init)-1;
@@ -85,7 +86,50 @@ std::vector<Position> Area::applyArea(const Position & p) const {
     for ( unsigned i = 0; i < getMaxH(); i++ )
         for ( unsigned j = 0; j < getMaxW(); j++ )
             if ( area_[i][j] )
-                positions.push_back(p + Position(-i, j));
+                positions.push_back(p + Distance(-i, j));
 
     return positions;
+}
+
+// OPERATORS
+Area& Area::operator+=(const Area& rhs) {
+    for ( size_t i = 0; i < area_.size(); i++ )
+        area_[i] |= rhs.area_[i];
+
+    maxW_ = maxW_ > rhs.maxW_ ? maxW_ : rhs.maxW_ ;
+    maxH_ = maxH_ > rhs.maxH_ ? maxH_ : rhs.maxH_ ;
+
+    return *this;
+}
+Area operator+(Area lhs, const Area& rhs) {
+    lhs += rhs;
+    return lhs;
+}
+
+Area& Area::operator-=(const Area& rhs) {
+    for ( size_t i = 0; i < area_.size(); i++ )
+        area_[i] ^= ( area_[i] & rhs.area_[i] );
+
+    normalize();
+
+    return *this;
+}
+Area operator-(Area lhs, const Area& rhs) {
+    lhs -= rhs;
+    return lhs;
+}
+
+template <typename T>
+T reverseBitmap(T v) {
+    auto r = v;
+
+    size_t s = v.size() - 1;
+    for (v >>= 1; v.any(); v >>= 1) {   
+        r <<= 1;
+        r[0] = v[0];
+        s--;
+    }
+    r <<= s; // shift when v's highest bits are zero
+    
+    return r;
 }

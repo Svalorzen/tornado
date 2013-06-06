@@ -2,7 +2,7 @@
 
 #include <graphics/textures.hpp>
 
-Item::Item(const Map & m, ItemType t) : Entity(m, {"1"}, false, Graphics::getTexture("src/resources/yellow.png")), type_(t) {} 
+Item::Item(const Map & m, ItemType t) : Entity(m, {"1"}, false, Graphics::getTexture("src/resources/yellow.png")), locked_(false), type_(t) {} 
 
 ItemType Item::getType() const {
     return type_;

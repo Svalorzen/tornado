@@ -4,6 +4,8 @@
 #include <utils/hashing.hpp>
 #include <iostream>
 
+class Distance;
+
 class Position {
     public:
         Position();
@@ -17,44 +19,29 @@ class Position {
         Position left() const;
         Position right() const;
 
-        void print() const { std::cout << "Position## X: " << getX() << " - Y: " << getY() << "\n"; }
+        void print() const { std::cout << "{ X: " << getX() << " , Y: " << getY() << " }"; }
 
         void setX(int);
         void setY(int);
 
-        Position& operator+=(const Position&);
-        Position& operator-=(const Position&);
+        Position& operator+=(const Distance&);
+        Position& operator-=(const Distance&);
 
     private:
         int x_;
         int y_;
 };
 
-inline bool operator==(const Position & lhs, const Position& rhs ) {
-    return (lhs.getX() == rhs.getX()) && (lhs.getY() == rhs.getY());
-}
 
-inline Position& Position::operator+=(const Position & rhs) {
-    setX(getX()+rhs.getX());
-    setY(getY()+rhs.getY());
+bool operator==(const Position & lhs, const Position& rhs );
+bool operator!=(const Position & lhs, const Position& rhs );
 
-    return *this;
-}
-inline Position operator+(Position lhs, const Position & rhs) {
-    lhs += rhs;
-    return lhs;
-}
+Position operator+(Position lhs, const Distance & rhs);
+Position operator+(const Distance & lhs, const Position & rhs);
 
-inline Position& Position::operator-=(const Position & rhs) {
-    setX(getX()-rhs.getX());
-    setY(getY()-rhs.getY());
-
-    return *this;
-}
-inline Position operator-(Position lhs, const Position & rhs) {
-    lhs -= rhs;
-    return lhs;
-}
+Position operator-(Position lhs, const Distance & rhs);
+Position operator-(const Distance & lhs, const Position & rhs);
+Distance operator-(const Position & lhs, const Position & rhs);
 
 // Hashing specialization
 namespace std {

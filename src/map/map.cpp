@@ -163,33 +163,33 @@ Position Map::computeSingleMove(const Entity & entity, Position target) {
     std::vector<Position> path;
 
     // Compute path
-    auto diff = target - entity.getPosition();
+    auto dist = target - entity.getPosition();
 
     // NOTE: LAST MOVES IN FIRST, LastInFirstOut!
     {
         int i = 0;
-        if ( diff.getX() < 0 ) {
-            while( i >= diff.getX() ) {
+        if ( dist.getDiffXi() < 0 ) {
+            while( i >= dist.getDiffXi() ) {
                 path.emplace_back(target.getX()-i, target.getY());
                 i--;
             }
         }
         else {
-            while( i <= diff.getX() ) {
+            while( i <= dist.getDiffXi() ) {
                 path.emplace_back(target.getX()-i, target.getY());
                 i++;
             }
         }
         i = 1;
-        if ( diff.getY() < 0 ) {
+        if ( dist.getDiffYi() < 0 ) {
             i = -i;
-            while( i > diff.getY() ) {
+            while( i > dist.getDiffYi() ) {
                 path.emplace_back(entity.getPosition().getX(), target.getY()-i);
                 i--;
             }
         }
         else {
-            while( i < diff.getY() ) {
+            while( i < dist.getDiffYi() ) {
                 path.emplace_back(entity.getPosition().getX(), target.getY()-i);
                 i++;
             }
@@ -240,12 +240,11 @@ bool Map::isThereFood() const {
 
 const Item * Map::getNearestFood(Position p) const {
     const Item * pi = nullptr;
-    int distance = 0;
+    Distance distance;
 
     for ( auto & i : items_ ) {
         if ( i->getType() == ItemType::FOOD && ! i->isLocked() ) {
-            Position diffPos = p - i->getPosition();
-            int distanceDiff = abs(diffPos.getX()) + abs(diffPos.getY());
+            Distance distanceDiff = p - i->getPosition();
 
             if ( pi == nullptr || distance > distanceDiff ) {
                 pi = i.get();
