@@ -1,0 +1,18 @@
+#ifndef LUAMAP_HEADER_FILE
+#define LUAMAP_HEADER_FILE
+
+class Map;
+
+class LuaMap {
+    public:
+        LuaMap(const Diluculum::LuaValueList &);
+        LuaMap(const Map *);
+
+        Diluculum::LuaValueList isThereFood(const Diluculum::LuaValueList &);
+
+    private:
+        const Map * ownMap_;
+
+};
+
+#endif

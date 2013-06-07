@@ -9,6 +9,8 @@ Action::Action(ActionType t, EntityBox te) :
         targetPosition_(te.getEntity()->getPosition()),
         targetEntity_(te){} 
 
+Action::Action() : Action(ActionType::NONE) {}
+
 // #############
 void Action::setResolved(bool r) {
     resolved_ = r;

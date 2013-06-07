@@ -9,6 +9,7 @@
 class Map;
 
 enum class ActionType {
+    NONE,
     MOVE_TO,
     PICK_UP,
     PUT_DOWN,
@@ -19,6 +20,7 @@ enum class ActionType {
 
 class Action {
     public:
+        Action();
         Action(ActionType);
         Action(ActionType,Position);
         Action(ActionType,EntityBox);
