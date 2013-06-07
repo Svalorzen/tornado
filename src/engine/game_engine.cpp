@@ -5,20 +5,30 @@
 #include <entities/entity.hpp>
 
 #include <ai/utils/action.hpp>
-#include <ai/person/base_person_ai.hpp>
+#include <ai/ai.hpp>
+
+#include <ai/lua/lua_action.hpp>
+#include <ai/lua/lua_person.hpp>
+#include <ai/lua/lua_map.hpp>
 
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
 void GameEngine::runStep() {
     std::vector<std::pair<Action, Person&>> actions;
 
-    // Don't pass a modifiable map to the AI
-    BasePersonAI ai(const_cast<const Map&>(ownMap_));
-
     auto & people = ownMap_.getPeople();
 
+    auto cpm = const_cast<const Map *>( & ownMap_ );
+
+    LuaMap lm(cpm);
+
     for ( auto & p : people ) {
-        actions.emplace_back(ai.getAction(p), p);
+        auto cpp = const_cast<const Person*>( &p );
+        
+        LuaPerson lp(cpp);
+        LuaAction la(cpm, cpp);
+
+        actions.emplace_back(AI::basePerson(lm, lp, la), p);
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
         p.refresh();

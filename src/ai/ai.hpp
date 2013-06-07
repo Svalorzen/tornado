@@ -1,20 +1,25 @@
 #ifndef AI_HEADER_FILE
 #define AI_HEADER_FILE
 
-namespace AI {
-    Action basePerson(const Map &, const Person &);
-        
-    inline const Diluculum::LuaValue & getLuaValue(std::string fileName, std::string valueName) {
-        static Diluculum::LuaState state_;
-        
-        // If we don't have it
-        if ( state_[valueName].value() == Diluculum::Nil ) {
-            try { state_.doFile(fileName); }
-            catch(Diluculum::LuaFileError) { std::cout << "Lua File missing" << std::endl; }
-        }
+#include <string>
 
-        return state_[valueName].value();
-    }
-}
+class LuaAction;
+class LuaMap;
+class LuaPerson;
+
+namespace Diluculum { class LuaVariable; }
+
+class AI {
+    public:
+        constexpr char mapHubName[]     = "mapHub"; 
+        constexpr char entityHubName[]  = "entityHub"; 
+        constexpr char actionHubName[]  = "actionHub";
+
+        Action basePerson(LuaMap &, LuaPerson &, LuaAction &);
+    private:
+        const Diluculum::LuaVariable & getLuaVariable(std::string, std::string);
+        
+        Diluculum::LuaState state_;
+};
 
 #endif
