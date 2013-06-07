@@ -32,7 +32,10 @@ class Entity {
         void refresh();
         void graphicalUpdate(unsigned msLapsed);
 
+        int getId() const;
+
     private:
+        int id_;
         Position position_;
         Area area_;
         // To update the sprite we would normally store an old position and the position, and find out
@@ -48,6 +51,8 @@ class Entity {
 
         // INVENTORY - need functions to get/remove objects
         std::vector<Entity*> inventory;
+
+        static long long unsigned idCreator_;
 };
 
 #endif

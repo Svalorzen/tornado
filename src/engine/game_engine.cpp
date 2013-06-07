@@ -55,7 +55,6 @@ void GameEngine::runStep() {
                 // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
                 }
                 case ActionType::MOVE_TO: {
-                    std::cout << "Moving to : "; a.first.getTargetPosition().print(); std::cout << std::endl;
                     auto nextMove = computeSingleMove(a.second, a.first.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us

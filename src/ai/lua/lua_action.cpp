@@ -37,7 +37,6 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP - Find a way to put Entity position
         ownAction_.setActionType(ActionType::PICK_UP);
         if ( action["target"].asString() == "food" ) {
-            std::cout << "I want food!\n";
             ownAction_.setEntityBox(ownMap_->getNearestFood(ownEntity_->getPosition()));
         }
 

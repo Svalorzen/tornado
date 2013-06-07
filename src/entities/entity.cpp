@@ -5,8 +5,16 @@
 
 #include <iostream>
 
-Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : position_(p), area_(a), solid_(s), ownSprite_(spr) {}
+long long unsigned Entity::idCreator_ = 0u;
+
+Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
+    idCreator_++;    
+}
 Entity::Entity(const Area& a, bool s, const AnimatedSprite& spr) : Entity({0,0}, a,s,spr) {}
+
+int Entity::getId() const {
+    return id_;
+}
 
 void Entity::setPosition(const Position& p) {
     stepDiff_ = p - position_;

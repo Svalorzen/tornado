@@ -31,3 +31,11 @@ Diluculum::LuaValueList LuaPerson::isMale(const Diluculum::LuaValueList &) {
 
     return list;
 }
+
+Diluculum::LuaValueList LuaPerson::getId(const Diluculum::LuaValueList &) {
+    Diluculum::LuaValueList list;
+
+    list.push_back(ownPerson_->getId());
+
+    return list;
+}
