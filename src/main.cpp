@@ -15,7 +15,7 @@ using std::vector;
 
 int main() {
     Diluculum::LuaState lua;
-    lua.doString("print(\"Hello World!\")");
+    lua.doFile("luaTestScript");
     Map map(100,100);
     GameEngine engine(map);
 
