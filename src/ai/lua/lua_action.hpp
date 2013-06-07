@@ -1,25 +1,27 @@
-#ifndef LUAACTION_HEADER_FILE
-#define LUAACTION_HEADER_FILE
+#ifndef LUA_ACTION_HEADER_FILE
+#define LUA_ACTION_HEADER_FILE
 
 #include <ai/utils/action.hpp>
 
 class Map;
-namespace Diluculum { class LuaValueList }
+class Person;
+#include <Diluculum/LuaValue.hpp>
 
 class LuaAction {
     public:
         LuaAction(const Diluculum::LuaValueList &);
-        LuaAction(const Map * , const Person *);
+        LuaAction(const Map * , const Entity *);
 
-        void setAction(Action::ActionType);
+        Diluculum::LuaValueList setAction(const Diluculum::LuaValueList&);
 
         Action getAction();
 
     private:
         const Map * ownMap_;
-        const Person * ownPerson_;
+        const Entity * ownEntity_;
         Action ownAction_;      
         
 };
+
 
 #endif

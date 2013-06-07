@@ -3,21 +3,23 @@
 
 #include <string>
 
+#include <Diluculum/LuaState.hpp>
+
 class LuaAction;
 class LuaMap;
 class LuaPerson;
-
-namespace Diluculum { class LuaVariable; }
+class Action;
 
 class AI {
     public:
-        constexpr char mapHubName[]     = "mapHub"; 
-        constexpr char entityHubName[]  = "entityHub"; 
-        constexpr char actionHubName[]  = "actionHub";
+        AI();
+        static constexpr char mapHubName[]     = "mapHub"; 
+        static constexpr char entityHubName[]  = "entityHub"; 
+        static constexpr char actionHubName[]  = "actionHub";
 
         Action basePerson(LuaMap &, LuaPerson &, LuaAction &);
     private:
-        const Diluculum::LuaVariable & getLuaVariable(std::string, std::string);
+        Diluculum::LuaValue getLuaValue(std::string, std::string);
         
         Diluculum::LuaState state_;
 };

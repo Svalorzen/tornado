@@ -2,7 +2,7 @@
 #define LUA_PERSON_HEADER_FILE
 
 class Person;
-namespace Diluculum { class LuaValueList; }
+#include <Diluculum/LuaValue.hpp>
 
 class LuaPerson {
     public:
@@ -16,5 +16,6 @@ class LuaPerson {
     private:
         const Person * ownPerson_;
 };
+
 
 #endif

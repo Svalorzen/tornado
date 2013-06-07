@@ -7,20 +7,20 @@
 #include <ai/lua/lua_person.hpp>
 #include <ai/lua/lua_action.hpp>
 
-namespace AI {
-    Action basePerson(LuaMap & m, LuaPerson & p, LuaAction & a) {
-        auto ai = getLuaVariable("base_person_ai", "base_person_ai.lua"); 
+Action AI::basePerson(LuaMap & m, LuaPerson & p, LuaAction & a) {
+    auto ai = getLuaValue("base_person_ai", "base_person_ai.lua"); 
 
-        if ( ai.type() != LUA_TFUNCTION )
-            throw Diluculum::LuaRunTimeError("Couldn't load ai function.");
+    if ( ai.type() != LUA_TFUNCTION )
+        throw Diluculum::LuaRunTimeError("Couldn't load ai function.");
 
-        // Set current AI with standard name 
-        DILUCULUM_REGISTER_OBJECT(state_[mapHubName],    LuaMap,     m);
-        DILUCULUM_REGISTER_OBJECT(state_[entityHubName], LuaPerson,  p);
-        DILUCULUM_REGISTER_OBJECT(state_[actionHubName], LuaAction,  a);
+    // Set current AI with standard name 
+    DILUCULUM_REGISTER_OBJECT(state_[mapHubName],    LuaMap,     m);
+    DILUCULUM_REGISTER_OBJECT(state_[entityHubName], LuaPerson,  p);
+    DILUCULUM_REGISTER_OBJECT(state_[actionHubName], LuaAction,  a);
 
-        state_.call(ai.asFunction(), Diluculum::LuaValueList() );
+    auto foo = ai.asFunction();
 
-        return a.getAction();
-    }
+    state_.call(foo, Diluculum::LuaValueList() );
+
+    return a.getAction();
 }

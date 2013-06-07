@@ -1,54 +1,62 @@
 #include "lua_action.hpp"
 
+#include <map/map.hpp>
+
+#include <Diluculum/LuaValue.hpp>
+#include <Diluculum/LuaExceptions.hpp>
+
 #include <map/utils/position.hpp>
 #include <ai/utils/entity_box.hpp>
+#include <entities/entity.hpp>
 
 #include <string>
+#include <iostream>
 
 LuaAction::LuaAction(const Diluculum::LuaValueList & in) : ownMap_(nullptr) {}
-LuaAction::LuaAction(const Map * m, const Person * p) : ownMap_(m), ownPerson_(p) {}
+LuaAction::LuaAction(const Map * m, const Entity * p) : ownMap_(m), ownEntity_(p) {}
 
-void LuaAction::setAction (const Diluculum::LuaValueList & in) {
+Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in) {
     // CHECK IF WE ARE PASSING AN EMPTY LIST
-    if ( in[0] == Diluculum::Nil ) {
-        std::cout << "ERROR: Passing NO Action" << std::endl;
-        return -1;
+    if ( in[0] == Diluculum::Nil || in[0].type() != LUA_TTABLE ) {
+        throw Diluculum::LuaTypeError("ERROR: Wrong type of info passed");
     }
 
     // SET ACTIONS
+    Diluculum::LuaValue actionValue = in[0];
+    auto action = actionValue.asTable();
 
-    Diluculum::LuaValueMap action = in[0];
-
-    if ( action["type"] == "move_to" ) {            // MOVE TO - Complete
-        int x = std::stoi(action["x"]);
-        int y = std::stoi(action["y"]);
+    if ( action["type"].asString() == "move_to" ) {            // MOVE TO - Complete
+        int x = static_cast<int>(action["x"].asNumber());
+        int y = static_cast<int>(action["y"].asNumber());
         
         Position targetPos(x,y);
 
-        ownAction_.setActionType(MOVE_TO);
+        ownAction_.setActionType(ActionType::MOVE_TO);
         ownAction_.setTargetPosition(targetPos);
     
-    } else if ( action["type"] == "pick_up" ) {     // PICK UP - Find a way to put Person position
-        if ( action["target"] == "food" ) {
-            EntityBox targetBox = ownMap_.getNearestFood(ownPerson_.getPosition());
+    } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP - Find a way to put Entity position
+        ownAction_.setActionType(ActionType::PICK_UP);
+        if ( action["target"].asString() == "food" ) {
+            std::cout << "I want food!\n";
+            ownAction_.setEntityBox(ownMap_->getNearestFood(ownEntity_->getPosition()));
         }
 
-        ownAction_.setActionType(PICK_UP);
-        ownAction_.setEntityBox(targetBox);
 
-    } else if ( action["type"] == "eat" ) {         // EAT
-        ownAction_.setActionType(EAT);
+    } else if ( action["type"].asString() == "eat" ) {         // EAT
+        ownAction_.setActionType(ActionType::EAT);
         
-    } else if ( action["type"] == "put_down" ) {    // PUT DOWN
-        ownAction_.setActionType(PUT_DOWN);
+    } else if ( action["type"].asString() == "put_down" ) {    // PUT DOWN
+        ownAction_.setActionType(ActionType::PUT_DOWN);
     
-    } else if ( action["type"] == "sleep" ) {       // SLEEP
-        ownAction_.setActionType(SLEEP);    
+    } else if ( action["type"].asString() == "sleep" ) {       // SLEEP
+        ownAction_.setActionType(ActionType::SLEEP);    
     
-    } else if ( action["type"] == "shelter" ) {     // FIND SHELTER
-        ownAction_.setActionType(SHELTER);
+    } else if ( action["type"].asString() == "shelter" ) {     // FIND SHELTER
+        ownAction_.setActionType(ActionType::SHELTER);
     }
+    // else if type none .... nothing to do!
 
+    return Diluculum::LuaValueList();
 }
 
 Action LuaAction::getAction() {

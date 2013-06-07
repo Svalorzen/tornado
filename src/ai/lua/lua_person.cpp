@@ -1,5 +1,7 @@
 #include "lua_person.hpp"
 
+#include <entities/person.hpp>
+
 LuaPerson::LuaPerson(const Person * p) : ownPerson_(p) {}
 LuaPerson::LuaPerson(const Diluculum::LuaValueList &) : ownPerson_(nullptr) {}
 

@@ -3,13 +3,13 @@
 #include <map/map.hpp>
 
 #include <entities/entity.hpp>
-
 #include <ai/utils/action.hpp>
-#include <ai/ai.hpp>
 
-#include <ai/lua/lua_action.hpp>
 #include <ai/lua/lua_person.hpp>
+#include <ai/lua/lua_action.hpp>
 #include <ai/lua/lua_map.hpp>
+// These needs to be last!
+#include <ai/ai.hpp>
 
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
@@ -18,8 +18,9 @@ void GameEngine::runStep() {
 
     auto & people = ownMap_.getPeople();
 
-    auto cpm = const_cast<const Map *>( & ownMap_ );
+    AI ai;
 
+    auto cpm = const_cast<const Map *>( & ownMap_ );
     LuaMap lm(cpm);
 
     for ( auto & p : people ) {
@@ -28,7 +29,7 @@ void GameEngine::runStep() {
         LuaPerson lp(cpp);
         LuaAction la(cpm, cpp);
 
-        actions.emplace_back(AI::basePerson(lm, lp, la), p);
+        actions.emplace_back(ai.basePerson(lm, lp, la), p);
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
         p.refresh();
@@ -54,10 +55,14 @@ void GameEngine::runStep() {
                 // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
                 }
                 case ActionType::MOVE_TO: {
+                    std::cout << "Moving to : "; a.first.getTargetPosition().print(); std::cout << std::endl;
                     auto nextMove = computeSingleMove(a.second, a.first.getTargetPosition()); 
                     // Here there should probably be a check verifying that target position is walkable in the
                     // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
                     ownMap_.setEntityPosition(a.second, nextMove);
+                    break;
+                }
+                case ActionType::NONE: {
                     break;
                 }
                 default: std::cout << "No code specified for this type of action: "<<(int)a.first.getActionType()<<"\n" ;

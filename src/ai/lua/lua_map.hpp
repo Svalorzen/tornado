@@ -1,7 +1,9 @@
 #ifndef LUAMAP_HEADER_FILE
 #define LUAMAP_HEADER_FILE
 
+
 class Map;
+#include <Diluculum/LuaValue.hpp>
 
 class LuaMap {
     public:
@@ -14,5 +16,6 @@ class LuaMap {
         const Map * ownMap_;
 
 };
+
 
 #endif

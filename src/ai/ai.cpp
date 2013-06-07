@@ -1,16 +1,45 @@
 #include "ai.hpp"
 
 #include <iostream>
+#include <Diluculum/LuaWrappers.hpp>
 
-#include <Diluculum/LuaState.hpp>
-#include <Diluculum/LuaVariable.hpp>
+#include <ai/lua/lua_action.hpp>
+#include <ai/lua/lua_map.hpp>
+#include <ai/lua/lua_person.hpp>
 
-const Diluculum::LuaValue & AI::getLuaVariable(std::string variableName, std::string fileName) {
+constexpr char AI::mapHubName[];
+constexpr char AI::entityHubName[];
+constexpr char AI::actionHubName[];
+
+// Lua class declaration
+DILUCULUM_BEGIN_CLASS(LuaAction)
+    DILUCULUM_CLASS_METHOD(LuaAction, setAction)
+DILUCULUM_END_CLASS(LuaAction)
+
+// Lua class declaration
+DILUCULUM_BEGIN_CLASS(LuaMap)
+    DILUCULUM_CLASS_METHOD(LuaMap, isThereFood)
+DILUCULUM_END_CLASS(LuaMap)
+
+// Lua class declaration
+DILUCULUM_BEGIN_CLASS(LuaPerson)
+    DILUCULUM_CLASS_METHOD(LuaPerson, getNeeds)
+    DILUCULUM_CLASS_METHOD(LuaPerson, isMale)
+DILUCULUM_END_CLASS(LuaPerson)
+
+AI::AI() {
+    // Registering class
+    DILUCULUM_REGISTER_CLASS(state_["LuaAction"], LuaAction);
+    DILUCULUM_REGISTER_CLASS(state_["LuaMap"], LuaMap);
+    DILUCULUM_REGISTER_CLASS(state_["LuaPerson"], LuaPerson);
+}
+
+Diluculum::LuaValue AI::getLuaValue(std::string valueName, std::string fileName) {
     // If we don't have it
-    if ( state_[variableName].value() == Diluculum::Nil ) {
+    if ( state_[valueName].value() == Diluculum::Nil ) {
         try { state_.doFile(fileName); }
         catch(Diluculum::LuaFileError) { std::cout << "Lua File missing" << std::endl; }
     }
 
-    return state_[valueName];
+    return state_[valueName].value();
 }

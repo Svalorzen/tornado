@@ -1,6 +1,8 @@
 #ifndef ENUM_STRING_HEADER_FILE
 #define ENUM_STRING_HEADER_FILE
 
+#include <cstdlib>
+
 struct entry {
     const char * name;
     int value;
@@ -12,7 +14,7 @@ constexpr size_t size_of(T (&)[N]) {
 }
 
 constexpr bool same(const char * lhs, const char * rhs) {
-    return !*x && !*y ? true : (*x == *y && same(x+1, y+1));
+    return !*lhs && !*rhs ? true : (*lhs == *rhs && same(lhs+1, rhs+1));
 }
 
 constexpr int value(char const * name, const entry * pair) {

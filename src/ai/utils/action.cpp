@@ -38,6 +38,7 @@ Position Action::getTargetPosition() const {
 // #############
 void Action::setEntityBox(EntityBox e) {
     targetEntity_ = e;
+    targetPosition_ = targetEntity_.getEntity()->getPosition();
 }
 
 const EntityBox Action::getEntityBox() const {
