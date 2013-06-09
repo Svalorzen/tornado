@@ -11,6 +11,7 @@ namespace Graphics {
         // If we don't have it
         if ( textures_.find(textureString) == textures_.end() ) {
             sf::Texture t;
+            t.setSmooth(true); 
             if ( ! t.loadFromFile(textureString) ) throw std::runtime_error("Failed to load the requested texture: "+textureString);
 
             textures_[textureString] = t;
