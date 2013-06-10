@@ -5,14 +5,14 @@
 
 #include <iostream>
 
-long long unsigned Entity::idCreator_ = 0u;
+ID_t Entity::idCreator_ = 0u;
 
 Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
     idCreator_++;    
 }
 Entity::Entity(const Area& a, bool s, const AnimatedSprite& spr) : Entity({0,0}, a,s,spr) {}
 
-int Entity::getId() const {
+ID_t Entity::getId() const {
     return id_;
 }
 

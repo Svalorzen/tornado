@@ -3,10 +3,11 @@
 
 #include <memory>
 
+#include <utils/types.hpp>
 #include <map/utils/position.hpp>
-#include <entities/utils/entity_box.hpp>
 
 class Map;
+class Entity;
 
 enum class ActionType {
     NONE,
@@ -20,10 +21,12 @@ enum class ActionType {
 
 class Action {
     public:
+        // We need this one for LUA
         Action();
-        Action(ActionType);
-        Action(ActionType,Position);
-        Action(ActionType,EntityBox);
+        Action(ID_t);
+        Action(ID_t,ActionType);
+        Action(ID_t,ActionType,Position);
+        Action(ID_t,ActionType,ID_t,Position);
 
         void setResolved(bool);
         bool isResolved() const;
@@ -34,8 +37,14 @@ class Action {
         void setTargetPosition(Position);
         Position getTargetPosition() const;
 
-        void setEntityBox(EntityBox);
-        const EntityBox getEntityBox() const;
+        void setActorId(ID_t);
+        ID_t getActorId() const;
+
+        void setTargetId(ID_t);
+        ID_t getTargetId() const;
+
+        void setTarget(const Entity &);
+
     private:
         ActionType at_;
 
@@ -46,7 +55,8 @@ class Action {
         
         Position targetPosition_;
 
-        EntityBox targetEntity_;
+        ID_t actorEntity_;
+        ID_t targetEntity_;
 };
 
 #endif

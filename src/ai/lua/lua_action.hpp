@@ -5,6 +5,7 @@
 
 class Map;
 class Person;
+class Entity;
 #include <Diluculum/LuaValue.hpp>
 
 class LuaAction {
@@ -20,7 +21,6 @@ class LuaAction {
         const Map * ownMap_;
         const Entity * ownEntity_;
         Action ownAction_;      
-        
 };
 
 

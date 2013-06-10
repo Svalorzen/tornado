@@ -6,14 +6,13 @@
 #include <Diluculum/LuaExceptions.hpp>
 
 #include <map/utils/position.hpp>
-#include <entities/utils/entity_box.hpp>
 #include <entities/entity.hpp>
 
 #include <string>
 #include <iostream>
 
 LuaAction::LuaAction(const Diluculum::LuaValueList & in) : ownMap_(nullptr) {}
-LuaAction::LuaAction(const Map * m, const Entity * p) : ownMap_(m), ownEntity_(p) {}
+LuaAction::LuaAction(const Map * m, const Entity * p) : ownMap_(m), ownEntity_(p), ownAction_(p->getId()) {}
 
 Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in) {
     // CHECK IF WE ARE PASSING AN EMPTY LIST
@@ -37,7 +36,7 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP - Find a way to put Entity position
         ownAction_.setActionType(ActionType::PICK_UP);
         if ( action["target"].asString() == "food" ) {
-            ownAction_.setEntityBox(ownMap_->getNearestFood(ownEntity_->getPosition()));
+            ownAction_.setTarget(ownMap_->getNearestFood(ownEntity_->getPosition()));
         }
 
 

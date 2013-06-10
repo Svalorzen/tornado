@@ -2,7 +2,10 @@
 #define MAP_HEADER_FILE
 
 #include <vector>
+#include <unordered_map>
 #include <random>
+
+#include <utils/types.hpp>
 
 #include <map/utils/tile.hpp>
 
@@ -22,19 +25,27 @@ class Map {
         void displayMap(sf::RenderWindow &, unsigned);
 
         std::vector<Person> & getPeople();
+        
+        Person & getPerson(ID_t);
+        const Person & getPerson(ID_t) const;
+
+        Item & getItem(ID_t);
+        const Item & getItem(ID_t) const;
 
         void addItem(Position);
         void addPerson(Position);
 
-        void removeItem(EntityBox);
-        void removePerson(EntityBox);
+        void removeItem(ID_t);
+        void removePerson(ID_t);
 
         // This function sets an entity on the map and updates eventual grid properties
         void setEntityPosition(Entity &, Position);
 
+        // ################ AI FUNCTIONS #########################
+
         bool isThereFood() const;
         // Can return nullptr if there's no food!
-        EntityBox getNearestFood(Position) const;
+        const Item & getNearestFood(Position) const;
 
     private:
         // Randoms for this map
@@ -48,10 +59,14 @@ class Map {
 
         // People
         std::vector<Person> people_;
+        std::unordered_map<ID_t, size_t> peopleIndex_;
         // Buildings
         std::vector<Building> buildings_;
+        std::unordered_map<ID_t, size_t> buildingsIndex_;
         // Items
         std::vector<Item> items_;
+        std::unordered_map<ID_t, size_t> itemsIndex_;
+
 };
 
 #endif

@@ -1,22 +1,21 @@
 #ifndef LOCKABLE_HEADER_FILE
 #define LOCKABLE_HEADER_FILE
 
-#include <entities/utils/entity_box.hpp>
+#include <utils/types.hpp>
 
 class Lockable {
     public:
         Lockable();
 
-        void lock(EntityBox);
+        void lock(ID_t);
         void unlock();
 
-        EntityBox & getLocker();
-        const EntityBox & getLocker() const;
+        ID_t getLocker() const;
 
         bool isLocked() const;
     private:
         bool locked_;
-        EntityBox locker_;
+        ID_t locker_;
 };
 
 #endif

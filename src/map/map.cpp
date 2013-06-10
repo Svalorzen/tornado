@@ -10,8 +10,6 @@
 
 #include <map/utils/position.hpp>
 
-#include <entities/utils/entity_box.hpp>
-
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
     const sf::Texture & texture = Graphics::getTexture("src/resources/green.png");
@@ -63,12 +61,9 @@ void Map::addPerson(Position pos) {
 
     setEntityPosition(p, pos);
     p.refresh();
-}
 
-void Map::removePerson(EntityBox b) {
-    size_t i = b.getEntityIndex();
-    unapplyEntityFromGrid(people_[i]);
-    people_.erase(begin(people_)+i);
+    // Save in index
+    peopleIndex_[p.getId()] = people_.size() - 1;
 }
 
 void Map::addItem(Position pos) {
@@ -77,12 +72,79 @@ void Map::addItem(Position pos) {
 
     setEntityPosition(i, pos);
     i.refresh();
+
+    // Save in index
+    itemsIndex_[i.getId()] = items_.size() - 1;
 }
 
-void Map::removeItem(EntityBox b) {
-    size_t i = b.getEntityIndex();
-    unapplyEntityFromGrid(items_[i]);
-    items_.erase(begin(items_)+i);
+Person & Map::getPerson(ID_t id) {
+    auto it = peopleIndex_.find(id);
+    if ( it != end(peopleIndex_) ) {
+        return people_[it->second];
+    }
+    throw std::runtime_error("Person id not valid.\n");
+}
+
+const Person & Map::getPerson(ID_t id) const {
+    auto it = peopleIndex_.find(id);
+    if ( it != end(peopleIndex_) ) {
+        return people_[it->second];
+    }
+    throw std::runtime_error("Person id not valid.\n");
+}
+
+Item & Map::getItem(ID_t id) {
+    auto it = itemsIndex_.find(id);
+    if ( it != end(itemsIndex_) ) {
+        return items_[it->second];
+    }
+    throw std::runtime_error("Item id not valid.\n");
+}
+
+const Item & Map::getItem(ID_t id) const {
+    auto it = itemsIndex_.find(id);
+    if ( it != end(itemsIndex_) ) {
+        return items_[it->second];
+    }
+    throw std::runtime_error("Item id not valid.\n");
+}
+
+void Map::removePerson(ID_t id) {
+    auto it = peopleIndex_.find(id);
+    if ( it != end(peopleIndex_) ) {
+        auto index = it->second;
+        unapplyEntityFromGrid(people_[index]);
+        // Efficient removal
+        if ( people_.size() > 1 )
+            std::swap(people_[index], people_.back());
+        people_.pop_back();
+
+        // Update other guy index
+        peopleIndex_[people_[index].getId()] = index;
+        // Remove old guy index
+        peopleIndex_.erase(it);
+        return;
+    }
+    throw std::runtime_error("Person id not valid.\n");
+}
+
+void Map::removeItem(ID_t id) {
+    auto it = itemsIndex_.find(id);
+    if ( it != end(itemsIndex_) ) {
+        auto index = it->second;
+        unapplyEntityFromGrid(items_[index]);
+        // Efficient removal
+        if ( items_.size() > 1 )
+            std::swap(items_[index], items_.back());
+        items_.pop_back();
+
+        // Update other guy index
+        itemsIndex_[items_[index].getId()] = index;
+        // Remove old guy index
+        itemsIndex_.erase(it);
+        return;
+    }
+    throw std::runtime_error("Item id not valid.\n");
 }
 
 // This function updates tile links, it is called only when we are actually
@@ -101,7 +163,7 @@ bool Map::isThereFood() const {
     return false;
 }
 
-EntityBox Map::getNearestFood(Position p) const {
+const Item & Map::getNearestFood(Position p) const {
     int it = -1;
     Distance distance;
 
@@ -118,7 +180,7 @@ EntityBox Map::getNearestFood(Position p) const {
         }
     }
 
-    return EntityBox(items_[it], static_cast<size_t>(it));
+    return items_[it];
 }
 
 void Map::unapplyEntityFromGrid(const Entity& e) {

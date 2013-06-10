@@ -1,6 +1,8 @@
 #ifndef ENTITY_HEADER_FILE
 #define ENTITY_HEADER_FILE
 
+#include <utils/types.hpp>
+
 #include <graphics/animated_sprite.hpp>
 
 #include <map/utils/position.hpp>
@@ -32,7 +34,7 @@ class Entity {
         void refresh();
         void graphicalUpdate(unsigned msLapsed);
 
-        int getId() const;
+        ID_t getId() const;
 
     private:
         int id_;
@@ -52,7 +54,7 @@ class Entity {
         // INVENTORY - need functions to get/remove objects
         std::vector<Entity*> inventory;
 
-        static long long unsigned idCreator_;
+        static ID_t idCreator_;
 };
 
 #endif

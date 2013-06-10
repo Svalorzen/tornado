@@ -2,22 +2,16 @@
 
 Lockable::Lockable() : locked_(false) {}
 
-void Lockable::lock(EntityBox e) {
-    if ( e != nullptr ) {
-        locker_ = e;
-        locked_ = true;
-    }
+void Lockable::lock(ID_t e) {
+    locker_ = e;
+    locked_ = true;
 }
 
 void Lockable::unlock() {
-    locker_ = EntityBox();
     locked_ = false;
 }
 
-EntityBox & Lockable::getLocker() {
-    return locker_;
-}
-const EntityBox & Lockable::getLocker() const {
+ID_t Lockable::getLocker() const {
     return locker_;
 }
 

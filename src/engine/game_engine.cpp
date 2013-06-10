@@ -41,7 +41,7 @@ void GameEngine::runStep() {
             switch( a.first.getActionType() ) {
                 case ActionType::PICK_UP: {
                     if ( a.second.getPosition() == a.first.getTargetPosition() ) {
-                        ownMap_.removeItem(a.first.getEntityBox());
+                        ownMap_.removeItem(a.first.getTargetId());
                         //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
                         //    if ( &(*it) == a.getTargetEntity() ) {
                         //        std::cout << "DELETED!!\n";
@@ -52,6 +52,7 @@ void GameEngine::runStep() {
 
                         break;
                     }
+                    ownMap_.getItem(a.first.getTargetId());
                 // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
                 }
                 case ActionType::MOVE_TO: {
