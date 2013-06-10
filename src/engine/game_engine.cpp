@@ -23,50 +23,48 @@ void GameEngine::runStep() {
     auto cpm = const_cast<const Map *>( & ownMap_ );
     LuaMap lm(cpm);
 
+    // FIXME: This for needs to become a while calling a resolver function onto a person;
     for ( auto & p : people ) {
-        auto cpp = const_cast<const Person*>( &p );
-        
-        LuaPerson lp(cpp);
-        LuaAction la(cpm, cpp);
-
-        actions.emplace_back(ai.basePerson(lm, lp, la), p);
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
         p.refresh();
-    }
 
-    for ( auto & a : actions ) {
+        // Build constant person pointer
+        auto cpp = const_cast<const Person*>( &p );
+        // Create Lua wrappers 
+        LuaPerson lp(cpp);
+        LuaAction la(cpm, cpp);
+        // Run Lua AI
+        auto action = ai.basePerson(lm, lp, la);
+
         // We may resolve more than one action at a time, so this checks that
-        if ( ! a.first.isResolved() ) {
-            switch( a.first.getActionType() ) {
-                case ActionType::PICK_UP: {
-                    if ( a.second.getPosition() == a.first.getTargetPosition() ) {
-                        ownMap_.removeItem(a.first.getTargetId());
-                        //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
-                        //    if ( &(*it) == a.getTargetEntity() ) {
-                        //        std::cout << "DELETED!!\n";
-                        //        items_.erase(it);
-                        //        break;
-                        //    }
-                        //}
+        switch( action.getActionType() ) {
+            case ActionType::PICK_UP: {
+                auto target = ownMap_.getItem(action.getTargetId());
 
-                        break;
-                    }
-                    ownMap_.getItem(a.first.getTargetId());
-                // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
-                }
-                case ActionType::MOVE_TO: {
-                    auto nextMove = computeSingleMove(a.second, a.first.getTargetPosition()); 
-                    // Here there should probably be a check verifying that target position is walkable in the
-                    // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    ownMap_.setEntityPosition(a.second, nextMove);
+                if ( p.getPosition() == action.getTargetPosition() ) {
+                    ownMap_.removeItem(action.getTargetId());
                     break;
                 }
-                case ActionType::NONE: {
-                    break;
-                }
-                default: std::cout << "No code specified for this type of action: "<<(int)a.first.getActionType()<<"\n" ;
+            // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
             }
+            case ActionType::MOVE_TO: {
+                auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
+                // Here there should probably be a check verifying that target position is walkable in the
+                // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
+                // IF ( NOT WALKABLE && ENDPOINT.HAS_ENTITY ) {
+                //     RESOLVE(PICK_ENTITY_ON_ENDPOINT)
+                // }
+                // ELSE {
+                    ownMap_.setEntityPosition(p, nextMove);
+                // }
+                
+                break;
+            }
+            case ActionType::NONE: {
+                break;
+            }
+            default: std::cout << "No code specified for this type of action: "<<(int)action.getActionType()<<"\n" ;
         }
     }
 }

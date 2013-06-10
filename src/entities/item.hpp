@@ -2,12 +2,13 @@
 #define ITEM_HEADER_FILE
 
 #include <entities/entity.hpp>
+#include <entities/utils/lockable.hpp>
 
 enum class ItemType {
     FOOD
 };
 
-class Item : public Entity {
+class Item : public Entity, public Lockable {
     public:
         Item(ItemType);        
 

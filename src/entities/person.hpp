@@ -4,11 +4,12 @@
 #include <utils/enum_string.hpp>
 
 #include <entities/entity.hpp>
+#include <entities/utils/locker.hpp>
 
 class Action;
 class Map;
 
-class Person : public Entity {
+class Person : public Entity, public Locker {
     public:
         static constexpr size_t NEEDS_NUM = 10;
         static constexpr size_t BASIC_NEEDS_NUM = 3;
