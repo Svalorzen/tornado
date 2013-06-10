@@ -6,13 +6,13 @@
 #include <Diluculum/LuaExceptions.hpp>
 
 #include <map/utils/position.hpp>
-#include <entities/entity.hpp>
+#include <entities/thinkable.hpp>
 
 #include <string>
 #include <iostream>
 
 LuaAction::LuaAction(const Diluculum::LuaValueList & in) : ownMap_(nullptr) {}
-LuaAction::LuaAction(const Map * m, const Entity * p) : ownMap_(m), ownEntity_(p), ownAction_(p->getId()) {}
+LuaAction::LuaAction(const Map * m, const Thinkable * p) : ownMap_(m), ownEntity_(p), ownAction_(p->getId()) {}
 
 Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in) {
     // CHECK IF WE ARE PASSING AN EMPTY LIST
@@ -51,6 +51,8 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     
     } else if ( action["type"].asString() == "shelter" ) {     // FIND SHELTER
         ownAction_.setActionType(ActionType::SHELTER);
+    } else if ( action["type"].asString() == "last" ) {
+        ownAction_ = ownEntity_->getLastAction();
     }
     // else if type none .... nothing to do!
 

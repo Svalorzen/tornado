@@ -1,15 +1,20 @@
 
 function base_person_ai()
     result = {}
-    -- entityHub
+    -- base action
+    result["type"] = "none"
+    
+    -- try to eat food
     if mapHub:isThereFood() then
         result["type"] = "pick_up"
         result["target"] = "food"
-        actionHub:setAction(result); 
     end
+
+    --//
+    -- if mapHub:isThereFood() && distance(
+    ---
 
     -- print(entityHub:getId())
 
-    result["type"] = "none"
     actionHub:setAction(result);
 end

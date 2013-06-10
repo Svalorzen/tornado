@@ -12,7 +12,7 @@ constexpr unsigned Person::NEED_PRIORITIES[];
 
 //    MAP, AREA, SOLID
 Person::Person(bool isMale) : 
-    Entity({"1"}, false, AnimatedSprite(Graphics::getTexture("src/resources/red.png"))),
+    Thinkable({"1"}, false, AnimatedSprite(Graphics::getTexture("src/resources/red.png"))),
     male_(isMale),
     needs_({10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}) {}
 
