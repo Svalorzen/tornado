@@ -8,7 +8,7 @@ function base_person_ai()
         actionHub:setAction(result); 
     end
 
-    --print(entityHub:getId())
+    -- print(entityHub:getId())
 
     result["type"] = "none"
     actionHub:setAction(result);

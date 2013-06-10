@@ -48,20 +48,26 @@ int main() {
             view.zoom(1.1f);
             window.setView(view);
             zoom--;
-            if ( zoom < 0 )
-                movement *= 1.5f;
-            else
-                movement *= 1.05f;
+            
+            movement = 10*pow(3,-tanh(zoom/2.));
+            
+            //if ( zoom < 0 )
+            //    movement *= 1.5f;
+            //else
+            //    movement *= 1.05f;
         }
         // Zoom in
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             view.zoom(0.909f);
             window.setView(view);
             zoom++;
-            if ( zoom <= 0 )
-                movement /= 1.5f;
-            else
-                movement /= 1.05f;
+            
+            movement = 10*pow(3,-tanh(zoom/2.));
+            
+            //if ( zoom <= 0 )
+            //    movement /= 1.5f;
+            //else
+            //    movement /= 1.05f;
         }
         // Up
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::W )) {
