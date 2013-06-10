@@ -6,7 +6,7 @@
 #include <Diluculum/LuaExceptions.hpp>
 
 #include <map/utils/position.hpp>
-#include <ai/utils/entity_box.hpp>
+#include <entities/utils/entity_box.hpp>
 #include <entities/entity.hpp>
 
 #include <string>

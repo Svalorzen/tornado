@@ -6,7 +6,7 @@ Action::Action(ActionType t) : at_(t) {}
 Action::Action(ActionType t, Position p) : at_(t), targetPosition_(p) {} 
 Action::Action(ActionType t, EntityBox te) :
         at_(t),
-        targetPosition_(te.getEntity()->getPosition()),
+        targetPosition_(te->getPosition()),
         targetEntity_(te){} 
 
 Action::Action() : Action(ActionType::NONE) {}
@@ -38,7 +38,7 @@ Position Action::getTargetPosition() const {
 // #############
 void Action::setEntityBox(EntityBox e) {
     targetEntity_ = e;
-    targetPosition_ = targetEntity_.getEntity()->getPosition();
+    targetPosition_ = targetEntity_->getPosition();
 }
 
 const EntityBox Action::getEntityBox() const {

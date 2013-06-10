@@ -9,7 +9,8 @@ class Entity;
 class EntityBox {
     public:
         EntityBox();
-        const Entity * getEntity() const;
+        operator const Entity *() const;
+        const Entity * operator->() const;
 
     private:
         friend class Map;

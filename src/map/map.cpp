@@ -10,7 +10,7 @@
 
 #include <map/utils/position.hpp>
 
-#include <ai/utils/entity_box.hpp>
+#include <entities/utils/entity_box.hpp>
 
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 

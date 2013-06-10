@@ -3,7 +3,11 @@
 EntityBox::EntityBox() : entity_(nullptr), entityIndex_(0) {}
 EntityBox::EntityBox(const Entity & e, size_t i) : entity_(&e), entityIndex_(i) {}
 
-const Entity * EntityBox::getEntity() const {
+EntityBox::operator const Entity *() const {
+    return entity_;
+}
+
+const Entity * EntityBox::operator->() const {
     return entity_;
 }
 
