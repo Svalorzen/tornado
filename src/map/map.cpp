@@ -32,6 +32,7 @@ Map::Map(int x, int y) {
     items_.reserve(1000);
 
     addPerson({1,1});
+    addPerson({10,10});
 }
 
 std::vector<Person> & Map::getPeople() {

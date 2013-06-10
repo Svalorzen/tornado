@@ -15,13 +15,9 @@ class Item : public Entity, public Lockable {
         void setType(ItemType);
         ItemType getType() const;
 
-        void setLocked(bool);
-        bool isLocked() const;
-
         virtual void stepUpdate();
 
     private:
-        bool locked_;
         ItemType type_;
 };
 

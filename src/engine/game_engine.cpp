@@ -14,8 +14,6 @@
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
 void GameEngine::runStep() {
-    std::vector<std::pair<Action, Person&>> actions;
-
     auto & people = ownMap_.getPeople();
 
     AI ai;
@@ -36,14 +34,28 @@ void GameEngine::runStep() {
         LuaAction la(cpm, cpp);
         // Run Lua AI
         auto action = ai.basePerson(lm, lp, la);
-
+        
         // We may resolve more than one action at a time, so this checks that
         switch( action.getActionType() ) {
             case ActionType::PICK_UP: {
-                auto target = ownMap_.getItem(action.getTargetId());
+                auto & target = ownMap_.getItem(action.getTargetId());
+                // If we are not the ones locking, something weird is going on..
+                if ( target.isLocked() ) {
+                    if ( p.getId() != target.getLocker() )
+                        throw std::runtime_error("Picking locked item.\n");
+                }
+                else {
+                    // Free old target
+                    if ( p.isLocking() )
+                        // FIXME: This probably will need to change (not only item are targets..)
+                        ownMap_.getItem(p.getLocked()).unlock();
 
+                    target.lock(p.getId());
+                    p.lock(target.getId());
+                }
                 if ( p.getPosition() == action.getTargetPosition() ) {
                     ownMap_.removeItem(action.getTargetId());
+                    p.unlock();
                     break;
                 }
             // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
