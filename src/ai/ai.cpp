@@ -35,6 +35,11 @@ AI::AI() {
     DILUCULUM_REGISTER_CLASS(state_["LuaPerson"], LuaPerson);
 }
 
+AI& AI::getInstance() {
+    static AI ai;
+    return ai;
+}
+
 Diluculum::LuaValue AI::getLuaValue(std::string valueName, std::string fileName) {
     // If we don't have it
     if ( state_[valueName].value() == Diluculum::Nil ) {

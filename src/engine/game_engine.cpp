@@ -16,7 +16,7 @@ GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 void GameEngine::runStep() {
     auto & people = ownMap_.getPeople();
 
-    AI ai;
+    AI& ai = AI::getInstance();
 
     auto cpm = const_cast<const Map *>( & ownMap_ );
     LuaMap lm(cpm);
