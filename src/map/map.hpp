@@ -17,6 +17,7 @@
 namespace sf { class Texture; class RenderWindow; }
 class EntityBox;
 class Position;
+class Area;
 
 class Map {
     public:
@@ -32,11 +33,18 @@ class Map {
         Item & getItem(ID_t);
         const Item & getItem(ID_t) const;
 
-        void addItem(Position);
+        Building & getBuilding(ID_t);
+        const Building & getBuilding(ID_t) const;
+        
+        void addItem(Position, ItemType);
         void addPerson(Position);
+        void addBuilding(Position, Area, BuildingType);
 
         void removeItem(ID_t);
         void removePerson(ID_t);
+        void removeBuilding(ID_t);
+
+        void stashItem(ID_t);
 
         // This function sets an entity on the map and updates eventual grid properties
         void setEntityPosition(Entity &, Position);
@@ -44,9 +52,16 @@ class Map {
         // ################ AI FUNCTIONS #########################
 
         bool isThereFood() const;
+        bool isThereWood() const;
         // Can return nullptr if there's no food!
         const Item & getNearestFood(Position) const;
         const Item & getNearestFood(Position, ID_t) const;
+        const Item & getNearestWood(Position) const;
+        const Item & getNearestWood(Position, ID_t) const;
+
+        bool isThereItem(ItemType) const;
+        const Item & getNearestItem(ItemType, Position) const;
+        const Item & getNearestItem(ItemType, Position, ID_t) const;
 
     private:
         // Randoms for this map

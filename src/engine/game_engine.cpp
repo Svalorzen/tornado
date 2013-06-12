@@ -54,14 +54,53 @@ void GameEngine::runStep() {
                     p.lock(target.getId());
                 }
                 if ( p.getPosition() == action.getTargetPosition() ) {
-                    ownMap_.removeItem(action.getTargetId());
+                    ownMap_.stashItem(target.getId());
+                    p.getInventory().push_back(target.getId());
                     p.unlock();
                     p.setResult(action);
                     break;
                 }
-            // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
+                goto MOVE_TO_LABEL;
+            }
+            case ActionType::BUILD: {
+                bool buildHouse = false;
+                {
+                    constexpr unsigned HOUSE_COST = 5; 
+                    auto & inv = p.getInventory();
+                    size_t j = inv.size();
+                
+                    for ( size_t i = 0 ; i < j; /* NO! i++ */ ) {
+                        if ( ownMap_.getItem(inv[i]).getType() == ItemType::WOOD ) {
+                            j--;
+                            std::swap(inv[i],inv[j]);
+                            if ( inv.size() - j >= HOUSE_COST ) {
+                                buildHouse = true;
+                                break;
+                            }
+                        }
+                        else i++;
+                    }
+
+                    if ( buildHouse ) {
+                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--)
+                            ownMap_.removeItem(inv[i]);
+                        inv.erase(end(inv) - HOUSE_COST, end(inv));
+                    }
+                }
+
+                if ( buildHouse ) {
+                    Position buildPos((p.getPosition().getX() + 1), p.getPosition().getY());
+                    Area buildArea({"11","11"});
+                    ownMap_.addBuilding(buildPos, buildArea, BuildingType::HOUSE);
+                    p.setResult(action);
+                }
+                else
+                    p.setResult(Action());
+                
+                break;
             }
             case ActionType::MOVE_TO: {
+                MOVE_TO_LABEL: 
                 auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
                 // Here there should probably be a check verifying that target position is walkable in the
                 // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us

@@ -6,7 +6,7 @@
 namespace sf { class Texture; }
 
 namespace Graphics {
-    const sf::Texture & getTexture(std::string textureString);    
+    const sf::Texture & getTexture(std::string textureString, bool smoothing=true);    
 }
 
 #endif

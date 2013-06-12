@@ -17,7 +17,21 @@ Diluculum::LuaValueList LuaMap::isThereFood(const Diluculum::LuaValueList & in) 
     return out;
 }
 
+Diluculum::LuaValueList LuaMap::isThereWood(const Diluculum::LuaValueList & in) {
+    Diluculum::LuaValueList a;
+    a.push_back(ownMap_->isThereWood());
+    return a;
+}
+
 Diluculum::LuaValueList LuaMap::getNearestFood(const Diluculum::LuaValueList & in) {
+    return getNearestItem(ItemType::FOOD, in);
+}
+
+Diluculum::LuaValueList LuaMap::getNearestWood(const Diluculum::LuaValueList & in) {
+    return getNearestItem(ItemType::WOOD, in);
+}
+
+Diluculum::LuaValueList LuaMap::getNearestItem(ItemType type, const Diluculum::LuaValueList & in) {
     Diluculum::LuaValueList out;
     // Check that we got somebody's ID to check for closeness
     if ( in.size() == 0 || in[0].type() != LUA_TNUMBER )
@@ -27,18 +41,18 @@ Diluculum::LuaValueList LuaMap::getNearestFood(const Diluculum::LuaValueList & i
     auto & p = ownMap_->getPerson(static_cast<ID_t>(in[0].asNumber()));
 
     // We need a pointer because we can't do a nice if with a reference
-    const Item * food;
+    const Item * item;
 
     if ( in.size() == 1 || in[1] == Diluculum::Nil ) {
-        food = &(ownMap_->getNearestFood(p.getPosition()));
+        item = &(ownMap_->getNearestItem(type, p.getPosition()));
     }
     else if ( in[1].type() == LUA_TNUMBER ) {
-        food = &(ownMap_->getNearestFood(p.getPosition(), static_cast<ID_t>(in[1].asNumber())));
+        item = &(ownMap_->getNearestItem(type, p.getPosition(), static_cast<ID_t>(in[1].asNumber())));
     }
     else {
         throw Diluculum::LuaTypeError("ERROR: Wrong type of info passed");
     }
 
-    out.push_back(food->getId());
+    out.push_back(item->getId());
     return out;
 }

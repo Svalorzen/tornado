@@ -5,7 +5,8 @@
 #include <entities/utils/lockable.hpp>
 
 enum class ItemType {
-    FOOD
+    FOOD,
+    WOOD
 };
 
 class Item : public Entity, public Lockable {

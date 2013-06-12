@@ -10,6 +10,12 @@ class AnimatedSprite : public sf::Sprite {
         AnimatedSprite(const sf::Texture &, const sf::IntRect & );
 
         void resize(int width, int height);
+
+        bool getToRender();
+        void setToRender(bool);
+
+    private:
+        bool toRender_;
 };
 
 #endif

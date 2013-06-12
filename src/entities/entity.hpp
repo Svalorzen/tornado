@@ -36,6 +36,9 @@ class Entity {
 
         ID_t getId() const;
 
+        std::vector<ID_t> & getInventory();
+        const std::vector<ID_t> & getInventory() const;
+
     private:
         int id_;
         Position position_;
@@ -52,7 +55,7 @@ class Entity {
         AnimatedSprite ownSprite_;
 
         // INVENTORY - need functions to get/remove objects
-        std::vector<Entity*> inventory;
+        std::vector<ID_t> inventory_;
 
         static ID_t idCreator_;
 };

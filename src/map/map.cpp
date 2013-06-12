@@ -12,7 +12,7 @@
 
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
-    const sf::Texture & texture = Graphics::getTexture("src/resources/green.png");
+    const sf::Texture & texture = Graphics::getTexture("src/resources/green.png", false);
 
     std::vector<Tile> dummy;
     // Reserve space in advance
@@ -30,6 +30,7 @@ Map::Map(int x, int y) {
 
     people_.reserve(1000);
     items_.reserve(1000);
+    buildings_.reserve(1000);
 
     addPerson({1,1});
     addPerson({10,10});
@@ -45,13 +46,24 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
             window.draw(cell.getOwnSprite());
     
     for ( auto & i : items_ ) {
-        window.draw(i.getOwnSprite());
-        i.graphicalUpdate(elapsedMs);
+        if ( i.getOwnSprite().getToRender() ) {
+            window.draw(i.getOwnSprite());
+            i.graphicalUpdate(elapsedMs);
+        }
     }
     for ( auto & p : people_ ) {
-        window.draw(p.getOwnSprite());
-        p.graphicalUpdate(elapsedMs);
+        if ( p.getOwnSprite().getToRender() ) {
+            window.draw(p.getOwnSprite());
+            p.graphicalUpdate(elapsedMs);
+        }
     }
+    for ( auto & b : buildings_ ) {
+        if ( b.getOwnSprite().getToRender() ) {
+            window.draw(b.getOwnSprite());
+            b.graphicalUpdate(elapsedMs);
+        }
+    }
+
 }
 
 void Map::addPerson(Position pos) {
@@ -67,8 +79,8 @@ void Map::addPerson(Position pos) {
     peopleIndex_[p.getId()] = people_.size() - 1;
 }
 
-void Map::addItem(Position pos) {
-    items_.emplace_back(ItemType::FOOD);
+void Map::addItem(Position pos, ItemType type) {
+    items_.emplace_back(type);
     Item & i = items_.back();
 
     setEntityPosition(i, pos);
@@ -76,6 +88,17 @@ void Map::addItem(Position pos) {
 
     // Save in index
     itemsIndex_[i.getId()] = items_.size() - 1;
+}
+
+void Map::addBuilding(Position pos, Area a, BuildingType type) {
+    buildings_.emplace_back(a,type);
+    Building & b = buildings_.back();
+
+    setEntityPosition(b, pos);
+    b.refresh();
+
+    // Save in index
+    buildingsIndex_[b.getId()] = buildings_.size() - 1;
 }
 
 Person & Map::getPerson(ID_t id) {
@@ -110,6 +133,22 @@ const Item & Map::getItem(ID_t id) const {
     throw std::runtime_error("Item id not valid.\n");
 }
 
+Building & Map::getBuilding(ID_t id) {
+    auto it = buildingsIndex_.find(id);
+    if ( it != end(buildingsIndex_) ) {
+        return buildings_[it->second];
+    }
+    throw std::runtime_error("Building id not valid.\n");
+}
+
+const Building & Map::getBuilding(ID_t id) const {
+    auto it = buildingsIndex_.find(id);
+    if ( it != end(buildingsIndex_) ) {
+        return buildings_[it->second];
+    }
+    throw std::runtime_error("Building id not valid.\n");
+}
+
 void Map::removePerson(ID_t id) {
     auto it = peopleIndex_.find(id);
     if ( it != end(peopleIndex_) ) {
@@ -124,9 +163,9 @@ void Map::removePerson(ID_t id) {
         peopleIndex_[people_[index].getId()] = index;
         // Remove old guy index
         peopleIndex_.erase(it);
-        return;
     }
-    throw std::runtime_error("Person id not valid.\n");
+    else
+        throw std::runtime_error("Person id not valid.\n");
 }
 
 void Map::removeItem(ID_t id) {
@@ -143,9 +182,39 @@ void Map::removeItem(ID_t id) {
         itemsIndex_[items_[index].getId()] = index;
         // Remove old guy index
         itemsIndex_.erase(it);
-        return;
     }
-    throw std::runtime_error("Item id not valid.\n");
+    else
+        throw std::runtime_error("Item id not valid.\n");
+}
+
+void Map::removeBuilding(ID_t id) {
+    auto it = buildingsIndex_.find(id);
+    if ( it != end(buildingsIndex_) ) {
+        auto index = it->second;
+        unapplyEntityFromGrid(buildings_[index]);
+        // Efficient removal
+        if ( buildings_.size() > 1 )
+            std::swap(buildings_[index], buildings_.back());
+        buildings_.pop_back();
+
+        // Update other guy index
+        buildingsIndex_[buildings_[index].getId()] = index;
+        // Remove old guy index
+        buildingsIndex_.erase(it);
+    }
+    else
+        throw std::runtime_error("Building id not valid.\n");
+}
+
+void Map::stashItem(ID_t id) {
+    auto it = itemsIndex_.find(id);
+    if ( it != end(itemsIndex_) ) {
+        auto index = it->second;
+        unapplyEntityFromGrid(items_[index]);
+        items_[index].getOwnSprite().setToRender(false);
+    }
+    else
+        throw std::runtime_error("Item id not valid.\n");
 }
 
 // This function updates tile links, it is called only when we are actually
@@ -157,21 +226,37 @@ void Map::setEntityPosition(Entity & e, Position p) {
 }
 
 bool Map::isThereFood() const {
+    return isThereItem(ItemType::FOOD);
+}
+
+bool Map::isThereWood() const {
+    return isThereItem(ItemType::WOOD);
+}
+
+bool Map::isThereItem(ItemType type) const {
     for ( auto & i : items_ )
-        if ( i.getType() == ItemType::FOOD && ! i.isLocked() ) 
+        if ( i.getType() == type && ! i.isLocked() ) 
             return true;
 
     return false;
 }
 
 const Item & Map::getNearestFood(Position p) const {
+    return getNearestItem(ItemType::FOOD, p);
+}
+
+const Item & Map::getNearestWood(Position p) const {
+    return getNearestItem(ItemType::WOOD, p);
+}
+
+const Item & Map::getNearestItem(ItemType type, Position p) const {
     int it = -1;
     Distance distance;
 
     for ( size_t i = 0; i < items_.size(); i++ ) {
         const Item & item = items_[i];
 
-        if ( item.getType() == ItemType::FOOD && ! item.isLocked() ) {
+        if ( item.getType() == type && ! item.isLocked() ) {
             Distance distanceDiff = p - item.getPosition();
 
             if ( it == -1 || distance > distanceDiff ) {
@@ -183,14 +268,23 @@ const Item & Map::getNearestFood(Position p) const {
 
     return items_[it];
 }
+
 const Item & Map::getNearestFood(Position p, ID_t id) const {
+    return getNearestItem(ItemType::FOOD, p, id);
+}
+
+const Item & Map::getNearestWood(Position p, ID_t id) const {
+    return getNearestItem(ItemType::WOOD, p, id);
+}
+
+const Item & Map::getNearestItem(ItemType type, Position p, ID_t id) const {
     int it = -1;
     Distance distance;
 
     for ( size_t i = 0; i < items_.size(); i++ ) {
         const Item & item = items_[i];
 
-        if ( item.getType() == ItemType::FOOD && ( ! item.isLocked() || item.getId() == id ) ) {
+        if ( item.getType() == type && ( ! item.isLocked() || item.getId() == id ) ) {
             Distance distanceDiff = p - item.getPosition();
 
             if ( it == -1 || distance > distanceDiff ) {

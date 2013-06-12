@@ -5,13 +5,13 @@
 #include <SFML/Graphics.hpp>
 
 namespace Graphics {
-    const sf::Texture & getTexture(std::string textureString) {
+    const sf::Texture & getTexture(std::string textureString, bool smoothing) {
         static std::unordered_map<std::string, sf::Texture> textures_;
 
         // If we don't have it
         if ( textures_.find(textureString) == textures_.end() ) {
             sf::Texture t;
-            t.setSmooth(true); 
+            t.setSmooth(smoothing); 
             if ( ! t.loadFromFile(textureString) ) throw std::runtime_error("Failed to load the requested texture: "+textureString);
 
             textures_[textureString] = t;
