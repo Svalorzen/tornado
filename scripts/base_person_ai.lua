@@ -3,10 +3,8 @@ function base_person_ai()
     -- load id
     local myId = entityHub:getId();
     -- load memory
-    print ( "loading memory" );
     local myMem = memory[myId];
     if ( myMem == nil ) then
-        print ( "No old memory" );
         myMem = {}
     end
 
@@ -17,7 +15,6 @@ function base_person_ai()
     end
 
     -- base action
-    print ( "Setting base action" );
     local result = {}
     result["type"] = "none"
     

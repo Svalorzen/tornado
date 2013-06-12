@@ -15,7 +15,6 @@ LuaAction::LuaAction(const Diluculum::LuaValueList & in) : ownMap_(nullptr) {}
 LuaAction::LuaAction(const Map * m, const Thinkable * p) : ownMap_(m), ownEntity_(p), ownAction_(p->getId()) {}
 
 Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in) {
-    std::cout << "Setting action\n";
     // CHECK IF WE ARE PASSING AN EMPTY LIST
     if ( in.size() == 0 || in[0] == Diluculum::Nil || in[0].type() != LUA_TTABLE ) {
         throw Diluculum::LuaTypeError("ERROR: Wrong type of info passed");
@@ -38,10 +37,8 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
         ownAction_.setActionType(ActionType::PICK_UP);
         if ( action["target"].asString() == "food" ) {
             // This maybe works for things other than wood
-            std::cout << "Setting target...\n";
             auto & target = ownMap_->getItem(static_cast<ID_t>(action["targetId"].asNumber()));
             ownAction_.setTarget(target);
-            std::cout << "Target set.\n";
         }
         // Last case in which we have no idea what to target
         else {

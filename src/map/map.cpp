@@ -21,8 +21,8 @@ Map::Map(int x, int y) {
 
     for ( int i = 0; i < y; i++ ) {
         for ( int j = 0; j < x; j++) {
-            dummy.emplace_back(texture);
-            dummy.back().setPosition(j*Graphics::TILE_EDGE_SIZE, i*Graphics::TILE_EDGE_SIZE);
+            dummy.emplace_back(AnimatedSprite(texture));
+            dummy.back().getOwnSprite().setPosition(j*Graphics::TILE_EDGE_SIZE, i*Graphics::TILE_EDGE_SIZE);
         }
         grid_.push_back(dummy);
         dummy.clear();
@@ -42,7 +42,7 @@ std::vector<Person> & Map::getPeople() {
 void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     for ( auto & row : grid_ )
         for (auto & cell : row ) 
-            window.draw(cell);
+            window.draw(cell.getOwnSprite());
     
     for ( auto & i : items_ ) {
         window.draw(i.getOwnSprite());
@@ -207,8 +207,11 @@ void Map::unapplyEntityFromGrid(const Entity& e) {
     std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
     
     for ( auto & p : initialTiles ) {
+        // This is because applying an area could go outside the map ( maybe hotness of fire )
+        // and in general I guess we want to go on. We should check beforehand if this is important
+        // ( e.g. when building houses )
         try {
-            grid_.at(p.getX()).at(p.getY()).rmEntity(&e); 
+            grid_.at(p.getX()).at(p.getY()).rmEntity(e); 
         } catch(...){}
     }
 }
@@ -218,7 +221,7 @@ void Map::applyEntityToGrid(const Entity& e) {
     
     for ( auto & p : finalTiles ) {
         try {
-            grid_.at(p.getX()).at(p.getY()).addEntity(&e); 
+            grid_.at(p.getX()).at(p.getY()).addEntity(e); 
         } catch(...) {}
     }
 }
