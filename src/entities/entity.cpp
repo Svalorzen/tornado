@@ -5,14 +5,14 @@
 
 #include <iostream>
 
-long long unsigned Entity::idCreator_ = 0u;
+ID_t Entity::idCreator_ = 0u;
 
 Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
     idCreator_++;    
 }
 Entity::Entity(const Area& a, bool s, const AnimatedSprite& spr) : Entity({0,0}, a,s,spr) {}
 
-int Entity::getId() const {
+ID_t Entity::getId() const {
     return id_;
 }
 
@@ -59,7 +59,7 @@ const AnimatedSprite & Entity::getOwnSprite() const {
 
 void Entity::refresh() {
     ownSprite_.setPosition( (float)position_.getX()*Graphics::TILE_EDGE_SIZE, 
-                            (float)position_.getY()*Graphics::TILE_EDGE_SIZE);
+                            (float)(position_.getY()-area_.getMaxH()+1)*Graphics::TILE_EDGE_SIZE);
     ownSprite_.resize(      area_.getMaxW()*Graphics::TILE_EDGE_SIZE,
                             area_.getMaxH()*Graphics::TILE_EDGE_SIZE);
 
@@ -71,5 +71,13 @@ void Entity::graphicalUpdate(unsigned msLapsed) {
     // here we are simply visualizing the transition.
     float stepPercentage = 1.0f - (float)msLapsed / Core::MS_PER_UPDATE;
     ownSprite_.setPosition( ((float)position_.getX()-stepPercentage*stepDiff_.getDiffXi())*Graphics::TILE_EDGE_SIZE, 
-                            ((float)position_.getY()-stepPercentage*stepDiff_.getDiffYi())*Graphics::TILE_EDGE_SIZE);
+                            ((float)(position_.getY()-area_.getMaxH()+1)-stepPercentage*stepDiff_.getDiffYi())*Graphics::TILE_EDGE_SIZE);
+}
+
+std::vector<ID_t> & Entity::getInventory() {
+    return inventory_;
+}
+
+const std::vector<ID_t> & Entity::getInventory() const {
+    return inventory_;
 }

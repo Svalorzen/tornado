@@ -14,63 +14,109 @@
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
 void GameEngine::runStep() {
-    std::vector<std::pair<Action, Person&>> actions;
-
     auto & people = ownMap_.getPeople();
 
-    AI ai;
+    AI& ai = AI::getInstance();
 
     auto cpm = const_cast<const Map *>( & ownMap_ );
     LuaMap lm(cpm);
 
+    // FIXME: This for needs to become a while calling a resolver function onto a person;
     for ( auto & p : people ) {
-        auto cpp = const_cast<const Person*>( &p );
-        
-        LuaPerson lp(cpp);
-        LuaAction la(cpm, cpp);
-
-        actions.emplace_back(ai.basePerson(lm, lp, la), p);
         // Set people so that graphically they are actually in the square they had to go previous turn,
         // so that there shouldn't be circular turns
         p.refresh();
-    }
 
-    for ( auto & a : actions ) {
+        // Build constant person pointer
+        auto cpp = const_cast<const Person*>( &p );
+        // Create Lua wrappers 
+        LuaPerson lp(cpp);
+        LuaAction la(cpm, cpp);
+        // Run Lua AI
+        auto action = ai.basePerson(lm, lp, la);
+        
         // We may resolve more than one action at a time, so this checks that
-        if ( ! a.first.isResolved() ) {
-            switch( a.first.getActionType() ) {
-                case ActionType::PICK_UP: {
-                    if ( a.second.getPosition() == a.first.getTargetPosition() ) {
-                        ownMap_.removeItem(a.first.getEntityBox());
-                        //for ( auto it = begin(items_) ; it != end(items_); it ++ ) {
-                        //    if ( &(*it) == a.getTargetEntity() ) {
-                        //        std::cout << "DELETED!!\n";
-                        //        items_.erase(it);
-                        //        break;
-                        //    }
-                        //}
-
-                        break;
-                    }
-                // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
+        switch( action.getActionType() ) {
+            case ActionType::PICK_UP: {
+                auto & target = ownMap_.getItem(action.getTargetId());
+                // If we are not the ones locking, something weird is going on..
+                if ( target.isLocked() ) {
+                    if ( p.getId() != target.getLocker() )
+                        throw std::runtime_error("Picking locked item.\n");
                 }
-                case ActionType::MOVE_TO: {
-                    auto nextMove = computeSingleMove(a.second, a.first.getTargetPosition()); 
-                    // Here there should probably be a check verifying that target position is walkable in the
-                    // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
-                    ownMap_.setEntityPosition(a.second, nextMove);
+                else {
+                    // Free old target
+                    if ( p.isLocking() )
+                        // FIXME: This probably will need to change (not only item are targets..)
+                        ownMap_.getItem(p.getLocked()).unlock();
+
+                    target.lock(p.getId());
+                    p.lock(target.getId());
+                }
+                if ( p.getPosition() == action.getTargetPosition() ) {
+                    ownMap_.stashItem(target.getId());
+                    p.getInventory().push_back(target.getId());
+                    p.unlock();
+                    p.setResult(action);
                     break;
                 }
-                case ActionType::BUILD: {
-                    Position buildPos((a.second.getPosition().getX() + 1), a.second.getPosition().getY());
+                goto MOVE_TO_LABEL;
+            }
+            case ActionType::BUILD: {
+                bool buildHouse = false;
+                {
+                    constexpr unsigned HOUSE_COST = 5; 
+                    auto & inv = p.getInventory();
+                    size_t j = inv.size();
+                
+                    for ( size_t i = 0 ; i < j; /* NO! i++ */ ) {
+                        if ( ownMap_.getItem(inv[i]).getType() == ItemType::WOOD ) {
+                            j--;
+                            std::swap(inv[i],inv[j]);
+                            if ( inv.size() - j >= HOUSE_COST ) {
+                                buildHouse = true;
+                                break;
+                            }
+                        }
+                        else i++;
+                    }
+
+                    if ( buildHouse ) {
+                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--)
+                            ownMap_.removeItem(inv[i]);
+                        inv.erase(end(inv) - HOUSE_COST, end(inv));
+                    }
+                }
+
+                if ( buildHouse ) {
+                    Position buildPos((p.getPosition().getX() + 1), p.getPosition().getY());
                     Area buildArea({"11","11"});
                     ownMap_.addBuilding(buildPos, buildArea, BuildingType::HOUSE);
-                    break;
+                    p.setResult(action);
                 }
-                case ActionType::NONE: {
-                    break;
-                }
-                default: std::cout << "No code specified for this type of action: "<<(int)a.first.getActionType()<<"\n" ;
+                else
+                    p.setResult(Action());
+                
+                break;
+            }
+            case ActionType::MOVE_TO: {
+                MOVE_TO_LABEL: 
+                auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
+                // Here there should probably be a check verifying that target position is walkable in the
+                // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
+                // IF ( NOT WALKABLE && ENDPOINT.HAS_ENTITY ) {
+                //     RESOLVE(PICK_ENTITY_ON_ENDPOINT)
+                // }
+                // ELSE {
+                    ownMap_.setEntityPosition(p, nextMove);
+                    Action actualAction(p.getId(), ActionType::MOVE_TO, nextMove);
+                    p.setResult(actualAction);
+                // }
+                
+                break;
+            }
+            default: {
+                p.setResult(Action());
             }
         }
     }

@@ -54,3 +54,28 @@ Diluculum::LuaValueList LuaPerson::getId(const Diluculum::LuaValueList &) {
 
     return list;
 }
+
+Diluculum::LuaValueList LuaPerson::getResult(const Diluculum::LuaValueList &) {
+    Diluculum::LuaValueList out;
+
+    auto & result = ownPerson_->getResult();
+
+    Diluculum::LuaValueMap map;
+
+    // Here we report the results of our last move
+    switch ( result.getActionType() ) {
+        case ActionType::PICK_UP:
+            map["type"] = "pick_up";
+            map["targetId"] = result.getTargetId();
+            break;
+        case ActionType::MOVE_TO:
+            map["type"] = "move_to";
+            break;
+        default:
+            map["type"] = "none";
+    }
+
+    out.push_back(map);
+
+    return out;
+}

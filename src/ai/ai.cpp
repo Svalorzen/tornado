@@ -20,10 +20,13 @@ DILUCULUM_END_CLASS(LuaAction)
 DILUCULUM_BEGIN_CLASS(LuaMap)
     DILUCULUM_CLASS_METHOD(LuaMap, isThereFood)
     DILUCULUM_CLASS_METHOD(LuaMap, isThereWood)
+    DILUCULUM_CLASS_METHOD(LuaMap, getNearestFood)
+    DILUCULUM_CLASS_METHOD(LuaMap, getNearestWood)
 DILUCULUM_END_CLASS(LuaMap)
 
 // Lua class declaration
 DILUCULUM_BEGIN_CLASS(LuaPerson)
+    DILUCULUM_CLASS_METHOD(LuaPerson, getResult)
     DILUCULUM_CLASS_METHOD(LuaPerson, getNeeds)
     DILUCULUM_CLASS_METHOD(LuaPerson, isMale)
     DILUCULUM_CLASS_METHOD(LuaPerson, getId)
@@ -34,6 +37,14 @@ AI::AI() {
     DILUCULUM_REGISTER_CLASS(state_["LuaAction"], LuaAction);
     DILUCULUM_REGISTER_CLASS(state_["LuaMap"], LuaMap);
     DILUCULUM_REGISTER_CLASS(state_["LuaPerson"], LuaPerson);
+
+    // Register memory variable
+    state_.doString("memory = {};");
+}
+
+AI& AI::getInstance() {
+    static AI ai;
+    return ai;
 }
 
 Diluculum::LuaValue AI::getLuaValue(std::string valueName, std::string fileName) {

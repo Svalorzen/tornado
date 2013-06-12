@@ -12,14 +12,19 @@ class Action;
 
 class AI {
     public:
-        AI();
         static constexpr char mapHubName[]     = "mapHub"; 
         static constexpr char entityHubName[]  = "entityHub"; 
         static constexpr char actionHubName[]  = "actionHub";
 
+        static AI & getInstance();
+
         Action basePerson(LuaMap &, LuaPerson &, LuaAction &);
     private:
         Diluculum::LuaValue getLuaValue(std::string, std::string);
+
+        AI();
+        AI(const AI &) = delete;
+        AI & operator=(const AI&) = delete;
         
         Diluculum::LuaState state_;
 };

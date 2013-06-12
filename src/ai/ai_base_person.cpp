@@ -8,7 +8,7 @@
 #include <ai/lua/lua_action.hpp>
 
 Action AI::basePerson(LuaMap & m, LuaPerson & p, LuaAction & a) {
-    auto ai = getLuaValue("base_person_ai", "base_person_ai.lua"); 
+    auto ai = getLuaValue("base_person_ai", "scripts/base_person_ai.lua"); 
 
     if ( ai.type() != LUA_TFUNCTION )
         throw Diluculum::LuaRunTimeError("Couldn't load ai function.");

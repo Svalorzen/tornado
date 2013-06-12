@@ -5,7 +5,6 @@
 
 Item::Item(ItemType t) :
     Entity({"1"}, false, AnimatedSprite()),
-    locked_(false),
     type_(t) {
 
     if ( t == ItemType::FOOD )
@@ -21,14 +20,6 @@ void Item::setType(ItemType t) {
 
 ItemType Item::getType() const {
     return type_;
-}
-
-void Item::setLocked(bool b) {
-    locked_ = b;
-}
-
-bool Item::isLocked() const {
-    return locked_;
 }
 
 void Item::stepUpdate() {

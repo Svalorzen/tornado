@@ -8,3 +8,11 @@ void AnimatedSprite::resize(int width, int height) {
     sf::FloatRect self = Sprite::getLocalBounds();
     Sprite::setScale((float)(width/self.width), (float)(height/self.height));
 }
+
+bool AnimatedSprite::getToRender() {
+    return toRender_;
+}
+
+void AnimatedSprite::setToRender(bool b) {
+    toRender_ = b;
+}

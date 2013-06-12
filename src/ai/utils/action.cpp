@@ -2,14 +2,15 @@
 
 #include <entities/entity.hpp>
 
-Action::Action(ActionType t) : at_(t) {} 
-Action::Action(ActionType t, Position p) : at_(t), targetPosition_(p) {} 
-Action::Action(ActionType t, EntityBox te) :
+Action::Action() : Action(0) {}
+Action::Action(ID_t a) : Action(a, ActionType::NONE) {}
+Action::Action(ID_t a, ActionType t) : at_(t), actorEntity_(a) {} 
+Action::Action(ID_t a, ActionType t, Position p) : at_(t), targetPosition_(p), actorEntity_(a) {} 
+Action::Action(ID_t a, ActionType t, ID_t tr, Position p ) :
         at_(t),
-        targetPosition_(te.getEntity()->getPosition()),
-        targetEntity_(te){} 
-
-Action::Action() : Action(ActionType::NONE) {}
+        targetPosition_(p),
+        actorEntity_(a),
+        targetEntity_(tr){} 
 
 // #############
 void Action::setResolved(bool r) {
@@ -36,12 +37,23 @@ Position Action::getTargetPosition() const {
     return targetPosition_;
 }
 // #############
-void Action::setEntityBox(EntityBox e) {
-    targetEntity_ = e;
-    targetPosition_ = targetEntity_.getEntity()->getPosition();
+void Action::setActorId(ID_t id) {
+    actorEntity_ = id;
 }
 
-const EntityBox Action::getEntityBox() const {
+ID_t Action::getActorId() const {
+    return actorEntity_;
+}
+// #############
+void Action::setTargetId(ID_t id) {
+    targetEntity_ = id;
+}
+
+ID_t Action::getTargetId() const {
     return targetEntity_;
 }
-
+// #############
+void Action::setTarget(const Entity & e) {
+    targetEntity_ = e.getId();
+    targetPosition_ = e.getPosition();
+}

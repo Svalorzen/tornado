@@ -9,6 +9,8 @@ class LuaPerson {
         LuaPerson(const Person *);
         LuaPerson(const Diluculum::LuaValueList &);
 
+        Diluculum::LuaValueList getResult(const Diluculum::LuaValueList &);
+
         Diluculum::LuaValueList getNeeds(const Diluculum::LuaValueList &);
         Diluculum::LuaValueList getId(const Diluculum::LuaValueList &);
 

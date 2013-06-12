@@ -2,26 +2,23 @@
 #define ITEM_HEADER_FILE
 
 #include <entities/entity.hpp>
+#include <entities/utils/lockable.hpp>
 
 enum class ItemType {
     FOOD,
     WOOD
 };
 
-class Item : public Entity {
+class Item : public Entity, public Lockable {
     public:
         Item(ItemType);        
 
         void setType(ItemType);
         ItemType getType() const;
 
-        void setLocked(bool);
-        bool isLocked() const;
-
         virtual void stepUpdate();
 
     private:
-        bool locked_;
         ItemType type_;
 };
 

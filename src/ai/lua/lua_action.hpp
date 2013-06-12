@@ -5,12 +5,13 @@
 
 class Map;
 class Person;
+class Thinkable;
 #include <Diluculum/LuaValue.hpp>
 
 class LuaAction {
     public:
         LuaAction(const Diluculum::LuaValueList &);
-        LuaAction(const Map * , const Entity *);
+        LuaAction(const Map * , const Thinkable *);
 
         Diluculum::LuaValueList setAction(const Diluculum::LuaValueList&);
 
@@ -18,9 +19,8 @@ class LuaAction {
 
     private:
         const Map * ownMap_;
-        const Entity * ownEntity_;
+        const Thinkable * ownEntity_;
         Action ownAction_;      
-        
 };
 
 
