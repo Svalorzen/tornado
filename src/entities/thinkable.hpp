@@ -10,11 +10,11 @@ class Thinkable : public Entity, public Locker {
     public:
         using Entity::Entity;
 
-        void setLastAction(Action);
-        Action getLastAction() const;
+        void setResult(Action);
+        const Action & getResult() const;
 
     private:
-        Action lastAction_;
+        Action result_;
 };
 
 #endif

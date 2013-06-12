@@ -10,6 +10,12 @@ function base_person_ai()
         myMem = {}
     end
 
+    -- checking old action with result
+    local result = entityHub:getResult();
+    if result["action"] == myMem["type"] then
+        myMem = {}
+    end
+
     -- base action
     print ( "Setting base action" );
     local result = {}
@@ -17,48 +23,25 @@ function base_person_ai()
     
     -- try to eat food
     if mapHub:isThereFood() then
-        print( "There is food" );
         result["type"] = "pick_up"
         result["target"] = "food"
         if myMem["target"] ~= "food" then
-            print( "No old target, try get food");
             result["targetId"] = mapHub:getNearestFood(myId);
-            if result["targetId"] == nil then
-                print "WTF NO ID";
-            else
-                print ("FOOD ID IS "..result["targetId"]);
-            end
         else
-            print( "We have old target, try get food");
             result["targetId"] = mapHub:getNearestFood(myId, myMem["targetId"]); 
         end
-        print ( "Saving food result" );
-        myMem["target"] = "food";
-        myMem["targetId"] = result["targetId"];
     else
         if myMem["target"] == "food" then
-            print ("We have old results");
             result["type"] = "pick_up"
             result["target"] = "food"
             result["targetId"] = myMem["targetId"];
-            if result["targetId"] == nil then
-                print "WTF NO ID";
-            else
-                print ("FOOD ID IS "..result["targetId"]);
-            end
         end
     end
 
+    myMem = result;
     -- if mapHub:isThereFood() && mapHub:getNearestFood(myOldFood);
     ---
 
-    if result["target"] == "food" then
-        if result["targetId"] == nil then
-            print "WTF NO ID";
-        else
-            print ("FOOD ID IS "..result["targetId"]);
-        end
-    end
     -- print(entityHub:getId())
 
     memory[entityHub:getId()] = myMem;

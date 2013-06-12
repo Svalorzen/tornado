@@ -1,9 +1,9 @@
 #include "thinkable.hpp"
 
-void Thinkable::setLastAction(Action a) {
-    lastAction_ = a;
+void Thinkable::setResult(Action a) {
+    result_ = a;
 }
 
-Action Thinkable::getLastAction() const {
-    return lastAction_;
+const Action & Thinkable::getResult() const {
+    return result_;
 }

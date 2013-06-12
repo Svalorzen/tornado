@@ -56,6 +56,7 @@ void GameEngine::runStep() {
                 if ( p.getPosition() == action.getTargetPosition() ) {
                     ownMap_.removeItem(action.getTargetId());
                     p.unlock();
+                    p.setResult(action);
                     break;
                 }
             // FALL THROUGH IF THEY ARE NOT IN THE SAME POSITION
@@ -69,14 +70,15 @@ void GameEngine::runStep() {
                 // }
                 // ELSE {
                     ownMap_.setEntityPosition(p, nextMove);
+                    Action actualAction(p.getId(), ActionType::MOVE_TO, nextMove);
+                    p.setResult(actualAction);
                 // }
                 
                 break;
             }
-            case ActionType::NONE: {
-                break;
+            default: {
+                p.setResult(Action());
             }
-            default: std::cout << "No code specified for this type of action: "<<(int)action.getActionType()<<"\n" ;
         }
     }
 }

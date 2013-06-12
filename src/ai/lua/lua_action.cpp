@@ -58,9 +58,7 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     
     } else if ( action["type"].asString() == "shelter" ) {     // FIND SHELTER
         ownAction_.setActionType(ActionType::SHELTER);
-    } else if ( action["type"].asString() == "last" ) {
-        ownAction_ = ownEntity_->getLastAction();
-    }
+    } 
     // else if type none .... nothing to do!
 
     return Diluculum::LuaValueList();

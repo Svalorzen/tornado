@@ -24,6 +24,7 @@ DILUCULUM_END_CLASS(LuaMap)
 
 // Lua class declaration
 DILUCULUM_BEGIN_CLASS(LuaPerson)
+    DILUCULUM_CLASS_METHOD(LuaPerson, getResult)
     DILUCULUM_CLASS_METHOD(LuaPerson, getNeeds)
     DILUCULUM_CLASS_METHOD(LuaPerson, isMale)
     DILUCULUM_CLASS_METHOD(LuaPerson, getId)
