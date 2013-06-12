@@ -19,7 +19,7 @@ Person::Person(bool isMale) :
 
 void Person::stepUpdate() {
     for ( size_t i = 0; i < NEEDS_NUM; i++ ) {
-        needs_[i] -= 1;     
+        needs_[i] -= 1000;     
         if ( needs_[i] == 0 ) {
             // DEATH
         }

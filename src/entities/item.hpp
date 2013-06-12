@@ -4,7 +4,8 @@
 #include <entities/entity.hpp>
 
 enum class ItemType {
-    FOOD
+    FOOD,
+    WOOD
 };
 
 class Item : public Entity {

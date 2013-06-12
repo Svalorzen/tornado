@@ -3,12 +3,23 @@
 
 #include <entities/entity.hpp>
 
+enum class BuildingType {
+    HOUSE
+};
+
 class Area;
 
 class Building : public Entity {
     public:
-        Building(Area);
+        Building(Area, BuildingType);
         virtual void stepUpdate();
+   
+        BuildingType getType();
+
+    private:
+
+        BuildingType type_;
+
 };
 
 #endif

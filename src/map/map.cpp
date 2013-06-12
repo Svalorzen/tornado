@@ -14,7 +14,7 @@
 
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
-    const sf::Texture & texture = Graphics::getTexture("src/resources/green.png");
+    const sf::Texture & texture = Graphics::getTexture("src/resources/green.png", false);
 
     std::vector<Tile> dummy;
     // Reserve space in advance
@@ -53,6 +53,11 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
         window.draw(p.getOwnSprite());
         p.graphicalUpdate(elapsedMs);
     }
+    for ( auto & b : buildings_ ) {
+        window.draw(b.getOwnSprite());
+        b.graphicalUpdate(elapsedMs);
+    }
+
 }
 
 void Map::addPerson(Position pos) {
@@ -71,8 +76,8 @@ void Map::removePerson(EntityBox b) {
     people_.erase(begin(people_)+i);
 }
 
-void Map::addItem(Position pos) {
-    items_.emplace_back(ItemType::FOOD);
+void Map::addItem(Position pos, ItemType type) {
+    items_.emplace_back(type);
     Item & i = items_.back();
 
     setEntityPosition(i, pos);
@@ -83,6 +88,20 @@ void Map::removeItem(EntityBox b) {
     size_t i = b.getEntityIndex();
     unapplyEntityFromGrid(items_[i]);
     items_.erase(begin(items_)+i);
+}
+
+void Map::addBuilding(Position pos, Area a, BuildingType type) {
+    buildings_.emplace_back(a,type);
+    Building & b = buildings_.back();
+
+    setEntityPosition(b, pos);
+    b.refresh();
+}
+
+void Map::removeBuilding(EntityBox b) {
+    size_t i = b.getEntityIndex();
+    unapplyEntityFromGrid(buildings_[i]);
+    buildings_.erase(begin(buildings_)+i);
 }
 
 // This function updates tile links, it is called only when we are actually
@@ -109,6 +128,34 @@ EntityBox Map::getNearestFood(Position p) const {
         const Item & item = items_[i];
 
         if ( item.getType() == ItemType::FOOD && ! item.isLocked() ) {
+            Distance distanceDiff = p - item.getPosition();
+
+            if ( it == -1 || distance > distanceDiff ) {
+                it = i;
+                distance = distanceDiff;
+            }
+        }
+    }
+
+    return EntityBox(items_[it], static_cast<size_t>(it));
+}
+
+bool Map::isThereWood() const {
+    for ( auto & i : items_ )
+        if ( i.getType() == ItemType::WOOD && ! i.isLocked() ) 
+            return true;
+
+    return false;
+}
+
+EntityBox Map::getNearestWood(Position p) const {
+    int it = -1;
+    Distance distance;
+
+    for ( size_t i = 0; i < items_.size(); i++ ) {
+        const Item & item = items_[i];
+
+        if ( item.getType() == ItemType::WOOD && ! item.isLocked() ) {
             Distance distanceDiff = p - item.getPosition();
 
             if ( it == -1 || distance > distanceDiff ) {

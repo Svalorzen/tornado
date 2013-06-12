@@ -14,6 +14,7 @@
 namespace sf { class Texture; class RenderWindow; }
 class EntityBox;
 class Position;
+class Area;
 
 class Map {
     public:
@@ -23,18 +24,22 @@ class Map {
 
         std::vector<Person> & getPeople();
 
-        void addItem(Position);
+        void addItem(Position, ItemType);
         void addPerson(Position);
+        void addBuilding(Position, Area, BuildingType);
 
         void removeItem(EntityBox);
         void removePerson(EntityBox);
+        void removeBuilding(EntityBox);
 
         // This function sets an entity on the map and updates eventual grid properties
         void setEntityPosition(Entity &, Position);
 
         bool isThereFood() const;
+        bool isThereWood() const;
         // Can return nullptr if there's no food!
         EntityBox getNearestFood(Position) const;
+        EntityBox getNearestWood(Position) const;
 
     private:
         // Randoms for this map

@@ -34,10 +34,12 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
         ownAction_.setActionType(ActionType::MOVE_TO);
         ownAction_.setTargetPosition(targetPos);
     
-    } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP - Find a way to put Entity position
+    } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP
         ownAction_.setActionType(ActionType::PICK_UP);
         if ( action["target"].asString() == "food" ) {
             ownAction_.setEntityBox(ownMap_->getNearestFood(ownEntity_->getPosition()));
+        } else if ( action["target"].asString() == "wood" ) {
+            ownAction_.setEntityBox(ownMap_->getNearestWood(ownEntity_->getPosition()));
         }
 
 
@@ -52,6 +54,9 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     
     } else if ( action["type"].asString() == "shelter" ) {     // FIND SHELTER
         ownAction_.setActionType(ActionType::SHELTER);
+
+    } else if ( action["type"].asString() == "build" ) {
+        ownAction_.setActionType(ActionType::BUILD);
     }
     // else if type none .... nothing to do!
 

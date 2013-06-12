@@ -13,9 +13,24 @@ Diluculum::LuaValueList LuaPerson::getNeeds(const Diluculum::LuaValueList &) {
     for ( size_t i = 0; i < size_of(Person::NEEDS); i++ ) {
         size_t j = 0;
         while ( j < size_of(Person::NEED_PRIORITIES) &&
-                n[i] > Person::NEED_PRIORITIES[j] ) j++;
-
-        map[Person::NEEDS[i].name] = j;
+                n[i] >= Person::NEED_PRIORITIES[j] ) j++;
+   
+        switch(j) {
+            case 0:
+                map[Person::NEEDS[i].name] = "verylow";
+                break;
+            case 1:
+                map[Person::NEEDS[i].name] = "low";
+                break;
+            case 2:
+                map[Person::NEEDS[i].name] = "normal";
+                break;
+            case 3:
+                map[Person::NEEDS[i].name] = "max";
+                break;
+            default:
+                break;
+        }
     }
 
     Diluculum::LuaValueList list;

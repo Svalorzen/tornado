@@ -35,9 +35,11 @@ class Person : public Entity {
         const std::array<unsigned,NEEDS_NUM> & getNeeds() const;
 
         virtual void stepUpdate();
+
     private:
         bool male_;
         std::array<unsigned,NEEDS_NUM> needs_;
+
 };
 
 #endif

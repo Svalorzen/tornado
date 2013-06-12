@@ -16,6 +16,8 @@ int main() {
     Map map(100,100);
     GameEngine engine(map);
 
+    ItemType currentItemType = ItemType::FOOD;
+
     sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!");
     window.setFramerateLimit(Graphics::FPS);
 
@@ -39,8 +41,17 @@ int main() {
             else if ( event.type == sf::Event::MouseButtonPressed ) {
                 auto realCoords = window.mapPixelToCoords( {event.mouseButton.x, event.mouseButton.y} );
                 map.addItem({static_cast<int>(realCoords.x/Graphics::TILE_EDGE_SIZE),
-                        static_cast<int>(realCoords.y/Graphics::TILE_EDGE_SIZE)});
+                        static_cast<int>(realCoords.y/Graphics::TILE_EDGE_SIZE)}, currentItemType);
             }
+        }
+        // Select Resource Type
+        // Select Food
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+            currentItemType = ItemType::FOOD;
+        }
+        // Select Wood
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+            currentItemType = ItemType::WOOD;
         }
         // View zooming/moving
         // Zoom back
@@ -49,7 +60,7 @@ int main() {
             window.setView(view);
             zoom--;
             
-            movement = 10*pow(3,-tanh(zoom/2.));
+            movement = 15*pow(3,-tanh(zoom/2.));
             
             //if ( zoom < 0 )
             //    movement *= 1.5f;
@@ -62,7 +73,7 @@ int main() {
             window.setView(view);
             zoom++;
             
-            movement = 10*pow(3,-tanh(zoom/2.));
+            movement = 15*pow(3,-tanh(zoom/2.));
             
             //if ( zoom <= 0 )
             //    movement /= 1.5f;

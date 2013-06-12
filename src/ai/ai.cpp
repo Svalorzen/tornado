@@ -19,6 +19,7 @@ DILUCULUM_END_CLASS(LuaAction)
 // Lua class declaration
 DILUCULUM_BEGIN_CLASS(LuaMap)
     DILUCULUM_CLASS_METHOD(LuaMap, isThereFood)
+    DILUCULUM_CLASS_METHOD(LuaMap, isThereWood)
 DILUCULUM_END_CLASS(LuaMap)
 
 // Lua class declaration

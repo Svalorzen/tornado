@@ -11,6 +11,7 @@ class LuaMap {
         LuaMap(const Map *);
 
         Diluculum::LuaValueList isThereFood(const Diluculum::LuaValueList &);
+        Diluculum::LuaValueList isThereWood(const Diluculum::LuaValueList &);
 
     private:
         const Map * ownMap_;

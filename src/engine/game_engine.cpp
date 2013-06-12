@@ -61,6 +61,12 @@ void GameEngine::runStep() {
                     ownMap_.setEntityPosition(a.second, nextMove);
                     break;
                 }
+                case ActionType::BUILD: {
+                    Position buildPos((a.second.getPosition().getX() + 1), a.second.getPosition().getY());
+                    Area buildArea({"11","11"});
+                    ownMap_.addBuilding(buildPos, buildArea, BuildingType::HOUSE);
+                    break;
+                }
                 case ActionType::NONE: {
                     break;
                 }

@@ -15,7 +15,8 @@ enum class ActionType {
     PUT_DOWN,
     EAT,
     SLEEP,
-    SHELTER
+    SHELTER,
+    BUILD
 };
 
 class Action {

@@ -14,3 +14,9 @@ Diluculum::LuaValueList LuaMap::isThereFood(const Diluculum::LuaValueList & in) 
     return a;
 }
 
+Diluculum::LuaValueList LuaMap::isThereWood(const Diluculum::LuaValueList & in) {
+    Diluculum::LuaValueList a;
+    a.push_back(ownMap_->isThereWood());
+    return a;
+}
+
