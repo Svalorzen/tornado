@@ -19,6 +19,7 @@ DILUCULUM_END_CLASS(LuaAction)
 // Lua class declaration
 DILUCULUM_BEGIN_CLASS(LuaMap)
     DILUCULUM_CLASS_METHOD(LuaMap, isThereFood)
+    DILUCULUM_CLASS_METHOD(LuaMap, getNearestFood)
 DILUCULUM_END_CLASS(LuaMap)
 
 // Lua class declaration
@@ -33,6 +34,9 @@ AI::AI() {
     DILUCULUM_REGISTER_CLASS(state_["LuaAction"], LuaAction);
     DILUCULUM_REGISTER_CLASS(state_["LuaMap"], LuaMap);
     DILUCULUM_REGISTER_CLASS(state_["LuaPerson"], LuaPerson);
+
+    // Register memory variable
+    state_.doString("memory = {};");
 }
 
 AI& AI::getInstance() {

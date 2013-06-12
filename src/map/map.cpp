@@ -183,6 +183,25 @@ const Item & Map::getNearestFood(Position p) const {
 
     return items_[it];
 }
+const Item & Map::getNearestFood(Position p, ID_t id) const {
+    int it = -1;
+    Distance distance;
+
+    for ( size_t i = 0; i < items_.size(); i++ ) {
+        const Item & item = items_[i];
+
+        if ( item.getType() == ItemType::FOOD && ( ! item.isLocked() || item.getId() == id ) ) {
+            Distance distanceDiff = p - item.getPosition();
+
+            if ( it == -1 || distance > distanceDiff ) {
+                it = i;
+                distance = distanceDiff;
+            }
+        }
+    }
+
+    return items_[it];
+}
 
 void Map::unapplyEntityFromGrid(const Entity& e) {
     std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());

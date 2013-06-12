@@ -46,6 +46,7 @@ class Map {
         bool isThereFood() const;
         // Can return nullptr if there's no food!
         const Item & getNearestFood(Position) const;
+        const Item & getNearestFood(Position, ID_t) const;
 
     private:
         // Randoms for this map
