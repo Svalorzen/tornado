@@ -15,12 +15,12 @@ class Entity {
         Entity(const Position &, const Area &, bool, const AnimatedSprite &);
 
         void setPosition(const Position &);
-        Position getPosition() const;
+        const Position & getPosition() const;
 
-        Distance getStepDiff() const;
+        const Distance & getStepDiff() const;
 
         void setArea(const Area&);
-        Area getArea() const;
+        const Area & getArea() const;
 
         void setSolid(bool);
         bool isSolid() const;

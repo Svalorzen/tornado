@@ -24,11 +24,11 @@ void Entity::setPosition(const Position& p) {
     position_ = p;
 }
 
-Position Entity::getPosition() const {
+const Position & Entity::getPosition() const {
     return position_;
 }
 
-Distance Entity::getStepDiff() const {
+const Distance & Entity::getStepDiff() const {
     return stepDiff_;
 }
 
@@ -36,7 +36,7 @@ void Entity::setArea(const Area& a) {
     area_ = a;
 }
 
-Area Entity::getArea() const {
+const Area & Entity::getArea() const {
     return area_;
 }
 

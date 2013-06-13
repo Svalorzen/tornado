@@ -66,7 +66,7 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
 
 }
 
-void Map::addPerson(Position pos) {
+Person & Map::addPerson(Position pos) {
     std::uniform_int_distribution<int> distribution(0,1);
     // Randomizes man females
     people_.emplace_back(distribution(generator_));
@@ -77,9 +77,10 @@ void Map::addPerson(Position pos) {
 
     // Save in index
     peopleIndex_[p.getId()] = people_.size() - 1;
+    return p;
 }
 
-void Map::addItem(Position pos, ItemType type) {
+Item & Map::addItem(Position pos, ItemType type) {
     items_.emplace_back(type);
     Item & i = items_.back();
 
@@ -88,9 +89,10 @@ void Map::addItem(Position pos, ItemType type) {
 
     // Save in index
     itemsIndex_[i.getId()] = items_.size() - 1;
+    return i;
 }
 
-void Map::addBuilding(Position pos, Area a, BuildingType type) {
+Building & Map::addBuilding(Position pos, Area a, BuildingType type) {
     buildings_.emplace_back(a,type);
     Building & b = buildings_.back();
 
@@ -99,6 +101,7 @@ void Map::addBuilding(Position pos, Area a, BuildingType type) {
 
     // Save in index
     buildingsIndex_[b.getId()] = buildings_.size() - 1;
+    return b;
 }
 
 Person & Map::getPerson(ID_t id) {
@@ -319,3 +322,10 @@ void Map::applyEntityToGrid(const Entity& e) {
         } catch(...) {}
     }
 }
+
+/*Position Map::findBuildSpot(const Entity& e) {
+    auto & area = e.getArea();  
+
+    
+
+}*/

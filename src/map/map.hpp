@@ -36,9 +36,9 @@ class Map {
         Building & getBuilding(ID_t);
         const Building & getBuilding(ID_t) const;
         
-        void addItem(Position, ItemType);
-        void addPerson(Position);
-        void addBuilding(Position, Area, BuildingType);
+        Item & addItem(Position, ItemType);
+        Person & addPerson(Position);
+        Building & addBuilding(Position, Area, BuildingType);
 
         void removeItem(ID_t);
         void removePerson(ID_t);
