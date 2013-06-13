@@ -86,7 +86,7 @@ std::vector<Position> Area::applyArea(const Position & p) const {
     for ( unsigned i = 0; i < getMaxH(); i++ )
         for ( unsigned j = 0; j < getMaxW(); j++ )
             if ( area_[i][j] )
-                positions.push_back(p + Distance(-i, j));
+                positions.push_back(p + Distance(j, -i));
 
     return positions;
 }

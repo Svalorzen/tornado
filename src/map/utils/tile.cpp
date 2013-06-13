@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <entities/entity.hpp>
 
+#include <graphics/textures.hpp>
+
 Tile::Tile(AnimatedSprite spr) : ownSprite_(spr) , walkable_(true) {}
 
 bool Tile::isWalkable() const {
@@ -11,7 +13,17 @@ bool Tile::isWalkable() const {
 
 void Tile::addEntity(const Entity & e) {
     aboveEntities_.emplace_back(e.getId(), e.isSolid());
-    walkable_ |= e.isSolid();
+    walkable_ &= !e.isSolid();
+
+    // DEBUG
+    if ( aboveEntities_.size() == 0 ) {
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/green.png"));
+    }
+    else if ( walkable_ ) {
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/yellow.png"));
+    }
+    else
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/red.png"));
 }
 
 void Tile::rmEntity(const Entity & e) {
@@ -20,10 +32,20 @@ void Tile::rmEntity(const Entity & e) {
         if ( (*it).first == e.getId() )
             it = aboveEntities_.erase(it);
         else {
-            walkable_ |= (*it).second;
+            walkable_ &= !(*it).second;
             it++;
         }
     }
+
+    // DEBUG
+    if ( aboveEntities_.size() == 0 ) {
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/green.png"));
+    }
+    else if ( walkable_ ) {
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/yellow.png"));
+    }
+    else
+        ownSprite_.setTexture(Graphics::getTexture("src/resources/red.png"));
 }
 
 const std::vector<std::pair<ID_t,bool>> & Tile::getEntities() const {

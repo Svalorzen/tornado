@@ -305,7 +305,7 @@ void Map::unapplyEntityFromGrid(const Entity& e) {
         // and in general I guess we want to go on. We should check beforehand if this is important
         // ( e.g. when building houses )
         try {
-            grid_.at(p.getX()).at(p.getY()).rmEntity(e); 
+            grid_.at(p.getY()).at(p.getX()).rmEntity(e); 
         } catch(...){}
     }
 }
@@ -315,7 +315,7 @@ void Map::applyEntityToGrid(const Entity& e) {
     
     for ( auto & p : finalTiles ) {
         try {
-            grid_.at(p.getX()).at(p.getY()).addEntity(e); 
+            grid_.at(p.getY()).at(p.getX()).addEntity(e); 
         } catch(...) {}
     }
 }

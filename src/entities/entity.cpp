@@ -9,6 +9,9 @@ ID_t Entity::idCreator_ = 0u;
 
 Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
     idCreator_++;    
+    
+    // DEBUG
+    ownSprite_.setToRender(false);
 }
 Entity::Entity(const Area& a, bool s, const AnimatedSprite& spr) : Entity({0,0}, a,s,spr) {}
 
