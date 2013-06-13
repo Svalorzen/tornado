@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include <map/utils/position.hpp>
-#include <map/utils/distance.hpp>
 
 Area::Area(std::initializer_list<std::string> init) {
     auto s = end(init)-1;
@@ -25,6 +24,22 @@ Area::Area(std::initializer_list<std::string> init) {
         s--;
     }
     normalize();
+    
+    centroid_ = {0,0};
+    unsigned counter = 0;
+    // Computing centroid
+    for ( unsigned i = 0; i < getMaxH(); i++ )
+        for ( unsigned j = 0; j < getMaxW(); j++ )
+            if ( area_[i][j] ) {
+                counter++;
+                centroid_ += Distance(j, -i);
+            }
+    
+    if ( counter == 0 )
+        throw std::invalid_argument("This area is empty!\n");
+
+    // Find actual centroid
+    centroid_ /= static_cast<float>(counter);
 }
 
 const std::array<std::bitset<Area::maxSize>,Area::maxSize> & Area::getArea() const {
@@ -132,4 +147,8 @@ T reverseBitmap(T v) {
     r <<= s; // shift when v's highest bits are zero
     
     return r;
+}
+
+const Distance & Area::getCentroid() const {
+    return centroid_;
 }

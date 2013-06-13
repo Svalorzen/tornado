@@ -19,9 +19,7 @@ class Distance {
 
         Distance& operator+=(const Distance&);
         Distance& operator-=(const Distance&);
-        Distance& operator/=(int);
         Distance& operator/=(float);
-        Distance& operator*=(int);
         Distance& operator*=(float);
 
     private:

@@ -33,7 +33,9 @@ Map::Map(int x, int y) {
     buildings_.reserve(1000);
 
     addPerson({1,1});
-    addPerson({10,10});
+//    addPerson({10,10});
+
+    buildingCentroid_ = {-1, -1};
 }
 
 std::vector<Person> & Map::getPeople() {
@@ -98,6 +100,20 @@ Building & Map::addBuilding(Position pos, Area a, BuildingType type) {
 
     setEntityPosition(b, pos);
     b.refresh();
+
+    // This needs to be moved in validateBuilding
+    {
+        Position newBuildingCentroid = pos + a.getCentroid();
+        if ( buildingCentroid_ == Position(-1,-1) ) {
+            buildingCentroid_ = newBuildingCentroid;
+        }
+        else {
+            buildingCentroid_ -= ( buildingCentroid_ - newBuildingCentroid ) / buildings_.size();
+        }
+        std::cout << "The new building centroid is: "; newBuildingCentroid.print();
+        std::cout << "\nThe new total centroid is: "; buildingCentroid_.print();
+        std::cout << "\n\n";
+    }
 
     // Save in index
     buildingsIndex_[b.getId()] = buildings_.size() - 1;
@@ -326,6 +342,14 @@ void Map::applyEntityToGrid(const Entity& e) {
 /*Position Map::findBuildSpot(const Entity& e) {
     auto & area = e.getArea();  
 
+    unsigned k = 1;
+    bool notFound = true;
     
+    Position centroid;
+
+    while ( notFound ) {
+            
+
+    }
 
 }*/

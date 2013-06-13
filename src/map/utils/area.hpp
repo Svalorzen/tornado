@@ -10,6 +10,7 @@
 #include <iostream>
 
 class Position;
+#include <map/utils/distance.hpp>
 
 class Area {
     public:
@@ -21,6 +22,8 @@ class Area {
 
         unsigned getMaxH() const;
         unsigned getMaxW() const;
+
+        const Distance & getCentroid() const;
 
         Area& operator+=(const Area&);
         Area& operator-=(const Area&);
@@ -41,6 +44,8 @@ class Area {
         std::array<std::bitset<maxSize>,maxSize> area_; 
         unsigned maxH_;
         unsigned maxW_;
+
+        Distance centroid_;
 
         void normalize();
 };

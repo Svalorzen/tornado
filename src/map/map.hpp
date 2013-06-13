@@ -79,6 +79,7 @@ class Map {
         // Buildings
         std::vector<Building> buildings_;
         std::unordered_map<ID_t, size_t> buildingsIndex_;
+        Position buildingCentroid_;
         // Items
         std::vector<Item> items_;
         std::unordered_map<ID_t, size_t> itemsIndex_;
