@@ -9,8 +9,10 @@
 
 #include <iostream>
 
-class Position;
 #include <map/utils/distance.hpp>
+
+template <typename T>
+class Position;
 
 class Area {
     public:
@@ -23,12 +25,12 @@ class Area {
         unsigned getMaxH() const;
         unsigned getMaxW() const;
 
-        const Distance & getCentroid() const;
+        const Distance<float> & getCentroid() const;
 
         Area& operator+=(const Area&);
         Area& operator-=(const Area&);
 
-        std::vector<Position> applyArea(const Position &) const;
+        std::vector<Position<int>> applyArea(const Position<int> &) const;
 
         void print() const {
             auto k = getArea();    
@@ -45,7 +47,7 @@ class Area {
         unsigned maxH_;
         unsigned maxW_;
 
-        Distance centroid_;
+        Distance<float> centroid_;
 
         void normalize();
 };

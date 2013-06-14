@@ -26,8 +26,8 @@ class Action {
         Action();
         Action(ID_t);
         Action(ID_t,ActionType);
-        Action(ID_t,ActionType,Position);
-        Action(ID_t,ActionType,ID_t,Position);
+        Action(ID_t,ActionType,Position<int>);
+        Action(ID_t,ActionType,ID_t,Position<int>);
 
         void setResolved(bool);
         bool isResolved() const;
@@ -35,8 +35,8 @@ class Action {
         void setActionType(ActionType);
         ActionType getActionType() const;
 
-        void setTargetPosition(Position);
-        Position getTargetPosition() const;
+        void setTargetPosition(Position<int>);
+        Position<int> getTargetPosition() const;
 
         void setActorId(ID_t);
         ID_t getActorId() const;
@@ -54,7 +54,7 @@ class Action {
         // execute the action trivially
         bool resolved_;
         
-        Position targetPosition_;
+        Position<int> targetPosition_;
 
         ID_t actorEntity_;
         ID_t targetEntity_;

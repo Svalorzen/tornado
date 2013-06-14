@@ -25,14 +25,16 @@ Area::Area(std::initializer_list<std::string> init) {
     }
     normalize();
     
-    centroid_ = {0,0};
+    centroid_ = {0.0f,0.0f};
     unsigned counter = 0;
     // Computing centroid
-    for ( unsigned i = 0; i < getMaxH(); i++ )
-        for ( unsigned j = 0; j < getMaxW(); j++ )
+    // Here we need the counters to be integers because we have to invert them
+    // Unfortunately -(unsigned) is a huge positive number, so we need int
+    for ( int i = 0; i < static_cast<int>(getMaxH()); i++ )
+        for ( int j = 0; j < static_cast<int>(getMaxW()); j++ )
             if ( area_[i][j] ) {
                 counter++;
-                centroid_ += Distance(j, -i);
+                centroid_ += Distance<float>(j, -i);
             }
     
     if ( counter == 0 )
@@ -95,13 +97,13 @@ void Area::normalize() {
 }
 
 
-std::vector<Position> Area::applyArea(const Position & p) const {
-    std::vector<Position> positions;
+std::vector<Position<int>> Area::applyArea(const Position<int> & p) const {
+    std::vector<Position<int>> positions;
 
     for ( unsigned i = 0; i < getMaxH(); i++ )
         for ( unsigned j = 0; j < getMaxW(); j++ )
             if ( area_[i][j] )
-                positions.push_back(p + Distance(j, -i));
+                positions.push_back(p + Distance<int>(j, -i));
 
     return positions;
 }
@@ -149,6 +151,6 @@ T reverseBitmap(T v) {
     return r;
 }
 
-const Distance & Area::getCentroid() const {
+const Distance<float> & Area::getCentroid() const {
     return centroid_;
 }

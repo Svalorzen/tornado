@@ -7,7 +7,7 @@
 
 ID_t Entity::idCreator_ = 0u;
 
-Entity::Entity(const Position& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
+Entity::Entity(const Position<int>& p, const Area& a, bool s, const AnimatedSprite& spr) : id_(idCreator_), position_(p), area_(a), solid_(s), ownSprite_(spr) {
     idCreator_++;    
     
     // DEBUG
@@ -19,16 +19,16 @@ ID_t Entity::getId() const {
     return id_;
 }
 
-void Entity::setPosition(const Position& p) {
+void Entity::setPosition(const Position<int>& p) {
     stepDiff_ = p - position_;
     position_ = p;
 }
 
-const Position & Entity::getPosition() const {
+const Position<int> & Entity::getPosition() const {
     return position_;
 }
 
-const Distance & Entity::getStepDiff() const {
+const Distance<int> & Entity::getStepDiff() const {
     return stepDiff_;
 }
 

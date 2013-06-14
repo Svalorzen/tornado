@@ -28,7 +28,7 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
         int x = static_cast<int>(action["x"].asNumber());
         int y = static_cast<int>(action["y"].asNumber());
         
-        Position targetPos(x,y);
+        Position<int> targetPos(x,y);
 
         ownAction_.setActionType(ActionType::MOVE_TO);
         ownAction_.setTargetPosition(targetPos);

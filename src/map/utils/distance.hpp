@@ -1,49 +1,68 @@
 #ifndef DISTANCE_HEADER_FILE
 #define DISTANCE_HEADER_FILE
 
+template <typename T>
 class Distance {
     public:
         Distance();
-        Distance(int, int);
+        Distance(T, T);
 
-        unsigned getDiffXu() const;
-        unsigned getDiffYu() const;
+        template <typename M>
+        Distance(const Distance<M> &);
 
-        int getDiffXi() const;
-        int getDiffYi() const;
+        T getDiffXu() const;
+        T getDiffYu() const;
 
-        unsigned getDistance() const;
+        T getDiffXi() const;
+        T getDiffYi() const;
 
-        void setDiffX(int);
-        void setDiffY(int);
+        T getDistance() const;
 
-        Distance& operator+=(const Distance&);
-        Distance& operator-=(const Distance&);
+        void setDiffX(T);
+        void setDiffY(T);
+
+        Distance& operator+=(const Distance<T>&);
+        Distance& operator-=(const Distance<T>&);
         Distance& operator/=(float);
         Distance& operator*=(float);
 
     private:
-        int diffX_;
-        int diffY_;
+        T diffX_;
+        T diffY_;
 };
 
-bool operator==(const Distance&, const Distance&);
-bool operator!=(const Distance&, const Distance&);
+template <typename T>
+bool operator==(const Distance<T>&, const Distance<T>&);
+template <typename T>
+bool operator!=(const Distance<T>&, const Distance<T>&);
 
-bool operator<(const Distance&, const Distance&);
-bool operator<=(const Distance&, const Distance&);
+template <typename T>
+bool operator<(const Distance<T>&, const Distance<T>&);
+template <typename T>
+bool operator<=(const Distance<T>&, const Distance<T>&);
 
-bool operator>(const Distance&, const Distance&);
-bool operator>=(const Distance&, const Distance&);
+template <typename T>
+bool operator>(const Distance<T>&, const Distance<T>&);
+template <typename T>
+bool operator>=(const Distance<T>&, const Distance<T>&);
 
-Distance operator+(Distance, const Distance&);
-Distance operator-(Distance, const Distance&);
-Distance operator-(Distance);
+template <typename T>
+Distance<T> operator+(Distance<T>, const Distance<T>&);
+template <typename T>
+Distance<T> operator-(Distance<T>, const Distance<T>&);
+template <typename T>
+Distance<T> operator-(Distance<T>);
 
-Distance operator*(Distance, float);
-Distance operator*(float, Distance);
+template <typename T>
+Distance<T> operator*(Distance<T>, float);
+template <typename T>
+Distance<T> operator*(float, Distance<T>);
 
-Distance operator/(Distance, float);
-Distance operator/(float, Distance);
+template <typename T>
+Distance<T> operator/(Distance<T>, float);
+template <typename T>
+Distance<T> operator/(float, Distance<T>);
+
+#include "distance.tpp"
 
 #endif

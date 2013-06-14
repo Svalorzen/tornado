@@ -89,7 +89,7 @@ void GameEngine::runStep() {
                 }
 
                 if ( buildHouse ) {
-                    Position buildPos((p.getPosition().getX() + 1), p.getPosition().getY());
+                    Position<int> buildPos((p.getPosition().getX() + 1), p.getPosition().getY());
                     Area buildArea({"11","11"});
                     ownMap_.addBuilding(buildPos, buildArea, BuildingType::HOUSE);
                     p.setResult(action);
@@ -122,7 +122,7 @@ void GameEngine::runStep() {
     }
 }
 
-Position GameEngine::computeSingleMove(const Entity & entity, Position target) {
+Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int> target) {
    // std::cout << "Going to -- "; target.print();
    // std::cout << "From     -- "; entity.getPosition().print();
    // std::cout << "\n";
@@ -156,7 +156,7 @@ Position GameEngine::computeSingleMove(const Entity & entity, Position target) {
             cachedPathsHistory_.erase((*it).second.second);
         }
     }
-    std::vector<Position> path;
+    std::vector<Position<int>> path;
 
     // Compute path
     auto dist = target - entity.getPosition();

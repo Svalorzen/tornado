@@ -68,7 +68,7 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
 
 }
 
-Person & Map::addPerson(Position pos) {
+Person & Map::addPerson(Position<int> pos) {
     std::uniform_int_distribution<int> distribution(0,1);
     // Randomizes man females
     people_.emplace_back(distribution(generator_));
@@ -82,7 +82,7 @@ Person & Map::addPerson(Position pos) {
     return p;
 }
 
-Item & Map::addItem(Position pos, ItemType type) {
+Item & Map::addItem(Position<int> pos, ItemType type) {
     items_.emplace_back(type);
     Item & i = items_.back();
 
@@ -94,7 +94,7 @@ Item & Map::addItem(Position pos, ItemType type) {
     return i;
 }
 
-Building & Map::addBuilding(Position pos, Area a, BuildingType type) {
+Building & Map::addBuilding(Position<int> pos, Area a, BuildingType type) {
     buildings_.emplace_back(a,type);
     Building & b = buildings_.back();
 
@@ -103,14 +103,15 @@ Building & Map::addBuilding(Position pos, Area a, BuildingType type) {
 
     // This needs to be moved in validateBuilding
     {
-        Position newBuildingCentroid = pos + a.getCentroid();
-        if ( buildingCentroid_ == Position(-1,-1) ) {
+        Position<float> newBuildingCentroid = static_cast<Position<float>>(pos) + a.getCentroid();
+        if ( buildingCentroid_ == Position<float>(-1,-1) ) {
+            std::cout << "\nSetting new centroid";
             buildingCentroid_ = newBuildingCentroid;
         }
         else {
             buildingCentroid_ -= ( buildingCentroid_ - newBuildingCentroid ) / buildings_.size();
         }
-        std::cout << "The new building centroid is: "; newBuildingCentroid.print();
+        std::cout << "\nThe new building centroid is: "; newBuildingCentroid.print();
         std::cout << "\nThe new total centroid is: "; buildingCentroid_.print();
         std::cout << "\n\n";
     }
@@ -238,7 +239,7 @@ void Map::stashItem(ID_t id) {
 
 // This function updates tile links, it is called only when we are actually
 // sure the guy will move here
-void Map::setEntityPosition(Entity & e, Position p) {
+void Map::setEntityPosition(Entity & e, Position<int> p) {
     unapplyEntityFromGrid(e);
     e.setPosition(p);
     applyEntityToGrid(e);
@@ -260,23 +261,23 @@ bool Map::isThereItem(ItemType type) const {
     return false;
 }
 
-const Item & Map::getNearestFood(Position p) const {
+const Item & Map::getNearestFood(Position<int> p) const {
     return getNearestItem(ItemType::FOOD, p);
 }
 
-const Item & Map::getNearestWood(Position p) const {
+const Item & Map::getNearestWood(Position<int> p) const {
     return getNearestItem(ItemType::WOOD, p);
 }
 
-const Item & Map::getNearestItem(ItemType type, Position p) const {
+const Item & Map::getNearestItem(ItemType type, Position<int> p) const {
     int it = -1;
-    Distance distance;
+    Distance<int> distance;
 
     for ( size_t i = 0; i < items_.size(); i++ ) {
         const Item & item = items_[i];
 
         if ( item.getType() == type && ! item.isLocked() ) {
-            Distance distanceDiff = p - item.getPosition();
+            Distance<int> distanceDiff = p - item.getPosition();
 
             if ( it == -1 || distance > distanceDiff ) {
                 it = i;
@@ -288,23 +289,23 @@ const Item & Map::getNearestItem(ItemType type, Position p) const {
     return items_[it];
 }
 
-const Item & Map::getNearestFood(Position p, ID_t id) const {
+const Item & Map::getNearestFood(Position<int> p, ID_t id) const {
     return getNearestItem(ItemType::FOOD, p, id);
 }
 
-const Item & Map::getNearestWood(Position p, ID_t id) const {
+const Item & Map::getNearestWood(Position<int> p, ID_t id) const {
     return getNearestItem(ItemType::WOOD, p, id);
 }
 
-const Item & Map::getNearestItem(ItemType type, Position p, ID_t id) const {
+const Item & Map::getNearestItem(ItemType type, Position<int> p, ID_t id) const {
     int it = -1;
-    Distance distance;
+    Distance<int> distance;
 
     for ( size_t i = 0; i < items_.size(); i++ ) {
         const Item & item = items_[i];
 
         if ( item.getType() == type && ( ! item.isLocked() || item.getId() == id ) ) {
-            Distance distanceDiff = p - item.getPosition();
+            Distance<int> distanceDiff = p - item.getPosition();
 
             if ( it == -1 || distance > distanceDiff ) {
                 it = i;
@@ -317,7 +318,7 @@ const Item & Map::getNearestItem(ItemType type, Position p, ID_t id) const {
 }
 
 void Map::unapplyEntityFromGrid(const Entity& e) {
-    std::vector<Position> initialTiles = e.getArea().applyArea(e.getPosition());
+    std::vector<Position<int>> initialTiles = e.getArea().applyArea(e.getPosition());
     
     for ( auto & p : initialTiles ) {
         // This is because applying an area could go outside the map ( maybe hotness of fire )
@@ -330,7 +331,7 @@ void Map::unapplyEntityFromGrid(const Entity& e) {
 }
 
 void Map::applyEntityToGrid(const Entity& e) {
-    std::vector<Position> finalTiles = e.getArea().applyArea(e.getPosition());
+    std::vector<Position<int>> finalTiles = e.getArea().applyArea(e.getPosition());
     
     for ( auto & p : finalTiles ) {
         try {
@@ -339,17 +340,47 @@ void Map::applyEntityToGrid(const Entity& e) {
     }
 }
 
-/*Position Map::findBuildSpot(const Entity& e) {
+/*Position<int> Map::findBuildSpot(const Entity& e) const {
     auto & area = e.getArea();  
 
-    unsigned k = 1;
-    bool notFound = true;
+    unsigned loops = grid_.size() * grid_[0].size();
+
+    unsigned maxHeight = 0 - area.maxHeight();
+
+    unsigned k = 1, counter = 0, direction = 0;
+    int turning = 1; // CW = 1; CCW = -1
+
+    Position<int> p = buildingCentroid_;
+    // This sets the starting direction
+    Distance<int> dir(0, -1);
+    Distance<int> offset(0,0);
     
-    Position centroid;
+    while ( loops ) {
+        // Only if it's inside the map
+        if ( p.getX() >= 0 && p.getY() >= maxHeight && false ) // canBuild(p, area) ) 
+            return p;
 
-    while ( notFound ) {
-            
+        // THIS IS FOR CLOCKWISE
+        if ( (offset.getX() == offset.getY()) ||
+            ((offset.getX() < 0) && (offset.getX() == -offset.getY())) ||
+            ((offset.getX() > 0) && (offset.getX() == 1-offset.getY())) ){
+            // This makes it turn CLOCKWISE
+            dir = Distance<int>(-dir.getY(), dir.getX());
+        }
+        // THIS IS COUNTERCLOCKWISE
+        if( (offset.getX() == -offset.getY()) ||
+            ((offset.getX() > 0) && (offset.getX() == offset.getY())) ||
+            ((offset.getX() < 0) && (offset.getX() == 1+offset.getY())) ) {
+            // This is COUNTER-CLOCKWISE
+            dir = Distance<int>(dir.getY(), -dir.getX());
+        }
+        p += dir;
+        offset += dir;
+        // DEBUG
+        p.print();
 
+        loops--;
     }
-
+    // No space in the whole map
+    return Position<int>(-1, -1);
 }*/

@@ -4,15 +4,19 @@
 #include <utils/hashing.hpp>
 #include <iostream>
 
+template <typename T>
 class Distance;
 
+template <typename T>
 class Position {
     public:
         Position();
-        Position(int, int);
+        Position(T, T);
+        template <typename M>
+        Position(const Position<M> &);
 
-        int getX() const;
-        int getY() const;
+        T getX() const;
+        T getY() const;
 
         Position up() const;
         Position down() const;
@@ -21,33 +25,45 @@ class Position {
 
         void print() const { std::cout << "{ X: " << getX() << " , Y: " << getY() << " }"; }
 
-        void setX(int);
-        void setY(int);
+        void setX(T);
+        void setY(T);
 
-        Position& operator+=(const Distance&);
-        Position& operator-=(const Distance&);
+        // This is for Positions with a different type
+        template <typename M>
+        Position& operator=(const Position<M>&);
+
+        Position& operator+=(const Distance<T>&);
+        Position& operator-=(const Distance<T>&);
 
     private:
-        int x_;
-        int y_;
+        T x_;
+        T y_;
 };
 
 
-bool operator==(const Position & lhs, const Position& rhs );
-bool operator!=(const Position & lhs, const Position& rhs );
+template <typename T>
+bool operator==(const Position<T> & lhs, const Position<T>& rhs );
+template <typename T>
+bool operator!=(const Position<T> & lhs, const Position<T>& rhs );
 
-Position operator+(Position lhs, const Distance & rhs);
-Position operator+(const Distance & lhs, const Position & rhs);
+template <typename T>
+Position<T> operator+(Position<T> lhs, const Distance<T> & rhs);
+template <typename T>
+Position<T> operator+(const Distance<T> & lhs, const Position<T> & rhs);
 
-Position operator-(Position lhs, const Distance & rhs);
-Position operator-(const Distance & lhs, const Position & rhs);
-Distance operator-(const Position & lhs, const Position & rhs);
+template <typename T>
+Position<T> operator-(Position<T> lhs, const Distance<T> & rhs);
+template <typename T>
+Position<T> operator-(const Distance<T> & lhs, const Position<T> & rhs);
+template <typename T>
+Distance<T> operator-(const Position<T> & lhs, const Position<T> & rhs);
 
 // Hashing specialization
 namespace std {
     template <>
-    struct hash<Position> {
-        inline size_t operator()(const Position& p) const { 
+    template <typename T>
+    struct hash<Position<T>> {
+        inline size_t operator()(const Position<T>& p) const { 
             size_t seed = 0;
             Utils::hash_combine(seed, p.getX());
             Utils::hash_combine(seed, p.getY());
@@ -55,5 +71,7 @@ namespace std {
         }
     };
 }
+
+#include "position.tpp"
 
 #endif

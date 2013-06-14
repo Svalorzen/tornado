@@ -5,8 +5,8 @@
 Action::Action() : Action(0) {}
 Action::Action(ID_t a) : Action(a, ActionType::NONE) {}
 Action::Action(ID_t a, ActionType t) : at_(t), actorEntity_(a) {} 
-Action::Action(ID_t a, ActionType t, Position p) : at_(t), targetPosition_(p), actorEntity_(a) {} 
-Action::Action(ID_t a, ActionType t, ID_t tr, Position p ) :
+Action::Action(ID_t a, ActionType t, Position<int> p) : at_(t), targetPosition_(p), actorEntity_(a) {} 
+Action::Action(ID_t a, ActionType t, ID_t tr, Position<int> p ) :
         at_(t),
         targetPosition_(p),
         actorEntity_(a),
@@ -29,11 +29,11 @@ ActionType Action::getActionType() const {
     return at_;
 }
 // #############
-void Action::setTargetPosition(Position p) {
+void Action::setTargetPosition(Position<int> p) {
     targetPosition_ = p;
 }
 
-Position Action::getTargetPosition() const {
+Position<int> Action::getTargetPosition() const {
     return targetPosition_;
 }
 // #############

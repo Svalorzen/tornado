@@ -21,17 +21,17 @@ class GameEngine {
     private:
         Map & ownMap_;
 
-        Position computeSingleMove(const Entity &, Position); 
+        Position<int> computeSingleMove(const Entity &, Position<int>); 
 
         // PATHING CACHE
         static constexpr unsigned MAX_PATH_CACHE = 1000;
-        // This map links a pair <Entity*,Position> with our last known pathfinding for it.
+        // This map links a pair <Entity*,Position<int>> with our last known pathfinding for it.
         // In addition, there is an iterator to the list containing the history, so that if
         // the cache is full we can remove the most old entries.
-        std::unordered_map<std::pair<const Entity*, Position>,
-                           std::pair<std::vector<Position>,
-                                     std::list<std::pair<const Entity*,Position>>::iterator>> cachedPaths_;
-        std::list<std::pair<const Entity*,Position>> cachedPathsHistory_;
+        std::unordered_map<std::pair<const Entity*, Position<int>>,
+                           std::pair<std::vector<Position<int>>,
+                                     std::list<std::pair<const Entity*,Position<int>>>::iterator>> cachedPaths_;
+        std::list<std::pair<const Entity*,Position<int>>> cachedPathsHistory_;
 };
 
 #endif
