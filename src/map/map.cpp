@@ -35,7 +35,7 @@ Map::Map(int x, int y) {
     buildings_.reserve(1000);
 
     addPerson({1,1});
-//    addPerson({10,10});
+    addPerson({10,10});
 
     buildingCentroid_ = {-1, -1};
 }
@@ -108,8 +108,11 @@ Building & Map::addBuilding(Position<int> pos, Area a, BuildingType type) {
 
     // FIXME: The area should be computed from the original building area, of course
     // Set that nobody can build near this, even if it is unvalidated
-    auto & aoe = addAoE(pos + Distance<int>(-1, 1), {"111", "111", "111"});
+    auto aoepos = pos + Distance<int>(-1, 1);
+    auto & aoe = addAoE(aoepos, {"1111", "1111", "1111", "1111"});
     aoe.setBuildable(false);
+    // Refresh on the grid the property change
+    setAoEPosition(aoe, aoepos);
     b.setUnbuildableArea(aoe.getId());
 
     // Save in index

@@ -37,10 +37,8 @@ function base_person_ai()
 
     if myMem["globals"]["woodCounter"] == 5 then
         if myMem["globals"]["building"] == true then
-            print "LUA: Validating"
             action["type"] = "validate"
         else
-            print "LUA: Building"
             action["type"] = "build"
         end
 

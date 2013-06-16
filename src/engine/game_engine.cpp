@@ -141,11 +141,13 @@ void GameEngine::runStep() {
                     ownMap_.validateBuilding(b.getId());
                     {
                         auto & inv = p.getInventory();
-                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--) {
+                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--)
                             ownMap_.removeItem(inv[i]);
-                            inv.erase(end(inv) - HOUSE_COST, end(inv));
-                        }
+
+                        inv.erase(end(inv) - HOUSE_COST, end(inv));
                     }
+                    p.unlock();
+                    b.unlock();
                     p.setResult(action);
                 }
                 break;
@@ -155,8 +157,10 @@ void GameEngine::runStep() {
             // ###########################################
             case ActionType::MOVE_TO: {
                 MOVE_TO_LABEL: 
-                std::cout << "Moving to : "; action.getTargetPosition().print(); std::cout << "\n";
+                std::cout << "ENGINE: Moving - "; p.getPosition().print(); std::cout << " --> ";
+                                                  action.getTargetPosition().print(); std::cout << "\n";
                 auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
+                std::cout << "ENGINE: Next move is: "; nextMove.print(); std::cout << "\n";
                 // Here there should probably be a check verifying that target position is walkable in the
                 // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
                 // IF ( NOT WALKABLE && ENDPOINT.HAS_ENTITY ) {
@@ -221,6 +225,8 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
 
     // Compute path
     auto dist = target - entity.getPosition();
+    std::cout << "ENGINE: NEW PATH\n";
+    dist.print();
 
     // NOTE: LAST MOVES IN FIRST, LastInFirstOut!
     {
@@ -254,12 +260,15 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
 
     }
 
-    //std::cout << "PATH BUILT:\n";
-    //for ( auto p : path ) {
-    //    std::cout << "  ";
-    //    p.print();
-    //}
-    //std::cout << "\n\n";
+    if ( path.back() == entity.getPosition() )
+        path.pop_back();
+
+    std::cout << "ENGINE: PATH BUILT:\n";
+    for ( auto p : path ) {
+        std::cout << "  ";
+        p.print();
+    }
+    std::cout << "\n\n";
 
     // We can build it in a forward manner, but then we have to invert it.
     // std::reverse(path.begin(),path.end());
