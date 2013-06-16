@@ -38,12 +38,15 @@ Area::Area(std::initializer_list<std::string> init) {
             }
     
     if ( counter == 0 )
-        throw std::invalid_argument("This area is empty!\n");
+        counter = 1;
 
     // Find actual centroid
     centroid_ /= static_cast<float>(counter);
 }
 
+void Area::setArea(const std::array<std::bitset<Area::maxSize>,Area::maxSize> & a) {
+    area_ = a;
+}
 const std::array<std::bitset<Area::maxSize>,Area::maxSize> & Area::getArea() const {
     return area_;
 }

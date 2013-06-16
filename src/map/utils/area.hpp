@@ -20,6 +20,7 @@ class Area {
 
         Area(std::initializer_list<std::string>); 
 
+        void setArea(const std::array<std::bitset<maxSize>,maxSize> &);
         const std::array<std::bitset<maxSize>,maxSize> & getArea() const;
 
         unsigned getMaxH() const;

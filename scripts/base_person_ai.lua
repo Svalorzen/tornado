@@ -10,6 +10,7 @@ function base_person_ai()
         myMem["globals"] = {}
         myMem["globals"]["foodCounter"] = 0;
         myMem["globals"]["woodCounter"] = 0;
+        myMem["globals"]["building"] = false;
     end
 
     -- checking old action with result
@@ -21,52 +22,60 @@ function base_person_ai()
             elseif myMem["action"]["target"] == "wood" then
                 myMem["globals"]["woodCounter"] = myMem["globals"]["woodCounter"] + 1
             end
+        elseif result["type"] == "build" then
+            myMem["globals"]["building"] = true
+        elseif result["type"] == "validate" then
+            myMem["globals"]["woodCounter"] = myMem["globals"]["woodCounter"] - 5;
+            myMem["globals"]["building"] = false
         end
         myMem["action"] = {} 
     end
 
     -- base action
-    local result = {}
-    result["type"] = "none"
+    local action = {}
+    action["type"] = "none"
 
     if myMem["globals"]["woodCounter"] == 5 then
-        result["type"] = "build"
-        myMem["globals"]["woodCounter"] = 0
-
-
+        if myMem["globals"]["building"] == true then
+            print "LUA: Validating"
+            action["type"] = "validate"
+        else
+            print "LUA: Building"
+            action["type"] = "build"
+        end
 
     -- try to eat food
     elseif mapHub:isThereFood() then
-        result["type"] = "pick_up"
-        result["target"] = "food"
+        action["type"] = "pick_up"
+        action["target"] = "food"
         if myMem["action"]["target"] ~= "food" then
-            result["targetId"] = mapHub:getNearestFood(myId);
+            action["targetId"] = mapHub:getNearestFood(myId);
         else
-            result["targetId"] = mapHub:getNearestFood(myId, myMem["action"]["targetId"]); 
+            action["targetId"] = mapHub:getNearestFood(myId, myMem["action"]["targetId"]); 
         end
     elseif myMem["action"]["target"] == "food" then
-        result["type"] = "pick_up"
-        result["target"] = "food"
-        result["targetId"] = myMem["action"]["targetId"];
+        action["type"] = "pick_up"
+        action["target"] = "food"
+        action["targetId"] = myMem["action"]["targetId"];
     elseif mapHub:isThereWood() then
-        result["type"] = "pick_up"
-        result["target"] = "wood"
+        action["type"] = "pick_up"
+        action["target"] = "wood"
         if myMem["action"]["target"] ~= "wood" then
-            result["targetId"] = mapHub:getNearestWood(myId);
+            action["targetId"] = mapHub:getNearestWood(myId);
         else
-            result["targetId"] = mapHub:getNearestWood(myId, myMem["action"]["targetId"]); 
+            action["targetId"] = mapHub:getNearestWood(myId, myMem["action"]["targetId"]); 
         end
     else
         if myMem["action"]["target"] == "wood" then
-            result["type"] = "pick_up"
-            result["target"] = "wood"
-            result["targetId"] = myMem["action"]["targetId"];
+            action["type"] = "pick_up"
+            action["target"] = "wood"
+            action["targetId"] = myMem["action"]["targetId"];
         end
     end
 
-    myMem["action"] = result;
+    myMem["action"] = action;
 
     memory[entityHub:getId()] = myMem;
 
-    actionHub:setAction(result);
+    actionHub:setAction(action);
 end

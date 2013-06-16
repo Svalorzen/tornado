@@ -58,6 +58,22 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
 
     } else if ( action["type"].asString() == "build" ) {
         ownAction_.setActionType(ActionType::BUILD);
+        Area a({"11", "11"});
+        Position<int> pos = ownMap_->findBuildSpot(ownEntity_->getPosition(), a);
+        if ( pos != Position<int>(-1, -1) )
+            ownAction_.setTargetPosition(pos);
+        else
+            ownAction_.setActionType(ActionType::FAILURE);
+        
+    } else if ( action["type"].asString() == "validate" ) {
+        ownAction_.setActionType(ActionType::VALIDATE);
+        try {
+            auto & b = ownMap_->getBuilding(ownEntity_->getLocked());
+            ownAction_.setTarget(b);
+        }
+        catch ( std::runtime_error ) {
+            ownAction_.setActionType(ActionType::FAILURE);
+        }
     }
     // else if type none .... nothing to do!
 

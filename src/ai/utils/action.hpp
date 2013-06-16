@@ -17,7 +17,9 @@ enum class ActionType {
     EAT,
     SLEEP,
     SHELTER,
-    BUILD
+    BUILD,
+    VALIDATE,
+    FAILURE
 };
 
 class Action {

@@ -13,6 +13,7 @@
 #include <entities/item.hpp>
 #include <entities/building.hpp>
 #include <entities/person.hpp>
+#include <entities/aoe.hpp>
 
 namespace sf { class Texture; class RenderWindow; }
 class EntityBox;
@@ -35,19 +36,27 @@ class Map {
 
         Building & getBuilding(ID_t);
         const Building & getBuilding(ID_t) const;
+
+        AoE & getAoE(ID_t);
+        const AoE & getAoE(ID_t) const;
         
         Item & addItem(Position<int>, ItemType);
         Person & addPerson(Position<int>);
         Building & addBuilding(Position<int>, Area, BuildingType);
+        AoE & addAoE(Position<int>, Area);
+
+        void validateBuilding(ID_t);
 
         void removeItem(ID_t);
         void removePerson(ID_t);
         void removeBuilding(ID_t);
+        void removeAoE(ID_t);
 
         void stashItem(ID_t);
 
         // This function sets an entity on the map and updates eventual grid properties
         void setEntityPosition(Entity &, Position<int>);
+        void setAoEPosition(AoE &, Position<int>);
 
         // ################ AI FUNCTIONS #########################
 
@@ -63,15 +72,21 @@ class Map {
         const Item & getNearestItem(ItemType, Position<int>) const;
         const Item & getNearestItem(ItemType, Position<int>, ID_t) const;
 
+        Position<int> findBuildSpot(const Position<int>&, const Area &) const;
+        bool canBuild(const Position<int>&, const Area&) const;
+
     private:
         // Randoms for this map
-        std::default_random_engine generator_;
+        mutable std::default_random_engine generator_;
 
         // The map grid. Contains walkable properties and other ones.
         std::vector<std::vector<Tile>> grid_;
 
         void applyEntityToGrid(const Entity &);
         void unapplyEntityFromGrid(const Entity &);
+
+        void applyAoEToGrid(const AoE &);
+        void unapplyAoEFromGrid(const AoE &);
 
         // People
         std::vector<Person> people_;
@@ -83,7 +98,9 @@ class Map {
         // Items
         std::vector<Item> items_;
         std::unordered_map<ID_t, size_t> itemsIndex_;
-
+        // AoE
+        std::vector<AoE> aoes_;
+        std::unordered_map<ID_t, size_t> aoesIndex_;
 };
 
 #endif

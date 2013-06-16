@@ -1,6 +1,8 @@
 #ifndef DISTANCE_HEADER_FILE
 #define DISTANCE_HEADER_FILE
 
+#include <iostream>
+
 template <typename T>
 class Distance {
     public:
@@ -20,6 +22,8 @@ class Distance {
 
         void setDiffX(T);
         void setDiffY(T);
+
+        void print() const { std::cout << "{ X: " << getDiffXi() << " , Y: " << getDiffYi() << " }"; }
 
         Distance& operator+=(const Distance<T>&);
         Distance& operator-=(const Distance<T>&);

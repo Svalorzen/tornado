@@ -2,28 +2,25 @@
 
 #include <algorithm>
 #include <entities/entity.hpp>
+#include <entities/aoe.hpp>
 
 #include <graphics/textures.hpp>
 
-Tile::Tile(AnimatedSprite spr) : ownSprite_(spr) , walkable_(true) {}
+Tile::Tile(AnimatedSprite spr) : ownSprite_(spr) , walkable_(true), buildable_(true), shelter_(false) {}
 
 bool Tile::isWalkable() const {
     return walkable_;
+}
+bool Tile::isBuildable() const {
+    return buildable_;
+}
+bool Tile::isShelter() const {
+    return shelter_;
 }
 
 void Tile::addEntity(const Entity & e) {
     aboveEntities_.emplace_back(e.getId(), e.isSolid());
     walkable_ &= !e.isSolid();
-
-    // DEBUG
-    if ( aboveEntities_.size() == 0 ) {
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/green.png"));
-    }
-    else if ( walkable_ ) {
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/yellow.png"));
-    }
-    else
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/red.png"));
 }
 
 void Tile::rmEntity(const Entity & e) {
@@ -36,18 +33,27 @@ void Tile::rmEntity(const Entity & e) {
             it++;
         }
     }
-
-    // DEBUG
-    if ( aboveEntities_.size() == 0 ) {
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/green.png"));
-    }
-    else if ( walkable_ ) {
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/yellow.png"));
-    }
-    else
-        ownSprite_.setTexture(Graphics::getTexture("src/resources/red.png"));
 }
 
+void Tile::addAoE(const AoE & e) {
+    aboveAoEs_.emplace_back(e.getId(), e.isBuildable(), e.isShelter());
+    buildable_ &= e.isBuildable();
+    shelter_ |= e.isShelter();
+}
+
+void Tile::rmAoE(const AoE & e) {
+    buildable_ = true;
+    shelter_ = false;
+    for ( auto it = begin(aboveAoEs_); it != end(aboveAoEs_); /* NO! it++ */ ) {
+        if ( std::get<0>(*it) == e.getId() )
+            it = aboveAoEs_.erase(it);
+        else {
+            buildable_ &= std::get<1>(*it);
+            shelter_ |= std::get<2>(*it);
+            it++;
+        }
+    }
+}
 const std::vector<std::pair<ID_t,bool>> & Tile::getEntities() const {
     return aboveEntities_;
 }

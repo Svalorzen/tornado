@@ -11,7 +11,7 @@ Entity::Entity(const Position<int>& p, const Area& a, bool s, const AnimatedSpri
     idCreator_++;    
     
     // DEBUG
-    ownSprite_.setToRender(false);
+    // ownSprite_.setToRender(false);
 }
 Entity::Entity(const Area& a, bool s, const AnimatedSprite& spr) : Entity({0,0}, a,s,spr) {}
 

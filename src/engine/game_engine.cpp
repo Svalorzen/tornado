@@ -14,6 +14,8 @@
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
 void GameEngine::runStep() {
+    constexpr unsigned HOUSE_COST = 5; 
+
     auto & people = ownMap_.getPeople();
 
     AI& ai = AI::getInstance();
@@ -34,9 +36,24 @@ void GameEngine::runStep() {
         LuaAction la(cpm, cpp);
         // Run Lua AI
         auto action = ai.basePerson(lm, lp, la);
+
+        // CHECK FOR STUFF WE MAY BE LOCKING IF WE CHANGE OUR MIND
+        if ( p.isLocking() ) {
+            if ( action.getActionType() != ActionType::VALIDATE ) {
+                try {
+                    auto & building = ownMap_.getBuilding(p.getLocked());
+                    if ( p.getId() == building.getOwner() && ! building.isValid() )
+                        ownMap_.removeBuilding(building.getId());
+                }
+                catch ( std::runtime_error ) {}
+            }
+        }
         
         // We may resolve more than one action at a time, so this checks that
         switch( action.getActionType() ) {
+            // ###########################################
+            // ############ ITEM PICK UP #################
+            // ###########################################
             case ActionType::PICK_UP: {
                 auto & target = ownMap_.getItem(action.getTargetId());
                 // If we are not the ones locking, something weird is going on..
@@ -62,45 +79,83 @@ void GameEngine::runStep() {
                 }
                 goto MOVE_TO_LABEL;
             }
+            // ###########################################
+            // ############## BUILD HOME #################
+            // ###########################################
             case ActionType::BUILD: {
+                // This should be read from the action or something!!
+                Area buildArea({"11","11"});
+                    
+                std::cout << "Checking building!\n";
+                if ( !ownMap_.canBuild(action.getTargetPosition(), buildArea) ) {
+                    p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                    break;
+                }
+                std::cout << "Can build!\n";
+
                 bool buildHouse = false;
                 {
-                    constexpr unsigned HOUSE_COST = 5; 
                     auto & inv = p.getInventory();
-                    size_t j = inv.size();
-                
-                    for ( size_t i = 0 ; i < j; /* NO! i++ */ ) {
-                        if ( ownMap_.getItem(inv[i]).getType() == ItemType::WOOD ) {
-                            j--;
-                            std::swap(inv[i],inv[j]);
-                            if ( inv.size() - j >= HOUSE_COST ) {
-                                buildHouse = true;
-                                break;
+                    if ( inv.size () >= HOUSE_COST ) {
+                        size_t j = inv.size();
+                    
+                        for ( int i = j-1; i >= 0; i-- ) {
+                            if ( ownMap_.getItem(inv[i]).getType() == ItemType::WOOD ) {
+                                j--;
+                                std::swap(inv[i],inv[j]);
+                                if ( inv.size() - j >= HOUSE_COST ) {
+                                    buildHouse = true;
+                                    break;
+                                }
                             }
                         }
-                        else i++;
                     }
 
-                    if ( buildHouse ) {
-                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--)
-                            ownMap_.removeItem(inv[i]);
-                        inv.erase(end(inv) - HOUSE_COST, end(inv));
+                    if ( !buildHouse ) {
+                        p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                        break;
                     }
                 }
+                std::cout << "Building!\n";
 
-                if ( buildHouse ) {
-                    Position<int> buildPos((p.getPosition().getX() + 1), p.getPosition().getY());
-                    Area buildArea({"11","11"});
-                    ownMap_.addBuilding(buildPos, buildArea, BuildingType::HOUSE);
-                    p.setResult(action);
-                }
-                else
-                    p.setResult(Action());
+                auto & b = ownMap_.addBuilding(action.getTargetPosition(), buildArea, BuildingType::HOUSE);
+                b.lock(p.getId());
+                p.lock(b.getId());
+
+                p.setResult(action);
                 
                 break;
             }
+            // ###########################################
+            // ############## VALIDATION #################
+            // ###########################################
+            case ActionType::VALIDATE: {
+                std::cout << "Validating!\n";
+                auto & b = ownMap_.getBuilding(action.getTargetId());
+                auto pos = b.getPosition()+Distance<int>(-1, 0);
+                if ( p.getPosition() != pos) {
+                    action.setTargetPosition(pos);
+                    goto MOVE_TO_LABEL;
+                }
+                else {
+                    ownMap_.validateBuilding(b.getId());
+                    {
+                        auto & inv = p.getInventory();
+                        for ( size_t i = inv.size() - 1, j = 0; j < HOUSE_COST; j++, i--) {
+                            ownMap_.removeItem(inv[i]);
+                            inv.erase(end(inv) - HOUSE_COST, end(inv));
+                        }
+                    }
+                    p.setResult(action);
+                }
+                break;
+            }
+            // ###########################################
+            // ############## MOVEMENT ###################
+            // ###########################################
             case ActionType::MOVE_TO: {
                 MOVE_TO_LABEL: 
+                std::cout << "Moving to : "; action.getTargetPosition().print(); std::cout << "\n";
                 auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
                 // Here there should probably be a check verifying that target position is walkable in the
                 // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
@@ -113,6 +168,12 @@ void GameEngine::runStep() {
                     p.setResult(actualAction);
                 // }
                 
+                break;
+            }
+            // This is for cases when the luaAction returned failure for some reason
+            // We let the AI know
+            case ActionType::FAILURE: {
+                p.setResult(action);
                 break;
             }
             default: {

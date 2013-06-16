@@ -71,6 +71,15 @@ Diluculum::LuaValueList LuaPerson::getResult(const Diluculum::LuaValueList &) {
         case ActionType::MOVE_TO:
             map["type"] = "move_to";
             break;
+        case ActionType::BUILD:
+            map["type"] = "build";
+            break;
+        case ActionType::VALIDATE:
+            map["type"] = "validate";
+            break;
+        case ActionType::FAILURE:
+            map["type"] = "failure";
+            break;
         default:
             map["type"] = "none";
     }
