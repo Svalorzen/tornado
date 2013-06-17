@@ -37,6 +37,10 @@ int main() {
 
     sf::View view = window.getDefaultView();
 
+    foodIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
+    woodIcon.setPosition(window.mapPixelToCoords({ 10 + 95 + 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
+    selIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 }));
+
     int zoom = 0;
     float movement = 15;
 
@@ -45,6 +49,7 @@ int main() {
     unsigned oldDiff = 0;
 
     bool updatedView = false;
+    bool changedSel = false;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -65,10 +70,12 @@ int main() {
         // Select Food
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
             currentItemType = ItemType::FOOD;
+            changedSel = true;
         }
         // Select Wood
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
             currentItemType = ItemType::WOOD;
+            changedSel = true;
         }
         // View zooming/moving
         // Zoom back
@@ -132,14 +139,17 @@ int main() {
             scoreText.setPosition(window.mapPixelToCoords( {0,0} ));
             foodIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
             woodIcon.setPosition(window.mapPixelToCoords({ 10 + 95 + 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
-
+        }
+        
+        if ( updatedView || changedSel ) {
             if ( currentItemType == ItemType::FOOD )
                 selIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 }));
             else if ( currentItemType == ItemType::WOOD )
                 selIcon.setPosition(window.mapPixelToCoords({ 10 + 95 + 10, static_cast<int>(window.getSize().y) - 10 - 22 }));
-
-            updatedView = false;
         }
+
+        updatedView = false;
+        changedSel = false;
 
         // We will need to do work during frames, can't do it all at once..
         std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
