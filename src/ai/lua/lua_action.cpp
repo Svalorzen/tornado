@@ -24,6 +24,9 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     Diluculum::LuaValue actionValue = in[0];
     auto action = actionValue.asTable();
 
+    if ( action["type"].type() != LUA_TSTRING )
+        throw Diluculum::LuaTypeError("ERROR: Action type is not a string");
+
     if ( action["type"].asString() == "move_to" ) {            // MOVE TO - Complete
         int x = static_cast<int>(action["x"].asNumber());
         int y = static_cast<int>(action["y"].asNumber());
@@ -35,10 +38,18 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
     
     } else if ( action["type"].asString() == "pick_up" ) {     // PICK UP
         ownAction_.setActionType(ActionType::PICK_UP);
+        if ( action["target"].type() != LUA_TSTRING )
+            throw Diluculum::LuaTypeError("ERROR: Action target is not a string");
+
         if ( action["target"].asString() == "food" || action["target"].asString() == "wood" ) {
             // This maybe works for things other than wood
-            auto & target = ownMap_->getItem(static_cast<ID_t>(action["targetId"].asNumber()));
-            ownAction_.setTarget(target);
+            try {
+                auto & target = ownMap_->getItem(static_cast<ID_t>(action["targetId"].asNumber()));
+                ownAction_.setTarget(target);
+            }
+            catch (...) { 
+                std::cout << "ERROR during object pickup.\n";
+                ownAction_.setActionType(ActionType::FAILURE); }
         }
         // Last case in which we have no idea what to target
         else {

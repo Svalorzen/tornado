@@ -13,26 +13,8 @@
 
 using std::vector;
 
-void splashScreen(sf::RenderWindow & window) {
-    sf::Sprite splash(Graphics::getTexture("src/resources/splash_screen.png", false));
-    splash.setPosition(10, 10);
-    window.draw(splash);
-    window.display();
-    while (window.isOpen()) {
-        sf::Event event;
-        // Event reading
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed ||
-               (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) )
-                window.close();
-            // Spawning stuff
-            else if ( event.type == sf::Event::MouseButtonPressed ||
-                    ( event.type == sf::Event::KeyPressed && event.key.code != sf::Keyboard::LAlt &&
-                                                             event.key.code != sf::Keyboard::RAlt ))
-                return;
-        }
-    }
-}
+void finalScreen(sf::RenderWindow & window, sf::Vector2f, const sf::Font &, unsigned score);
+void splashScreen(sf::RenderWindow & window);
 
 int main() {
     Map map(100,100);
@@ -202,7 +184,10 @@ int main() {
 
         // Update world state once per second
         if ( diff > oldDiff ) {
-            engine.runStep();
+            if ( !engine.runStep() ) {
+                finalScreen(window, woodIcon.getScale(), scoreFont,score);
+                return 0;
+            }
             score += map.getPeople().size();
             scoreText.setString("Score: "+std::to_string(score));
 
@@ -231,4 +216,56 @@ int main() {
     }
 
     return 0;
+}
+
+
+void finalScreen(sf::RenderWindow & window, sf::Vector2f scale, const sf::Font & font, unsigned score) {
+    sf::Sprite final(Graphics::getTexture("src/resources/final_screen.png", false));
+    final.setPosition(window.mapPixelToCoords({ 10 ,10 }));
+    final.setScale(scale);
+
+    sf::Text scoreText(std::to_string(score), font);
+    scoreText.setScale(3.0f * scale);
+
+    sf::FloatRect rect = scoreText.getGlobalBounds();
+
+    scoreText.setPosition(window.mapPixelToCoords({400.0f - rect.width/2, 353.0f -rect.height/2}));
+    window.draw(final);
+    window.draw(scoreText);
+    window.display();
+    while (window.isOpen()) {
+        sf::Event event;
+        // Event reading
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed ||
+               (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) )
+                window.close();
+            // Spawning stuff
+            else if ( event.type == sf::Event::MouseButtonPressed ||
+                    ( event.type == sf::Event::KeyPressed && event.key.code != sf::Keyboard::LAlt &&
+                                                             event.key.code != sf::Keyboard::RAlt ))
+                return;
+        }
+    }
+}
+
+void splashScreen(sf::RenderWindow & window) {
+    sf::Sprite splash(Graphics::getTexture("src/resources/splash_screen.png", false));
+    splash.setPosition(10, 10);
+    window.draw(splash);
+    window.display();
+    while (window.isOpen()) {
+        sf::Event event;
+        // Event reading
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed ||
+               (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) )
+                window.close();
+            // Spawning stuff
+            else if ( event.type == sf::Event::MouseButtonPressed ||
+                    ( event.type == sf::Event::KeyPressed && event.key.code != sf::Keyboard::LAlt &&
+                                                             event.key.code != sf::Keyboard::RAlt ))
+                return;
+        }
+    }
 }

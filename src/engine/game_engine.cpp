@@ -16,7 +16,7 @@
 
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
-void GameEngine::runStep() {
+bool GameEngine::runStep() {
     constexpr unsigned HOUSE_COST = 5; 
 
     auto & people = ownMap_.getPeople();
@@ -266,6 +266,9 @@ void GameEngine::runStep() {
     for ( auto i : deadPeople ) {
         ownMap_.removePerson(i);
     }
+    if ( ownMap_.getPeople().size() == 0 )
+        return false;
+    return true;
 }
 
 Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int> target) {
