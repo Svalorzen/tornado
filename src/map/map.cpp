@@ -509,7 +509,7 @@ Position<int> Map::findBuildSpot(const Position<int> & pos, const Area& area) co
     while ( loops ) {
      //   countt++;
         // Only if it's inside the map
-        if ( p.getX() >= 0 && p.getY() >= ( static_cast<int>(area.getMaxH()) - 1 ) && canBuild(p, area) ) 
+        if ( p.getX() >= 1 && p.getY() >= ( static_cast<int>(area.getMaxH()) - 1 ) && canBuild(p, area) ) 
             return p;
         //p.print(); std::cout << "\n";
         // DEBUG
