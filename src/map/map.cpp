@@ -548,6 +548,9 @@ Position<int> Map::findBuildSpot(const Position<int> & pos, const Area& area) co
 }
 
 bool Map::canBuild(const Position<int> & p, const Area & a) const {
+    // They can't go on the left like this!!
+    if ( p.getX() == 0 ) return false;
+
     std::vector<Position<int>> finalTiles = a.applyArea(p);
 
     for ( auto & p : finalTiles ) {
