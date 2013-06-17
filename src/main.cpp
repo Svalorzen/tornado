@@ -62,8 +62,16 @@ int main() {
             // Spawning stuff
             else if ( event.type == sf::Event::MouseButtonPressed ) {
                 auto realCoords = window.mapPixelToCoords( {event.mouseButton.x, event.mouseButton.y} );
-                map.addItem({static_cast<int>(realCoords.x/Graphics::TILE_EDGE_SIZE),
-                        static_cast<int>(realCoords.y/Graphics::TILE_EDGE_SIZE)}, currentItemType);
+                Position<int> gridPos({static_cast<int>(realCoords.x/Graphics::TILE_EDGE_SIZE),
+                        static_cast<int>(realCoords.y/Graphics::TILE_EDGE_SIZE)});
+
+                auto & grid = map.getGrid();
+                try {
+                    if ( grid.at(gridPos.getY()).at(gridPos.getX()).isWalkable() ) 
+                        map.addItem(gridPos, currentItemType);
+                } catch ( std::out_of_range ) {
+                    std::cout << "I don't like you.\n";    
+                }
             }
         }
         // Select Resource Type

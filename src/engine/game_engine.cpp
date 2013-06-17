@@ -159,6 +159,10 @@ void GameEngine::runStep() {
                     }
                     p.unlock();
                     b.unlock();
+
+                    p.own(b.getId());
+                    b.setOwner(p.getId());
+
                     p.setResult(action);
                 }
                 break;
@@ -169,6 +173,10 @@ void GameEngine::runStep() {
             case ActionType::REPRODUCE: {
                 constexpr unsigned REPRODUCTION_COST = 5;
                 bool reproduce = false;
+                if ( ! p.isOwner() ) {
+                    p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                    break;
+                }
                 auto & inv = p.getInventory();
                 if ( p.getNeeds()[value("hunger", Person::NEEDS)] > Person::NEED_PRIORITIES[0] ) {
                     if ( inv.size () >= REPRODUCTION_COST ) {
@@ -236,11 +244,23 @@ void GameEngine::runStep() {
             }
         }
         p.stepUpdate();
-        if ( p.getNeeds()[value("hunger", Person::NEEDS)] == 0 )
+        if ( p.getNeeds()[value("hunger", Person::NEEDS)] == 0 ) {
             deadPeople.push_back(p.getId());
+            if ( p.isLocking() ) {
+                try {
+                    auto & building = ownMap_.getBuilding(p.getLocked());
+                    if ( p.getId() == building.getOwner() && ! building.isValid() )
+                    ownMap_.removeBuilding(building.getId());
+                }
+                catch ( std::runtime_error ) {
+                    ownMap_.getItem(p.getLocked()).unlock();     
+                }
+            }
+        }
     }
-    for ( auto i : deadPeople )
+    for ( auto i : deadPeople ) {
         ownMap_.removePerson(i);
+    }
 }
 
 Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int> target) {

@@ -3,7 +3,7 @@
 #include <graphics/textures.hpp>
 #include <graphics/animated_sprite.hpp>
 
-Building::Building(Area a, BuildingType t) : Entity(a,false, AnimatedSprite()), type_(t), valid_(false), owned_(false) { 
+Building::Building(Area a, BuildingType t) : Entity(a,false, AnimatedSprite()), type_(t), valid_(false) { 
     if ( t == BuildingType::HOUSE )
         getOwnSprite().setTexture(Graphics::getTexture("src/resources/house.png"));
 
@@ -30,21 +30,4 @@ void Building::validate() {
 
 bool Building::isValid() const {
     return valid_;
-}
-
-bool Building::isOwned() const {
-    return owned_;
-}
-
-void Building::disown() {
-    owned_ = false;
-}
-
-ID_t Building::getOwner() const {
-    return owner_;
-}
-
-void Building::setOwner(ID_t id) {
-    owner_ = id;
-    owned_ = true;
 }

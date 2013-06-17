@@ -155,6 +155,18 @@ void Map::validateBuilding(ID_t id) {
     setEntityPosition(b, b.getPosition());
     b.refresh();
 
+    {
+        auto covered = b.getArea().applyArea(b.getPosition());
+        std::vector<ID_t> itemsToRemove;
+
+        for ( auto & p : covered )
+            for ( auto & it : items_ )
+                if ( it.getPosition() == p )
+                    itemsToRemove.push_back(it.getId());
+        for ( auto id : itemsToRemove )
+            removeItem(id);
+    }
+
     // Move the village centroid
     {
         Position<float> newBuildingCentroid = static_cast<Position<float>>(b.getPosition()) + b.getArea().getCentroid();
@@ -233,20 +245,27 @@ void Map::removePerson(ID_t id) {
     auto it = peopleIndex_.find(id);
     if ( it != end(peopleIndex_) ) {
         auto index = it->second;
-        unapplyEntityFromGrid(people_[index]);
+        auto & p = people_[index];
+        unapplyEntityFromGrid(p);
 
         // Delete inventory
-        auto & inv = people_[index].getInventory();
+        auto & inv = p.getInventory();
         for ( auto i : inv )
             removeItem(i);
 
+        // Free houses
+        if ( p.isOwner() ) {
+            auto & b = getBuilding(p.getOwned());
+            b.disown();
+        }
+
         // Efficient removal
         if ( people_.size() > 1 )
-            std::swap(people_[index], people_.back());
+            std::swap(p, people_.back());
         people_.pop_back();
 
         // Update other guy index
-        peopleIndex_[people_[index].getId()] = index;
+        peopleIndex_[p.getId()] = index;
         // Remove old guy index
         peopleIndex_.erase(it);
     }
@@ -320,6 +339,7 @@ void Map::stashItem(ID_t id) {
     if ( it != end(itemsIndex_) ) {
         auto index = it->second;
         unapplyEntityFromGrid(items_[index]);
+        items_[index].setPosition({-1, -1});
         items_[index].getOwnSprite().setToRender(false);
     }
     else
