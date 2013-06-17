@@ -80,7 +80,9 @@ function base_person_ai()
         myMem["action"] = {} 
     -- FAILURES CHECK
     elseif result["type"] == "failure" then
-    
+        if myMem["action"]["type"] == "pick_up" then
+            myMem["action"] = {} 
+        end
     end
 
     -- base action
