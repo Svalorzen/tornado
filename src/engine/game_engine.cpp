@@ -97,12 +97,12 @@ void GameEngine::runStep() {
                 // This should be read from the action or something!!
                 Area buildArea({"11","11"});
                     
-                std::cout << "Checking building!\n";
+                //std::cout << "Checking building!\n";
                 if ( !ownMap_.canBuild(action.getTargetPosition(), buildArea) ) {
                     p.setResult(Action(p.getId(), ActionType::FAILURE)); 
                     break;
                 }
-                std::cout << "Can build!\n";
+                //std::cout << "Can build!\n";
 
                 bool buildHouse = false;
                 {
@@ -127,7 +127,7 @@ void GameEngine::runStep() {
                         break;
                     }
                 }
-                std::cout << "Building!\n";
+                //std::cout << "Building!\n";
 
                 auto & b = ownMap_.addBuilding(action.getTargetPosition(), buildArea, BuildingType::HOUSE);
                 b.lock(p.getId());
@@ -141,7 +141,7 @@ void GameEngine::runStep() {
             // ############## VALIDATION #################
             // ###########################################
             case ActionType::VALIDATE: {
-                std::cout << "Validating!\n";
+                //std::cout << "Validating!\n";
                 auto & b = ownMap_.getBuilding(action.getTargetId());
                 auto pos = b.getPosition()+Distance<int>(-1, 0);
                 if ( p.getPosition() != pos) {

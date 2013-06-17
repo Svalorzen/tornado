@@ -19,9 +19,9 @@ int main() {
 
     ItemType currentItemType = ItemType::FOOD;
 
-    sf::Sprite woodIcon(Graphics::getTexture("src/resources/wood_icon_temp.png"));
-    sf::Sprite foodIcon(Graphics::getTexture("src/resources/food_icon_temp.png"));
-    sf::Sprite selIcon(Graphics::getTexture("src/resources/selection.png"));
+    sf::Sprite woodIcon(Graphics::getTexture("src/resources/wood_gui.png"));
+    sf::Sprite foodIcon(Graphics::getTexture("src/resources/food_gui.png"));
+    sf::Sprite selIcon(Graphics::getTexture("src/resources/selection_gui.png"));
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!", sf::Style::Titlebar);
     window.setFramerateLimit(Graphics::FPS);

@@ -13,7 +13,7 @@
 
 Map::Map(int x, int y) {
     // getTexture MAY THROW! 
-    const sf::Texture & texture = Graphics::getTexture("src/resources/green.png", false);
+    const sf::Texture & texture = Graphics::getTexture("src/resources/grass.png", false);
 
     std::vector<Tile> dummy;
     // Reserve space in advance
@@ -460,10 +460,10 @@ Position<int> Map::findBuildSpot(const Position<int> & pos, const Area& area) co
     Distance<int> dir( (1-horiz) * -mirrorX, horiz * mirrorY );
 
     // Either we search from the unit position, or from the village centroid
-    std::cout << "Centroid is at: "; buildingCentroid_.print();
+    //std::cout << "Centroid is at: "; buildingCentroid_.print();
     Position<int> p = buildingCentroid_ == Position<float>(-1.0f, -1.0f) ?
                         pos : Position<int>(std::round(buildingCentroid_.getX()), std::round(buildingCentroid_.getY()));
-    std::cout << "\nStarting position is at: "; p.print(); std::cout << std::endl;
+    //std::cout << "\nStarting position is at: "; p.print(); std::cout << std::endl;
     // This tracks where we are in the spiral
     Distance<int> offset(0,0);
     int offsetXCheck = 0;
@@ -480,7 +480,7 @@ Position<int> Map::findBuildSpot(const Position<int> & pos, const Area& area) co
         // Only if it's inside the map
         if ( p.getX() >= 0 && p.getY() >= ( static_cast<int>(area.getMaxH()) - 1 ) && canBuild(p, area) ) 
             return p;
-        p.print(); std::cout << "\n";
+        //p.print(); std::cout << "\n";
         // DEBUG
     //    grid_[p.getY()][p.getX()].getOwnSprite().setColor(sf::Color(255 - countt*30, 100, 100));
 
