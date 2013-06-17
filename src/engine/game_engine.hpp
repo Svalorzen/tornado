@@ -17,6 +17,7 @@ class GameEngine {
 
         void runStep();
 
+        std::vector<Position<int>> Astar(const Position<int> & from, const Position<int> & to);
         
     private:
         Map & ownMap_;

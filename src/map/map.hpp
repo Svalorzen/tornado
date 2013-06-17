@@ -27,6 +27,7 @@ class Map {
         void displayMap(sf::RenderWindow &, unsigned);
 
         std::vector<Person> & getPeople();
+        std::vector<std::vector<Tile>> & getGrid();
         
         Person & getPerson(ID_t);
         const Person & getPerson(ID_t) const;

@@ -221,12 +221,12 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
             cachedPathsHistory_.erase((*it).second.second);
         }
     }
-    std::vector<Position<int>> path;
 
     // Compute path
+    std::vector<Position<int>> path;
+
+/*
     auto dist = target - entity.getPosition();
-    std::cout << "ENGINE: NEW PATH\n";
-    dist.print();
 
     // NOTE: LAST MOVES IN FIRST, LastInFirstOut!
     {
@@ -262,13 +262,17 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
 
     if ( path.back() == entity.getPosition() )
         path.pop_back();
-
-    std::cout << "ENGINE: PATH BUILT:\n";
+*/
+    path = Astar(entity.getPosition(), target);
+    // FIXME: Astar may fail!
+    {
+    std::cout << "ENGINE: A* PATH:\n";
     for ( auto p : path ) {
         std::cout << "  ";
         p.print();
     }
     std::cout << "\n\n";
+    }
 
     // We can build it in a forward manner, but then we have to invert it.
     // std::reverse(path.begin(),path.end());

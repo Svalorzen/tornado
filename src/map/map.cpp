@@ -44,6 +44,10 @@ std::vector<Person> & Map::getPeople() {
     return people_;
 }
 
+std::vector<std::vector<Tile>> & Map::getGrid() {
+    return grid_;
+}
+
 void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
     for ( auto & row : grid_ )
         for (auto & cell : row ) 
