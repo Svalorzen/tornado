@@ -1,5 +1,5 @@
-#ifndef SELECTOR_HEADER_FILE
-#define SELECTOR_HEADER_FILE
+#ifndef LOCKER_HEADER_FILE
+#define LOCKER_HEADER_FILE
 
 #include <utils/types.hpp>
 

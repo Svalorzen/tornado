@@ -4,11 +4,12 @@
 #include <utils/enum_string.hpp>
 
 #include <entities/thinkable.hpp>
+#include <entities/utils/owner.hpp>
 
 class Action;
 class Map;
 
-class Person : public Thinkable {
+class Person : public Thinkable, public Owner {
     public:
         static constexpr size_t NEEDS_NUM = 10;
         static constexpr size_t BASIC_NEEDS_NUM = 3;

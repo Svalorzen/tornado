@@ -1,3 +1,48 @@
+function getFood(myMem, myId) 
+    local action = {}
+    local result = true
+
+    if mapHub:isThereFood() then
+        action["type"] = "pick_up"
+        action["target"] = "food"
+        if myMem["action"]["target"] ~= "food" then
+            action["targetId"] = mapHub:getNearestFood(myId);
+        else
+            action["targetId"] = mapHub:getNearestFood(myId, myMem["action"]["targetId"]); 
+        end
+    elseif myMem["action"]["target"] == "food" then
+        action["type"] = "pick_up"
+        action["target"] = "food"
+        action["targetId"] = myMem["action"]["targetId"];
+    else
+        result = false
+    end
+
+    return result, action
+end
+
+function getWood(myMem, myId)
+    local action = {}
+    local result = true
+
+    if mapHub:isThereWood() then
+        action["type"] = "pick_up"
+        action["target"] = "wood"
+        if myMem["action"]["target"] ~= "wood" then
+            action["targetId"] = mapHub:getNearestWood(myId);
+        else
+            action["targetId"] = mapHub:getNearestWood(myId, myMem["action"]["targetId"]); 
+        end
+    elseif myMem["action"]["target"] == "wood" then
+        action["type"] = "pick_up"
+        action["target"] = "wood"
+        action["targetId"] = myMem["action"]["targetId"];
+    else
+        result = false
+    end
+
+    return result, action
+end
 
 function base_person_ai()
     -- load id
@@ -11,6 +56,7 @@ function base_person_ai()
         myMem["globals"]["foodCounter"] = 0;
         myMem["globals"]["woodCounter"] = 0;
         myMem["globals"]["building"] = false;
+        myMem["globals"]["owner"] = false;
     end
 
     -- checking old action with result
@@ -27,6 +73,7 @@ function base_person_ai()
         elseif result["type"] == "validate" then
             myMem["globals"]["woodCounter"] = myMem["globals"]["woodCounter"] - 5;
             myMem["globals"]["building"] = false
+            myMem["globals"]["owner"] = true
         elseif result["type"] == "reproduce" then
             myMem["globals"]["foodCounter"] = myMem["globals"]["foodCounter"] - 5;
         end
@@ -38,43 +85,27 @@ function base_person_ai()
     local action = {}
     action["type"] = "none"
 
-    if myMem["globals"]["woodCounter"] == 5 then
+    if myMem["globals"]["woodCounter"] >= 5 and not myMem["globals"]["owner"] then
         if myMem["globals"]["building"] == true then
             action["type"] = "validate"
         else
             action["type"] = "build"
         end
-    elseif myMem["globals"]["foodCounter"] == 5 then
+    elseif myMem["globals"]["foodCounter"] >= 5 and myMem["globals"]["owner"] then
         action["type"] = "reproduce"
     -- try to eat food
-    elseif mapHub:isThereFood() then
-        action["type"] = "pick_up"
-        action["target"] = "food"
-        if myMem["action"]["target"] ~= "food" then
-            action["targetId"] = mapHub:getNearestFood(myId);
-        else
-            action["targetId"] = mapHub:getNearestFood(myId, myMem["action"]["targetId"]); 
-        end
-    elseif myMem["action"]["target"] == "food" then
-        action["type"] = "pick_up"
-        action["target"] = "food"
-        action["targetId"] = myMem["action"]["targetId"];
-    elseif mapHub:isThereWood() then
-        action["type"] = "pick_up"
-        action["target"] = "wood"
-        if myMem["action"]["target"] ~= "wood" then
-            action["targetId"] = mapHub:getNearestWood(myId);
-        else
-            action["targetId"] = mapHub:getNearestWood(myId, myMem["action"]["targetId"]); 
-        end
+    elseif myMem["globals"]["owner"] then
+        result, action = getFood(myMem, myId)
     else
-        if myMem["action"]["target"] == "wood" then
-            action["type"] = "pick_up"
-            action["target"] = "wood"
-            action["targetId"] = myMem["action"]["targetId"];
+        result, action = getWood(myMem, myId)
+        if not result then
+            result, action = getFood(myMem, myId)
         end
     end
 
+    if next(action) == nil then
+        action["type"] = "none"
+    end
     myMem["action"] = action;
 
     memory[entityHub:getId()] = myMem;

@@ -3,6 +3,7 @@
 
 #include <entities/entity.hpp>
 #include <entities/utils/lockable.hpp>
+#include <entities/utils/ownable.hpp>
 
 enum class BuildingType {
     HOUSE
@@ -10,7 +11,7 @@ enum class BuildingType {
 
 class Area;
 
-class Building : public Entity, public Lockable {
+class Building : public Entity, public Lockable, public Ownable {
     public:
         Building(Area, BuildingType);
         virtual void stepUpdate();
@@ -23,19 +24,11 @@ class Building : public Entity, public Lockable {
 
         void validate();
 
-        bool isOwned() const;
-        void disown();
-
-        ID_t getOwner() const;
-        void setOwner(ID_t);
     private:
         BuildingType type_;
-        ID_t owner_;
-
         ID_t unbuildableArea_;
 
         bool valid_;
-        bool owned_;
 };
 
 #endif
