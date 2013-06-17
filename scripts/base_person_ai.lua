@@ -77,8 +77,10 @@ function base_person_ai()
         elseif result["type"] == "reproduce" then
             myMem["globals"]["foodCounter"] = myMem["globals"]["foodCounter"] - 5;
         end
-
         myMem["action"] = {} 
+    -- FAILURES CHECK
+    elseif result["type"] == "failure" then
+    
     end
 
     -- base action

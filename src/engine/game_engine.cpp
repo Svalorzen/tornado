@@ -219,6 +219,11 @@ void GameEngine::runStep() {
                 // std::cout << "ENGINE: Moving - "; p.getPosition().print(); std::cout << " --> ";
                 //                                  action.getTargetPosition().print(); std::cout << "\n";
                 auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
+                if ( nextMove == Position<int>(-1,-1) ) {
+                    p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                    std::cout << "Couldn't find any path!" << std::endl;
+                    break; 
+                }
                 // std::cout << "ENGINE: Next move is: "; nextMove.print(); std::cout << "\n";
                 // Here there should probably be a check verifying that target position is walkable in the
                 // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
@@ -249,7 +254,7 @@ void GameEngine::runStep() {
             if ( p.isLocking() ) {
                 try {
                     auto & building = ownMap_.getBuilding(p.getLocked());
-                    if ( p.getId() == building.getOwner() && ! building.isValid() )
+                    if ( ! building.isValid() )
                     ownMap_.removeBuilding(building.getId());
                 }
                 catch ( std::runtime_error ) {
@@ -343,8 +348,11 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
     // std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
     // for ( int i = 0; i < 10; i++ )
-        path = Astar(entity.getPosition(), target);
 
+    path = Astar(entity.getPosition(), target);
+    if ( path.size() == 0 )
+        return Position<int>(-1,-1);
+        
     // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     // std::cout << "\nENGINE: A* TOOK : " << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << " MILLISECONDS\n\n";
     // FIXME: Astar may fail!
