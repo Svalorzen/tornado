@@ -6,7 +6,7 @@ SHELL=/bin/bash
 CXX=/usr/bin/g++-4.8
 WCXX=~/Projects/MinGW/bin/i686-w64-mingw32-g++
 
-EXECUTABLE=tornado
+EXECUTABLE=eatmeat_andbuild
 WINEXECUTABLE=ruletheskies.exe
                                                                                     
 CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./include/ -I./src/ -I/usr/include/lua5.2/ 
