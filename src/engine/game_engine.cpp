@@ -20,6 +20,7 @@ void GameEngine::runStep() {
     constexpr unsigned HOUSE_COST = 5; 
 
     auto & people = ownMap_.getPeople();
+    std::vector<ID_t> deadPeople;
 
     AI& ai = AI::getInstance();
 
@@ -156,6 +157,46 @@ void GameEngine::runStep() {
                 break;
             }
             // ###########################################
+            // ############## REPRODUCTION ###############
+            // ###########################################
+            case ActionType::REPRODUCE: {
+                constexpr unsigned REPRODUCTION_COST = 5;
+                bool reproduce = false;
+                auto & inv = p.getInventory();
+                if ( p.getNeeds()[value("hunger", Person::NEEDS)] > Person::NEED_PRIORITIES[0] ) {
+                    if ( inv.size () >= REPRODUCTION_COST ) {
+                        size_t j = inv.size();
+                    
+                        for ( int i = j-1; i >= 0; i-- ) {
+                            if ( ownMap_.getItem(inv[i]).getType() == ItemType::FOOD ) {
+                                j--;
+                                std::swap(inv[i],inv[j]);
+                                if ( inv.size() - j >= REPRODUCTION_COST ) {
+                                    reproduce = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if ( reproduce ) {
+                    // Remove stuff from map
+                    for ( size_t i = inv.size() - 1, j = 0; j < REPRODUCTION_COST; j++, i--)
+                        ownMap_.removeItem(inv[i]);
+                    // Remove stuff from inventory
+                    inv.erase(end(inv) - REPRODUCTION_COST, end(inv));
+
+                    ownMap_.addPerson(p.getPosition());
+                    p.setResult(action);
+
+                }
+                else {
+                    // Failure
+                    p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                }
+                break;
+            }
+            // ###########################################
             // ############## MOVEMENT ###################
             // ###########################################
             case ActionType::MOVE_TO: {
@@ -187,7 +228,12 @@ void GameEngine::runStep() {
                 p.setResult(Action());
             }
         }
+        p.stepUpdate();
+        if ( p.getNeeds()[value("hunger", Person::NEEDS)] == 0 )
+            deadPeople.push_back(p.getId());
     }
+    for ( auto i : deadPeople )
+        ownMap_.removePerson(i);
 }
 
 Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int> target) {
