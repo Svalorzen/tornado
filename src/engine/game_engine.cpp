@@ -59,7 +59,14 @@ void GameEngine::runStep() {
             // ############ ITEM PICK UP #################
             // ###########################################
             case ActionType::PICK_UP: {
-                auto & target = ownMap_.getItem(action.getTargetId());
+                Item * tp;
+                try {
+                    tp = &(ownMap_.getItem(action.getTargetId()));
+                } catch ( std::runtime_error e ) {
+                    p.setResult(Action(p.getId(), ActionType::FAILURE)); 
+                    break;
+                }
+                Item & target = *tp;
                 // If we are not the ones locking, something weird is going on..
                 if ( target.isLocked() ) {
                     if ( p.getId() != target.getLocker() )
@@ -259,16 +266,17 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
         // Or we may want to validate only the next step, and we recompute the path only when we realize that
         // the world has changed
         if ( (*it).second.first.size() > 1 && entity.getPosition() == (*it).second.first.back() ) {
-            // If it is good, we refresh it in the history
-            cachedPathsHistory_.splice(cachedPathsHistory_.begin(), cachedPathsHistory_, (*it).second.second);
-
+            auto & grid = ownMap_.getGrid();
             (*it).second.first.pop_back();
-            return (*it).second.first.back();
+            if ( grid[it->second.first.back().getY()][it->second.first.back().getX()].isWalkable() ) {
+                // If it is good, we refresh it in the history
+                cachedPathsHistory_.splice(cachedPathsHistory_.begin(), cachedPathsHistory_, (*it).second.second);
+
+                return (*it).second.first.back();
+            }
         }
         // Otherwise it's wrong (for whatever reason), so we remove it from the history and then recompute it
-        else {
-            cachedPathsHistory_.erase((*it).second.second);
-        }
+        cachedPathsHistory_.erase((*it).second.second);
     }
 
     // Compute path

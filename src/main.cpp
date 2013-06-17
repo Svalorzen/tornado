@@ -31,12 +31,15 @@ int main() {
     sf::Text scoreText("Score: "+std::to_string(score), scoreFont);
 
     sf::View view = window.getDefaultView();
+
     int zoom = 0;
     float movement = 15;
 
     // Using chrono instead of SF::Time.. not a problem for now
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() - std::chrono::duration<int>(1);
     unsigned oldDiff = 0;
+
+    bool updatedView = false;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -66,48 +69,58 @@ int main() {
         // Zoom back
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
             view.zoom(1.1f);
+            scoreText.setScale(scoreText.getScale()*1.1f);
             window.setView(view);
             zoom--;
             
             movement = 15*pow(3,-tanh(zoom/2.));
-            
-            //if ( zoom < 0 )
-            //    movement *= 1.5f;
-            //else
-            //    movement *= 1.05f;
+
+            updatedView = true;
         }
         // Zoom in
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             view.zoom(0.909f);
+            scoreText.setScale(scoreText.getScale()*0.909f);
             window.setView(view);
             zoom++;
             
             movement = 15*pow(3,-tanh(zoom/2.));
-            
-            //if ( zoom <= 0 )
-            //    movement /= 1.5f;
-            //else
-            //    movement /= 1.05f;
+
+            updatedView = true;
         }
         // Up
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::W )) {
             view.move(0,-movement);
             window.setView(view);
+
+            updatedView = true;
         }
         // Left
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::A )) {
             view.move(-movement,0);
             window.setView(view);
+
+            updatedView = true;
         }
         // Down
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::S )) {
             view.move(0,movement);
             window.setView(view);
+
+            updatedView = true;
         }
         // Right
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::D )) {
             view.move(movement,0);
             window.setView(view);
+
+            updatedView = true;
+        }
+
+        if ( updatedView ) {
+            scoreText.setPosition(window.mapPixelToCoords( {0,0} ));
+
+            updatedView = false;
         }
 
         // We will need to do work during frames, can't do it all at once..
@@ -130,6 +143,7 @@ int main() {
             // Not sure if it'll work but let's see!
             elapsedMs -= oldDiff * Core::MS_PER_UPDATE;
 
+
         // This will be automatically limited to Graphics::FPS by SFML (setted frame rate above) 
         window.clear();
         // The idea here is that elapsed is a number [0,MS_PER_UPDATE), that represents how far we are in this frame.
@@ -140,9 +154,5 @@ int main() {
 
     }
 
-    //Map map(10,10);
-    //Person p(map, true);
-    //printArea(p.getArea());
     return 0;
-
 }
