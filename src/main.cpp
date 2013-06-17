@@ -21,6 +21,15 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!");
     window.setFramerateLimit(Graphics::FPS);
 
+    sf::Font scoreFont;
+    if ( !scoreFont.loadFromFile("fonts/airstrip.ttf") ) {
+        std::cout << "Could not load font.\n";
+        return -1;
+    }
+
+    unsigned long score = 0;
+    sf::Text scoreText("Score: "+std::to_string(score), scoreFont);
+
     sf::View view = window.getDefaultView();
     int zoom = 0;
     float movement = 15;
@@ -109,6 +118,8 @@ int main() {
         // Update world state once per second
         if ( diff > oldDiff ) {
             engine.runStep();
+            score += map.getPeople().size();
+            scoreText.setString("Score: "+std::to_string(score));
 
             oldDiff = diff;
             // We reset this because runStep already forces stuff to snap to the grid (moving them),
@@ -123,6 +134,8 @@ int main() {
         window.clear();
         // The idea here is that elapsed is a number [0,MS_PER_UPDATE), that represents how far we are in this frame.
         map.displayMap(window, elapsedMs);
+        window.draw(scoreText);
+
         window.display();
 
     }

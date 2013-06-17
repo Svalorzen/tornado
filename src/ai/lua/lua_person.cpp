@@ -80,6 +80,9 @@ Diluculum::LuaValueList LuaPerson::getResult(const Diluculum::LuaValueList &) {
         case ActionType::FAILURE:
             map["type"] = "failure";
             break;
+        case ActionType::REPRODUCE:
+            map["type"] = "reproduce";
+            break;
         default:
             map["type"] = "none";
     }

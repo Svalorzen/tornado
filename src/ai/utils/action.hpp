@@ -19,6 +19,7 @@ enum class ActionType {
     SHELTER,
     BUILD,
     VALIDATE,
+    REPRODUCE,
     FAILURE
 };
 

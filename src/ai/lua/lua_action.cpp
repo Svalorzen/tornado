@@ -74,6 +74,8 @@ Diluculum::LuaValueList LuaAction::setAction(const Diluculum::LuaValueList & in)
         catch ( std::runtime_error ) {
             ownAction_.setActionType(ActionType::FAILURE);
         }
+    } else if ( action["type"].asString() == "reproduce" ) {
+        ownAction_.setActionType(ActionType::REPRODUCE);
     }
     // else if type none .... nothing to do!
 
