@@ -13,6 +13,27 @@
 
 using std::vector;
 
+void splashScreen(sf::RenderWindow & window) {
+    sf::Sprite splash(Graphics::getTexture("src/resources/splash_screen.png", false));
+    splash.setPosition(10, 10);
+    window.draw(splash);
+    window.display();
+    while (window.isOpen()) {
+        sf::Event event;
+        // Event reading
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed ||
+               (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) )
+                window.close();
+            // Spawning stuff
+            else if ( event.type == sf::Event::MouseButtonPressed ||
+                    ( event.type == sf::Event::KeyPressed && event.key.code != sf::Keyboard::LAlt &&
+                                                             event.key.code != sf::Keyboard::RAlt ))
+                return;
+        }
+    }
+}
+
 int main() {
     Map map(100,100);
     GameEngine engine(map);
@@ -23,7 +44,7 @@ int main() {
     sf::Sprite foodIcon(Graphics::getTexture("src/resources/food_gui.png"));
     sf::Sprite selIcon(Graphics::getTexture("src/resources/selection_gui.png"));
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!", sf::Style::Titlebar);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Eat Meat and Build!", sf::Style::Titlebar);
     window.setFramerateLimit(Graphics::FPS);
 
     sf::Font scoreFont;
@@ -50,6 +71,20 @@ int main() {
 
     bool updatedView = false;
     bool changedSel = false;
+
+    // This will be automatically limited to Graphics::FPS by SFML (setted frame rate above) 
+    window.clear();
+    // The idea here is that elapsed is a number [0,MS_PER_UPDATE), that represents how far we are in this frame.
+    map.displayMap(window, 0);
+    
+    window.draw(foodIcon);
+    window.draw(woodIcon);
+    window.draw(selIcon);
+    window.draw(scoreText);
+
+    window.display();
+
+    splashScreen(window);
 
     while (window.isOpen()) {
         sf::Event event;

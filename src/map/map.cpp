@@ -43,6 +43,17 @@ Map::Map(int x, int y) {
     lifeBarOutline_ = sf::Sprite(Graphics::getTexture("src/resources/lifebar_outline.png", false));
 }
 
+void Map::clean() {
+    while ( people_.size() > 0 )
+        removePerson(people_[0].getId());
+    while ( items_.size() > 0 )
+        removeItem(items_[0].getId());
+    while ( buildings_.size() > 0 )
+        removeBuilding(buildings_[0].getId());
+    while ( aoes_.size() > 0 )
+        removeAoE(aoes_[0].getId());
+}
+
 std::vector<Person> & Map::getPeople() {
     return people_;
 }

@@ -23,6 +23,7 @@ class Area;
 class Map {
     public:
         Map(int,int);
+        void clean();
         
         void displayMap(sf::RenderWindow &, unsigned);
 
