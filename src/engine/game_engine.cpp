@@ -261,7 +261,10 @@ bool GameEngine::runStep() {
                     ownMap_.removeBuilding(building.getId());
                 }
                 catch ( std::runtime_error ) {
-                    ownMap_.getItem(p.getLocked()).unlock();     
+                    try {
+                        ownMap_.getItem(p.getLocked()).unlock();     
+                    }
+                    catch ( std::runtime_error ) {}
                 }
             }
         }
