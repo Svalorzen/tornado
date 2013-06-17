@@ -1,6 +1,7 @@
 #include "game_engine.hpp"
 
-#include <boost/heap/d_ary_heap.hpp>
+//#include <boost/heap/d_ary_heap.hpp>
+#include <boost/heap/fibonacci_heap.hpp>
 
 #include <map/map.hpp>
 #include <iostream>
@@ -23,11 +24,17 @@ std::vector<Position<int>> GameEngine::Astar(const Position<int> & from, const P
     };
 
     // Heap structure to keep nodes we have to examine in order of F score
-    using openSet_t = boost::heap::d_ary_heap<
-        node_t,
-        boost::heap::arity<2>,
-        boost::heap::compare<node_t_comparator>,
-        boost::heap::mutable_<true>>;
+    // This is for binary heaps
+ //   using openSet_t = boost::heap::d_ary_heap<
+ //       node_t,
+ //       boost::heap::arity<2>,
+ //       boost::heap::compare<node_t_comparator>,
+ //       boost::heap::mutable_<true>>;
+
+    // This is apparently like 5x faster on long paths
+    using openSet_t = boost::heap::fibonacci_heap<
+            node_t,
+            boost::heap::compare<node_t_comparator>>;
 
     openSet_t openSet;
 
@@ -52,12 +59,12 @@ std::vector<Position<int>> GameEngine::Astar(const Position<int> & from, const P
 
         closedSet[current] = top;
 
-        std::cout << "ASTAR: Now considering: "; current.print(); std::cout << "\n";
+        //std::cout << "ASTAR: Now considering: "; current.print(); std::cout << "\n";
 
         // Success
         if ( to == current ) {
             while ( current != from ) {
-                std::cout << "ASTAR: Success -- Adding: "; current.print(); std::cout << "\n"; 
+          //      std::cout << "ASTAR: Success -- Adding: "; current.print(); std::cout << "\n"; 
                 path.push_back(current);
                 current = std::get<PARENT>(closedSet.find(current)->second);
             }
@@ -70,16 +77,16 @@ std::vector<Position<int>> GameEngine::Astar(const Position<int> & from, const P
         for ( auto & n : neighbours ) {
             Position<int> neighbour = current + n;
             // Check walkability/validity of the position
-            std::cout << "ASTAR:     Neighbour: "; neighbour.print(); std::cout << "\n";
-            try {
-            if ( !grid.at(neighbour.getY()).at(neighbour.getX()).isWalkable() ) continue;
-            } catch( std::out_of_range ) { continue; }
-            std::cout << "ASTAR:         Neighbour valid.\n";
+           // std::cout << "ASTAR:     Neighbour: "; neighbour.print(); std::cout << "\n";
+           if ( neighbour.getX() < 0 || static_cast<unsigned>(neighbour.getX()) >= grid[0].size() ||
+                neighbour.getY() < 0 || static_cast<unsigned>(neighbour.getY()) >= grid.size() ) continue;
+           if ( !grid[neighbour.getY()][neighbour.getX()].isWalkable() ) continue;
+           // std::cout << "ASTAR:         Neighbour valid.\n";
             {
                 auto it = closedSet.find(neighbour);
                 // If we processed it already
                 if ( it != end(closedSet) ) {
-                    std::cout << "ASTAR:         Neighbour in closedSet.\n";
+             //       std::cout << "ASTAR:         Neighbour in closedSet.\n";
                     // And this path to it is no good, avoid it
                     if ( costFromCurrent >= std::get<G_SCORE>(it->second) ) continue;
                 }
@@ -87,13 +94,16 @@ std::vector<Position<int>> GameEngine::Astar(const Position<int> & from, const P
             {
                 auto it = openSetHandles.find(neighbour);
                 auto tuple = std::make_tuple(costFromCurrent + (to - neighbour).getDistance(), costFromCurrent, neighbour, current);
-                std::cout << "ASTAR:        Neighbour stats: " << std::get<0>(tuple) << ", " << std::get<1>(tuple) << "\n";
+              //  std::cout << "ASTAR:        Neighbour stats: " << std::get<0>(tuple) << ", " << std::get<1>(tuple) << "\n";
                 // Either we make it better, or we create it again
                 if ( it != end(openSetHandles) ) {
-                    std::cout << "ASTAR:         Neighbour in openSet.\n";
-                    //openSet.increase(it->second, tuple);
-                    //openSet.decrease(it->second, tuple);
-                    openSet.update(it->second, tuple);
+               //     std::cout << "ASTAR:         Neighbour in openSet.\n";
+                    if ( node_t_comparator()(*(it->second), tuple)) {
+                //        std::cout << "ASTAR:         Neighbour updated.\n";
+                        //openSet.increase(it->second, tuple);
+                        //openSet.decrease(it->second, tuple);
+                        openSet.increase(it->second, tuple);
+                    }
                 }
                 else
                     openSetHandles[neighbour] = openSet.push(tuple);

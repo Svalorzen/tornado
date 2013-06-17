@@ -35,7 +35,6 @@ Map::Map(int x, int y) {
     buildings_.reserve(1000);
 
     addPerson({1,1});
-    addPerson({10,10});
 
     buildingCentroid_ = {-1, -1};
 }

@@ -11,6 +11,9 @@
 // These needs to be last!
 #include <ai/ai.hpp>
 
+#include <chrono>
+#include <iostream>
+
 GameEngine::GameEngine(Map & m) : ownMap_(m) {}
 
 void GameEngine::runStep() {
@@ -157,10 +160,10 @@ void GameEngine::runStep() {
             // ###########################################
             case ActionType::MOVE_TO: {
                 MOVE_TO_LABEL: 
-                std::cout << "ENGINE: Moving - "; p.getPosition().print(); std::cout << " --> ";
-                                                  action.getTargetPosition().print(); std::cout << "\n";
+                // std::cout << "ENGINE: Moving - "; p.getPosition().print(); std::cout << " --> ";
+                //                                  action.getTargetPosition().print(); std::cout << "\n";
                 auto nextMove = computeSingleMove(p, action.getTargetPosition()); 
-                std::cout << "ENGINE: Next move is: "; nextMove.print(); std::cout << "\n";
+                // std::cout << "ENGINE: Next move is: "; nextMove.print(); std::cout << "\n";
                 // Here there should probably be a check verifying that target position is walkable in the
                 // sense that there aren't agents in there, or maybe there is an agent that wants to switch places with us
                 // IF ( NOT WALKABLE && ENDPOINT.HAS_ENTITY ) {
@@ -263,16 +266,22 @@ Position<int> GameEngine::computeSingleMove(const Entity & entity, Position<int>
     if ( path.back() == entity.getPosition() )
         path.pop_back();
 */
-    path = Astar(entity.getPosition(), target);
+    // std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+
+    // for ( int i = 0; i < 10; i++ )
+        path = Astar(entity.getPosition(), target);
+
+    // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    // std::cout << "\nENGINE: A* TOOK : " << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << " MILLISECONDS\n\n";
     // FIXME: Astar may fail!
-    {
-    std::cout << "ENGINE: A* PATH:\n";
-    for ( auto p : path ) {
-        std::cout << "  ";
-        p.print();
-    }
-    std::cout << "\n\n";
-    }
+    // {
+    // std::cout << "ENGINE: A* PATH:\n";
+    // for ( auto p : path ) {
+    //     std::cout << "  ";
+    //     p.print();
+    // }
+    // std::cout << "\n\n";
+    // }
 
     // We can build it in a forward manner, but then we have to invert it.
     // std::reverse(path.begin(),path.end());
