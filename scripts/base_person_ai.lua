@@ -27,7 +27,10 @@ function base_person_ai()
         elseif result["type"] == "validate" then
             myMem["globals"]["woodCounter"] = myMem["globals"]["woodCounter"] - 5;
             myMem["globals"]["building"] = false
+        elseif result["type"] == "reproduce" then
+            myMem["globals"]["foodCounter"] = myMem["globals"]["foodCounter"] - 5;
         end
+
         myMem["action"] = {} 
     end
 
@@ -41,7 +44,8 @@ function base_person_ai()
         else
             action["type"] = "build"
         end
-
+    elseif myMem["globals"]["foodCounter"] == 5 then
+        action["type"] = "reproduce"
     -- try to eat food
     elseif mapHub:isThereFood() then
         action["type"] = "pick_up"

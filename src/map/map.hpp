@@ -102,6 +102,9 @@ class Map {
         // AoE
         std::vector<AoE> aoes_;
         std::unordered_map<ID_t, size_t> aoesIndex_;
+
+        sf::Sprite lifeBar_;
+        sf::Sprite lifeBarOutline_;
 };
 
 #endif

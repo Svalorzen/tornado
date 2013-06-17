@@ -37,6 +37,10 @@ Map::Map(int x, int y) {
     addPerson({1,1});
 
     buildingCentroid_ = {-1, -1};
+
+    // Life bar for everybody
+    lifeBar_ = sf::Sprite(Graphics::getTexture("src/resources/lifebar.png", false));
+    lifeBarOutline_ = sf::Sprite(Graphics::getTexture("src/resources/lifebar_outline.png", false));
 }
 
 std::vector<Person> & Map::getPeople() {
@@ -70,7 +74,16 @@ void Map::displayMap(sf::RenderWindow &window, unsigned elapsedMs) {
             p.graphicalUpdate(elapsedMs);
         }
     }
+    // Render lifebars
+    for ( auto & p : people_ ) {
+        lifeBar_.setTextureRect(sf::IntRect(30 - 30*(static_cast<float>(p.getNeeds()[value("hunger", Person::NEEDS)])/
+                                                     static_cast<float>(Person::NEED_PRIORITIES[2])),0,30,3));
+        lifeBar_.setPosition(p.getOwnSprite().getPosition() + sf::Vector2f(1.0f, -10.0f) );
+        lifeBarOutline_.setPosition(lifeBar_.getPosition() + sf::Vector2f(-1.0f,-1.0f) );
 
+        window.draw(lifeBarOutline_);
+        window.draw(lifeBar_);
+    }
 }
 
 Person & Map::addPerson(Position<int> pos) {
@@ -222,7 +235,10 @@ void Map::removePerson(ID_t id) {
         auto index = it->second;
         unapplyEntityFromGrid(people_[index]);
 
-        // Unset unbuildable stuff
+        // Delete inventory
+        auto & inv = people_[index].getInventory();
+        for ( auto i : inv )
+            removeItem(i);
 
         // Efficient removal
         if ( people_.size() > 1 )
