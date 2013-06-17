@@ -74,9 +74,12 @@ bool GameEngine::runStep() {
                 }
                 else {
                     // Free old target
-                    if ( p.isLocking() )
-                        // FIXME: This probably will need to change (not only item are targets..)
-                        ownMap_.getItem(p.getLocked()).unlock();
+                    if ( p.isLocking() ) {
+                        try {
+                            // FIXME: This probably will need to change (not only item are targets..)
+                            ownMap_.getItem(p.getLocked()).unlock();
+                        } catch ( std::runtime_error ) {}
+                    }
 
                     target.lock(p.getId());
                     p.lock(target.getId());
