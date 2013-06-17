@@ -5,6 +5,7 @@
 
 #include <globals.hpp>
 #include <graphics/globals.hpp>
+#include <graphics/textures.hpp>
 #include <map/map.hpp>
 #include <engine/game_engine.hpp>
 #include <iostream>
@@ -18,7 +19,11 @@ int main() {
 
     ItemType currentItemType = ItemType::FOOD;
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!");
+    sf::Sprite woodIcon(Graphics::getTexture("src/resources/wood_icon_temp.png"));
+    sf::Sprite foodIcon(Graphics::getTexture("src/resources/food_icon_temp.png"));
+    sf::Sprite selIcon(Graphics::getTexture("src/resources/selection.png"));
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Tornado!", sf::Style::Titlebar);
     window.setFramerateLimit(Graphics::FPS);
 
     sf::View view = window.getDefaultView();
@@ -57,6 +62,9 @@ int main() {
         // Zoom back
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
             view.zoom(1.1f);
+            woodIcon.setScale(woodIcon.getScale()*1.1f);
+            foodIcon.setScale(foodIcon.getScale()*1.1f);
+            selIcon.setScale(selIcon.getScale()*1.1f);
             window.setView(view);
             zoom--;
             
@@ -70,6 +78,9 @@ int main() {
         // Zoom in
         if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             view.zoom(0.909f);
+            woodIcon.setScale(woodIcon.getScale()*0.909f);
+            foodIcon.setScale(foodIcon.getScale()*0.909f);
+            selIcon.setScale(selIcon.getScale()*0.909f);
             window.setView(view);
             zoom++;
             
@@ -123,6 +134,19 @@ int main() {
         window.clear();
         // The idea here is that elapsed is a number [0,MS_PER_UPDATE), that represents how far we are in this frame.
         map.displayMap(window, elapsedMs);
+       
+        foodIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
+        woodIcon.setPosition(window.mapPixelToCoords({ 10 + 95 + 10 , static_cast<int>(window.getSize().y) - 10 - 22 - 10 - 86 }));
+        
+        if ( currentItemType == ItemType::FOOD )
+            selIcon.setPosition(window.mapPixelToCoords({ 10 , static_cast<int>(window.getSize().y) - 10 - 22 }));
+        else if ( currentItemType == ItemType::WOOD )
+            selIcon.setPosition(window.mapPixelToCoords({ 10 + 95 + 10, static_cast<int>(window.getSize().y) - 10 - 22 }));
+        
+        window.draw(foodIcon);
+        window.draw(woodIcon);
+        window.draw(selIcon);
+
         window.display();
 
     }

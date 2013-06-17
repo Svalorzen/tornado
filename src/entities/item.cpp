@@ -8,9 +8,9 @@ Item::Item(ItemType t) :
     type_(t) {
 
     if ( t == ItemType::FOOD )
-        getOwnSprite().sf::Sprite::setTexture(Graphics::getTexture("src/resources/yellow.png"));
+        getOwnSprite().sf::Sprite::setTexture(Graphics::getTexture("src/resources/food.png"));
     else if ( t == ItemType::WOOD )
-        getOwnSprite().sf::Sprite::setTexture(Graphics::getTexture("src/resources/brown.png"));
+        getOwnSprite().sf::Sprite::setTexture(Graphics::getTexture("src/resources/wood.png"));
 
 } 
 
