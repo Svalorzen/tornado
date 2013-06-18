@@ -228,8 +228,9 @@ void finalScreen(sf::RenderWindow & window, sf::Vector2f scale, const sf::Font &
     scoreText.setScale(3.0f * scale);
 
     sf::FloatRect rect = scoreText.getLocalBounds();
-
-    scoreText.setPosition(window.mapPixelToCoords({static_cast<int>(400.0f - rect.width/2.0f), static_cast<int>(353.0f -rect.height/2.0f)}));
+    std::cout<<rect.width<<std::endl;
+    std::cout<<rect.height<<std::endl;
+    scoreText.setPosition(window.mapPixelToCoords({static_cast<int>(400.0f - 1.5f*(rect.width)), static_cast<int>(315.0f)}));
     window.draw(final);
     window.draw(scoreText);
     window.display();
