@@ -85,7 +85,6 @@ int main() {
                 auto & grid = map.getGrid();
                 try {
                     if ( grid.at(gridPos.getY()).at(gridPos.getX()).isWalkable() ) 
-                        for ( int i = 0; i<5; i++) 
                         map.addItem(gridPos, currentItemType);
                 } catch ( std::out_of_range ) {
                     std::cout << "I don't like you.\n";    
@@ -230,8 +229,9 @@ void finalScreen(sf::RenderWindow & window, sf::Vector2f scale, const sf::Font &
     scoreText.setScale(3.0f * scale);
 
     sf::FloatRect rect = scoreText.getLocalBounds();
-
-    scoreText.setPosition(window.mapPixelToCoords({static_cast<int>(400.0f - rect.width/2.0f), static_cast<int>(353.0f -rect.height/2.0f)}));
+    std::cout<<rect.width<<std::endl;
+    std::cout<<rect.height<<std::endl;
+    scoreText.setPosition(window.mapPixelToCoords({static_cast<int>(400.0f - 1.5f*(rect.width)), static_cast<int>(315.0f)}));
     window.draw(final);
     window.draw(scoreText);
     window.display();
