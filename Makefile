@@ -10,7 +10,7 @@ EXECUTABLE=eatmeat_andbuild
 WINEXECUTABLE=ruletheskies.exe
                                                                                     
 CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./include/ -I./src/ -I/usr/include/lua5.2/ 
-LDFLAGS=-L./lib/Diluculum/ -L./lib/SFML/ -Wl,-rpath -Wl,./lib/SFML/ -Wl,-rpath -Wl,./lib/Diluculum/ -g
+LDFLAGS=-L./lib/Diluculum/ -L./lib/SFML/ -Wl,-rpath -Wl,./lib/SFML/ -Wl,-rpath -Wl,./lib/Diluculum/ -Wl,-rpath -Wl,./lib/others -g
 
 LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system -ldiluculum
 WINLIBRARIES=#-ljson_mingw_libmt -lbprinter_mingw

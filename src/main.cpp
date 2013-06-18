@@ -91,17 +91,19 @@ int main() {
                     std::cout << "I don't like you.\n";    
                 }
             }
-        }
-        // Select Resource Type
-        // Select Food
-        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-            currentItemType = ItemType::FOOD;
-            changedSel = true;
-        }
-        // Select Wood
-        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-            currentItemType = ItemType::WOOD;
-            changedSel = true;
+            // Select Resource Type
+            else if ( event.type == sf::Event::KeyPressed ) {
+                // Select Food
+                if ( event.key.code == sf::Keyboard::Num1 ) {
+                    currentItemType = ItemType::FOOD;
+                    changedSel = true;
+                }
+                // Select Wood
+                else if ( event.key.code == sf::Keyboard::Num2 ) {
+                    currentItemType = ItemType::WOOD;
+                    changedSel = true;
+                }
+            }
         }
         // View zooming/moving
         // Zoom back
