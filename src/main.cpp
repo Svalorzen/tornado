@@ -85,7 +85,6 @@ int main() {
                 auto & grid = map.getGrid();
                 try {
                     if ( grid.at(gridPos.getY()).at(gridPos.getX()).isWalkable() ) 
-                        for ( int i = 0; i<5; i++) 
                         map.addItem(gridPos, currentItemType);
                 } catch ( std::out_of_range ) {
                     std::cout << "I don't like you.\n";    
