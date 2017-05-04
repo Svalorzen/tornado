@@ -3,7 +3,7 @@
 # by Eugenio Bargiacchi - 2013
 
 SHELL=/bin/bash
-CXX=/usr/bin/g++-4.8
+CXX=/usr/bin/g++
 WCXX=~/Projects/MinGW/bin/i686-w64-mingw32-g++
 
 EXECUTABLE=eatmeat_andbuild
@@ -12,7 +12,7 @@ WINEXECUTABLE=ruletheskies.exe
 CXXFLAGS=-std=c++11 -g -Wall -pedantic -I./include/ -I./src/ -I/usr/include/lua5.2/ 
 LDFLAGS=-L./lib/Diluculum/ -L./lib/SFML/ -Wl,-rpath -Wl,./lib/SFML/ -Wl,-rpath -Wl,./lib/Diluculum/ -Wl,-rpath -Wl,./lib/others -g
 
-LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system -ldiluculum
+LIBRARIES=-lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system -ldiluculum -llua5.2
 WINLIBRARIES=#-ljson_mingw_libmt -lbprinter_mingw
 
 WINDEFINES=-DWINVER=0x0400 -D__WIN95__ -D__GNUWIN32__ -DSTRICT -DHAVE_W32API_H -D__WXMSW__ -D__WINDOWS__
